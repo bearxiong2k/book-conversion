@@ -1,0 +1,44 @@
+12 THE IDEA OF PHENOMENOLOGY
+
+consistently deviated from their translation policy. I have translated Sinn as
+“sense” rather than “meaning” (annexing the latter to Bedeutung). I do this to
+disassociate Husserl’s concept of Sinn from exclusively linguistic concerns.
+Sinn, for Husserl, is the intentional element of an act of consciousness
+whereby that act refers to its object. It is intentionally resident in all acts of
+perception, memory, imagination, and the like. As such, it far exceeds in scope
+the concerns of the philosophy of language; indeed, for Husserl, it also
+precedes those concerns insofar as all linguistic reference is ultimately
+founded on pre-predicative acts of consciousness. Second, I have translated
+“natiirliche Wissenschaften” as the “‘positive sciences” rather than the “natural
+sciences” or “‘sciences of the natural sort.” I do so because the term “natural
+sciences” calls to the mind of the English reader such sciences as physics,
+chemistry, and biology; whereas Husserl meant by this locution all the
+sciences insofar as they are based upon the assumption of the “natural
+attitude,” the assumption of the existence of the world, the validity of
+transcendent experience — that is, all the sciences except the properly philo-
+sophical science of phenomenology, which seeks to assess the basic and
+pervasive assumption of the positive sciences without participating in it. In his
+later writings Husserl himself referred to all such sciences as the “positive
+Wissenschaften” (see the Crisis of the European Sciences and Transcendental
+Phenomenology, written in the 1930’s, for example). So the use of the English
+cognate for this term in a translation of his earlier work would seem permissi-
+ble. Third, the term “psychisch” is transliterated by Alston and Nakhnikian as
+“psychic,” as in “psychic experience,” or “psychic data.” By this Husserl
+means experience or data as they pertain to the mind. But the term “psychic”
+calls to the mind of the English-speaking reader images of people with
+clairvoyant powers, who regularly invite perfect strangers to chat with them
+over the phone about the details of their private lives. To avoid all associations
+with the para-normal and occult, I have translated the term “psychisch” as
+“mental,” “of the mind,” and the like.
+
+An additional terminological difficulty is posed by Husserl’s use of the term
+of “reell” both as an adjective and as an adverb. This term is best explained
+by reference to its place in a three-way conceptual partition between the reelle,
+the reale, and the intentionale components of an act of consciousness. First,
+the contrast between reell and intentionale: in expanding the domain of what
+is included in the phenomenon of knowing, Husserl seeks to go beyond the
+temporal parts, layers, and phases of an act that actually make it up to those
+elements that do not make it up, but are essentially referred to by that act, or
+serve as the structural features of the act that make such reference possible.
+The former are reelle components of the act, the latter are intentionale parts.
+The concept of reelle components receives further definition by reference to

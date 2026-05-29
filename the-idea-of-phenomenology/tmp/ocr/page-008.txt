@@ -1,0 +1,44 @@
+TRANSLATOR’S INTRODUCTION 3
+same lecture he characterizes the phenomenology of knowledge, more
+specifically, as the “theory of the essence of the pure phenomenon of
+knowing” (see below, p. 36). Such a phenomenology would advance the
+“critique of knowledge,” in which the problem of knowledge is clearly
+formulated and the possibility of knowledge rigorously secured. It is important
+to realize, however, that in these lectures Husserl will not enact, pursue, or
+develop a phenomenological critique of knowledge, even though he opens
+with a trenchant statement of the problem of knowledge that such a critique
+would solve. Rather, he seeks here only to secure the possibility of a phe-
+nomenological critique of knowledge; that is, he attempts to secure the
+possibility of the knowledge of the possibility of knowledge, not the possibil-
+ity of knowledge in general (see below, pp. 37-39). Thus the work before us
+is not phenomenological in the straightforward sense, but pre-
+phenomenological: it sets out to identify and satisfy the epistemic require-
+ments of the phenomenological critique of knowledge, not to carry out that
+critique itself.
+
+To keep these two levels of theoretical inquiry distinct, I will call the level
+that deals with the problem of the possibility of knowledge the “critical level”;
+the level that deals with the problem of the possibility of the knowledge of the
+possibility of knowledge the “meta-critical level.” Although distinct, these
+levels nonetheless interact: the initial statement of the problem of knowledge
+on the critical level governs the identification and elaboration of the require-
+ments on the meta-critical level; the work done on the meta-critical level to
+indicate how these requirements will be satisfied in turn leads to a
+reformulation of the problem of knowledge on the critical level. The produc-
+tive interaction between these two levels inquiry is key to understanding the
+progress of the text before us. Husserl’s initial formulation of the problem of
+knowledge is broadly Cartesian; the reformulation is specifically phenome-
+nological. Thus the exposition given in these lectures recapitulates the order
+of the discovery: it retraces the steps in the development of Husserl’s thought
+concerning the problem of knowledge, and it invites the reader to tread the
+same path.
+
+The initial formulation of the problem of knowledge at the critical level in
+Lecture I has two parts. First, the problem of knowledge entails the problem
+of “transcendence”: how can consciousness reach out beyond itself and “make
+contact” with an object wholly external to it? (see below, p. 19) Second, the
+problem of knowledge involves the problem of “correspondence”: how can we
+be assured of an agreement between the act of knowing and the object known?
+(see below, p. 17) The first part of the problem of knowledge is to be solved
+by a theory of intentionality, an account of how acts of consciousness refer to
+objects. The second part is to be solved by a specifically phenomenological

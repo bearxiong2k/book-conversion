@@ -1,0 +1,45 @@
+8 THE IDEA OF PHENOMENOLOGY
+regular inhabitant of the world it takes as its object; it will be referred to as
+“pure consciousness” (later: “transcendental consciousness”).
+
+This implication of the methodological requirements of the critique of
+knowledge, worked out on the meta-critical level, in turn forces another
+revision of the formulation of the problem of knowledge on the critical level.
+Henceforth the question is not how the psychological phenomenon of knowing
+can transcend itself, but how the pure phenomenon of knowing can transcend
+itself. Transcendence is no longer the problem of reaching out from the inner
+workings of one part of the world to another, but the transcendence of a pure
+consciousness to which both the empirical object and empirical subject appear.
+
+The first requirement for the critique of knowledge, the requirement of
+Type Two knowledge, motivated the reflective turn to acts of consciousness.
+The second requirement for the critique of knowledge — a basis for general
+statements — motivated the expansion of Type Two knowledge so as to include
+essences. The object domain of Type Two knowledge will now undergo a
+second expansion in connection with a third requirement for the critique of
+knowledge: that the problem of correspondence become phenomenologically
+accessible (see below, pp. 29, 35-36, 55). For if the problem of knowledge is
+to receive a phenomenological solution, the relation between the act of
+knowing and the object known must be drawn into the sphere of immanence
+in the phenomenologically revised sense; it must itself be given, and, as such,
+open to direct investigation under the constraints of the reduction. Otherwise,
+knowledge claims concerning correspondence, insofar as they posit transcen-
+dent relations between acts and objects, will be afflicted by the very problem
+they seek to solve.
+
+Husserl addresses this issue in Lecture Five. There he states that while the
+physical object which appears is transcendent (in both the real and phenome-
+nological sense) to the act of consciousness that apprehends it, the same is not
+the case for the appearances of the physical object whereby it presents itself
+to consciousness. In phenomenologically reduced experience, these object-
+appearances are wholly given. Although they are not a real part of conscious-
+ness, thus transcendent in the real sense, they are absolutely given, thus
+immanent in the phenomenological sense. This fact provides Husserl with all
+the resources he needs for a phenomenological version of the correspondence
+theory. The phenomenon of knowing, the act of knowing as given in reflec-
+tion, is adequately given. It intentionally contains the systems of appearance
+whereby objects, persons, properties, universals, and states of affairs present
+themselves to it. For every possible objectivity, there is a corresponding set of
+appearances whereby it appears. The correspondence relation is not between
+stripped-down acts occurring within a self-enclosed mind and objects external
+to it, as we have in Descartes. Consciousness is not like an empty container
