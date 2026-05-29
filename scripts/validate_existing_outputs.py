@@ -71,6 +71,20 @@ CASES = [
             r"scroll-behavior",
         ],
     },
+    {
+        "path": ROOT / "how-to-read/how-to-read-lacan.html",
+        "figures": 0,
+        "notes": 60,
+        "scan": [
+            r"calibre",
+            r"filepos",
+            r"How to Read Lacan How to Read Lacan",
+            r"scroll-behavior",
+            r"\bamella\b",
+            r"llamella",
+            r"dano ferentes",
+        ],
+    },
 ]
 
 
