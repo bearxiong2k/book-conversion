@@ -55,6 +55,21 @@ CASES = [
             r"ISBN",
         ],
     },
+    {
+        "path": ROOT / "for-they-know-not/for-they-know-not.html",
+        "figures": 12,
+        "notes": 371,
+        "scan": [
+            r"Roudedge",
+            r"direcdy",
+            r"detaded",
+            r"forgetten",
+            r"mouuement",
+            r"silendy",
+            r"Weatherhilt",
+            r"suiprising",
+        ],
+    },
 ]
 
 
