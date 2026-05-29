@@ -21,6 +21,7 @@ main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-he
 .page-nav .nav-level-3 a,.page-nav a.nav-level-3{padding-left:10px;color:#4b443b}
 .page-nav .nav-level-4 a,.page-nav a.nav-level-4{padding-left:20px;color:#5c5449;font-size:.8rem}
 .page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}
+.page-nav a.is-active{color:#7a3d00;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 h1,h2{font-weight:600;line-height:1.15;text-align:center}
 h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}
 h2{font-size:1.65rem;margin:56px 0 28px}
@@ -35,6 +36,10 @@ p{font-size:1.03rem;margin:0 0 1rem}
 .contents-detail{color:#5c5449}
 .contents{margin:24px auto 48px;max-width:560px}
 .contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}
+.contents a{display:block;width:100%;color:#2f2a24;text-decoration:none}
+.contents a:hover,.contents a:focus{text-decoration:underline;text-underline-offset:3px}
+.contents .nav-level-1{font-variant:small-caps;letter-spacing:.04em}
+.contents .nav-level-3{padding-left:18px;font-size:.95rem;color:#5c5449}
 .contents span:first-child{padding-right:16px}
 .part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}
 .index-entry,.index-subentry{margin-bottom:.22em;line-height:1.35}
@@ -64,6 +69,7 @@ sup{font-size:.72em;line-height:0}
 <nav class="page-nav" aria-label="Section navigation">
 <p class="page-nav-title">Navigate</p>
 <ol class="page-nav-list">
+<li><a href="#title">Title</a></li>
 <li><a href="#contents">Contents</a></li>
 <li><details open>
 <summary>Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</summary>
@@ -204,32 +210,46 @@ sup{font-size:.72em;line-height:0}
   <p class="publisher">VERSO<br>London - New York</p>
 </section>
 <p class="dedication">For Kostja, my son</p>
+<section aria-labelledby="contents">
 <h2 id="contents">Contents</h2>
-<p class="contents-entry">Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</p>
-<p class="contents-detail">The Hard Road to Dialectical Materialism – From the Logic of the Signifier… – …to Hegelian Dialectics – The Act – Zen at War – Religion – The Act, Again – Ideology – Is There a Politics of Subtraction? – Lacan and Badiou – Surplus-Enjoyment</p>
-<p class="contents-entry">Introduction: Destiny of a Joke</p>
-<p class="contents-entry">PART I    E Pluribus Unum</p>
-<p class="contents-entry">1    On the One</p>
-<p class="contents-detail">I   THE BIRTH OF A MASTER-SIGNIFIER:- The non-analysable Slovene – Let the Emperor have his clothes! – The “quilting point” – “A signifier represents the subject for another signifier” – Why is morality the darkest of conspiracies?</p>
-<p class="contents-detail">II   HOW TO COUNT ZERO FOR ONE?:- Derrida is a reader of Hegel – Identity as “reflective determination” – “God is…” – A “chiasmic exchange of properties” – The “logic of the signifier” – The subjectivized structure – The “metaphor of the subject” – The Hegelian “one One”</p>
-<p class="contents-entry">2    The Wanton Identity</p>
-<p class="contents-detail">I   IMPOSSIBILITY:- Hegel’s monism – The “silent weaving of the Spirit” – “From nothingness through nothingness to nothingness” – The condition of (im)possibility</p>
-<p class="contents-detail">II   REFLECTION:- The logic of remark – The abyss re-marked – From failed reflection to reflected failure – The tain of the mirror</p>
-<p class="contents-entry">PART II    Dialectics and its Discontents</p>
-<p class="contents-entry">3    Hegelian Llanguage</p>
-<p class="contents-detail">I   WITH AN EYE TO OUR GAZE:- How to do a totality with failures – The speculative (lack of) identity – Llanguage and its limit – The squabble about All</p>
-<p class="contents-detail">II   JUDGEMENT BY DEFAULT:- “The word is an elephant” – The paradoxes of sexuation – How necessity arises out of contingency – “In father more than father himself”</p>
-<p class="contents-entry">4    On the Other</p>
-<p class="contents-detail">I   HYSTERIA, CERTAINTY AND DOUBT:- Wittgenstein as a Hegelian – Hegel’s hysterical theatre – Cogito and the forced choice – “Objective certainty” – From Ⱥ to $</p>
-<p class="contents-detail">II   THE “FORMAL ASPECT”:- History of an apparition – Saying and meaning-to-say – The Hegelian performative – “The cunning of Reason” revisited</p>
-<p class="contents-entry">PART III    Cum Grano Praxis</p>
-<p class="contents-entry">5    All’s Well That Ends Well?</p>
-<p class="contents-detail">I   WHY SHOULD A DIALECTICIAN LEARN TO COUNT TO FOUR?:- The triad and its excess – Protestantism, Jacobinism… – … and other “vanishing mediators” – “A beat of your finger…” – Why is Truth always political?</p>
-<p class="contents-detail">II   THE “MISSING LINK” OF IDEOLOGY:- The self-referring structure and its void – Narrating the origins – So-called “primitive accumulation” – The paradox of a finite totality – The Kantian Thing</p>
-<p class="contents-entry">6    Much Ado about a Thing</p>
-<p class="contents-detail">I   THE VARIANTS OF THE FETISHISM-TYPE:- Why is Sade the truth of Kant? – The “totalitarian object” – “I know, but nevertheless…” – Traditional, manipulative, totalitarian power</p>
-<p class="contents-detail">II   “THE KING IS A THING”:- The King’s two bodies – Lenin’s two bodies – How to extract the People from within the people? – The “Hypothesis of the Master” – The King is a place-holder of the void</p>
-<p class="contents-entry">Index</p>
+<ol class="contents">
+<li class="nav-level-2"><a href="#foreword-to-the-second-edition-enjoyment-within-the-limits-of-reason-alone">Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</a></li>
+<li class="nav-level-3"><a href="#the-hard-road-to-dialectical-materialism">The Hard Road to Dialectical Materialism</a></li>
+<li class="nav-level-3"><a href="#from-the-logic-of-the-signifier">From the Logic of the Signifier…</a></li>
+<li class="nav-level-3"><a href="#to-hegelian-dialectics">…to Hegelian Dialectics</a></li>
+<li class="nav-level-3"><a href="#the-act">The Act</a></li>
+<li class="nav-level-3"><a href="#zen-at-war">Zen at War</a></li>
+<li class="nav-level-3"><a href="#religion">Religion</a></li>
+<li class="nav-level-3"><a href="#the-act-again">The Act, Again</a></li>
+<li class="nav-level-3"><a href="#ideology">Ideology</a></li>
+<li class="nav-level-3"><a href="#is-there-a-politics-of-subtraction">Is There a Politics of Subtraction?</a></li>
+<li class="nav-level-3"><a href="#lacan-and-badiou">Lacan and Badiou</a></li>
+<li class="nav-level-3"><a href="#surplus-enjoyment">Surplus-Enjoyment</a></li>
+<li class="nav-level-2"><a href="#introduction-destiny-of-a-joke">Introduction: Destiny of a Joke</a></li>
+<li class="nav-level-2"><a href="#part-i-e-pluribus-unum">Part I: E Pluribus Unum</a></li>
+<li class="nav-level-2"><a href="#1-on-the-one">1. On the One</a></li>
+<li class="nav-level-3"><a href="#i-the-birth-of-a-master-signifier">I. The Birth of a Master-Signifier</a></li>
+<li class="nav-level-3"><a href="#ii-how-to-count-zero-for-one">II. How to Count Zero for One?</a></li>
+<li class="nav-level-2"><a href="#2-the-wanton-identity">2. The Wanton Identity</a></li>
+<li class="nav-level-3"><a href="#i-impossibility">I. Impossibility</a></li>
+<li class="nav-level-3"><a href="#ii-reflection">II. Reflection</a></li>
+<li class="nav-level-2"><a href="#part-ii-dialectics-and-its-discontents">Part II: Dialectics and its Discontents</a></li>
+<li class="nav-level-2"><a href="#3-hegelian-llanguage">3. Hegelian Llanguage</a></li>
+<li class="nav-level-3"><a href="#i-with-an-eye-to-our-gaze">I. With an Eye to Our Gaze</a></li>
+<li class="nav-level-3"><a href="#ii-judgement-by-default">II. Judgement by Default</a></li>
+<li class="nav-level-2"><a href="#4-on-the-other">4. On the Other</a></li>
+<li class="nav-level-3"><a href="#i-hysteria-certainty-and-doubt">I. Hysteria, Certainty and Doubt</a></li>
+<li class="nav-level-3"><a href="#ii-the-formal-aspect">II. The “Formal Aspect”</a></li>
+<li class="nav-level-2"><a href="#part-iii-cum-grano-praxis">Part III: Cum Grano Praxis</a></li>
+<li class="nav-level-2"><a href="#5-alls-well-that-ends-well">5. All’s Well That Ends Well?</a></li>
+<li class="nav-level-3"><a href="#i-why-should-a-dialectician-learn-to-count-to-four">I. Why Should a Dialectician Learn to Count to Four?</a></li>
+<li class="nav-level-3"><a href="#ii-the-missing-link-of-ideology">II. The “Missing Link” of Ideology</a></li>
+<li class="nav-level-2"><a href="#6-much-ado-about-a-thing">6. Much Ado about a Thing</a></li>
+<li class="nav-level-3"><a href="#i-the-variants-of-the-fetishism-type">I. The Variants of the Fetishism-Type</a></li>
+<li class="nav-level-3"><a href="#ii-the-king-is-a-thing">II. “The King is a Thing”</a></li>
+<li class="nav-level-2"><a href="#index">Index</a></li>
+</ol>
+</section>
 <h2 id="foreword-to-the-second-edition-enjoyment-within-the-limits-of-reason-alone">Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</h2>
 <p>There are philosophical books, minor classics even, which are widely known and referred to, although practically no one has actually read them page by page (John Rawls’s Theory of Justice, for example, or Robert Brandom’s Making It Explicit) – a nice example of interpassivity, where some figure of the Other is supposed to do the reading for us. I hope For they know not what they do avoided this fate by, at least, really being read. Although it was overshadowed by the more popular Sublime Object of Ideology, my first book in English published two years earlier, I always considered it a more substantial achievement: it is a book of theoretical work, in contrast to the succession of anecdotes and cinema references in The Sublime Object. For me, the reaction of individual readers to it was a kind of test: those who said: “I was disappointed by it, finding it a little bit boring after all the firecrackers of The Sublime Object,” obviously missed the crucial argument of both books. Even today, my attitude is: those who do not want to talk about For they know not what they do should remain silent about The Sublime Object.</p>
 <h3 id="the-hard-road-to-dialectical-materialism">The Hard Road to Dialectical Materialism</h3>
@@ -2364,6 +2384,68 @@ document.querySelectorAll('.footnote-popover').forEach((wrap) => {
   wrap.addEventListener('mouseenter', position);
   wrap.addEventListener('focusin', position);
 });
+(() => {
+  const links = Array.from(document.querySelectorAll('.page-nav a[href^="#"]'));
+  if (!links.length) return;
+  const byId = new Map();
+  for (const link of links) {
+    const id = decodeURIComponent(link.hash.slice(1));
+    if (!id) continue;
+    if (!byId.has(id)) byId.set(id, []);
+    byId.get(id).push(link);
+  }
+  const targets = Array.from(byId.keys())
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  if (!targets.length) return;
+  let activeId = "";
+  const setActive = (id) => {
+    if (!id || id === activeId) return;
+    activeId = id;
+    for (const link of links) {
+      const active = decodeURIComponent(link.hash.slice(1)) === id;
+      link.classList.toggle('is-active', active);
+      if (active) {
+        let parent = link.parentElement;
+        while (parent) {
+          if (parent.tagName === 'DETAILS') parent.open = true;
+          parent = parent.parentElement;
+        }
+      }
+    }
+  };
+  const currentTarget = () => {
+    const offset = Math.max(96, window.innerHeight * 0.22);
+    let current = targets[0];
+    for (const target of targets) {
+      if (target.getBoundingClientRect().top <= offset) current = target;
+      else break;
+    }
+    return current;
+  };
+  const update = () => setActive(currentTarget().id);
+  let scheduled = false;
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      update();
+    });
+  };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('hashchange', () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (byId.has(id)) setActive(id);
+    else schedule();
+  });
+  if (location.hash && byId.has(decodeURIComponent(location.hash.slice(1)))) {
+    setActive(decodeURIComponent(location.hash.slice(1)));
+  } else {
+    update();
+  }
+})();
 </script>
 </body>
 </html>

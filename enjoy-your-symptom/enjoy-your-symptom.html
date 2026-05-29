@@ -21,6 +21,7 @@ main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-he
 .page-nav .nav-level-3 a,.page-nav a.nav-level-3{padding-left:10px;color:#4b443b}
 .page-nav .nav-level-4 a,.page-nav a.nav-level-4{padding-left:20px;color:#5c5449;font-size:.8rem}
 .page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}
+.page-nav a.is-active{color:#7a3d00;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 h1,h2{font-weight:600;line-height:1.15;text-align:center}
 h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}
 h2{font-size:1.65rem;margin:56px 0 28px}
@@ -35,6 +36,10 @@ p{font-size:1.03rem;margin:0 0 1rem}
 .contents-detail{color:#5c5449}
 .contents{margin:24px auto 48px;max-width:560px}
 .contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}
+.contents a{display:block;width:100%;color:#2f2a24;text-decoration:none}
+.contents a:hover,.contents a:focus{text-decoration:underline;text-underline-offset:3px}
+.contents .nav-level-1{font-variant:small-caps;letter-spacing:.04em}
+.contents .nav-level-3{padding-left:18px;font-size:.95rem;color:#5c5449}
 .contents span:first-child{padding-right:16px}
 .part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}
 .index-entry,.index-subentry{margin-bottom:.22em;line-height:1.35}
@@ -177,31 +182,33 @@ sup{font-size:.72em;line-height:0}
 <p class="subtitle">Jacques Lacan in Hollywood and Out</p>
 <p>With a new preface by the author</p>
 </section>
-<section aria-labelledby="contents"><h2 id="contents">Contents</h2>
+<section aria-labelledby="contents">
+<h2 id="contents">Contents</h2>
 <ol class="contents">
-<li><a href="#preface-to-the-routledge-classics-edition">Preface to the Routledge Classics Edition</a></li>
-<li><a href="#introduction-to-the-new-revised-edition">Introduction to the New Revised Edition</a></li>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#1-why-does-a-letter-always-arrive-at-its-destination">1 Why Does a Letter Always Arrive at Its Destination?</a></li>
-<li><a href="#1-1-death-and-sublimation-the-final-scene-of-city-lights">1.1 Death and Sublimation: The Final Scene of City Lights</a></li>
-<li><a href="#1-2-imaginary-symbolic-real">1.2 Imaginary, Symbolic, Real</a></li>
-<li><a href="#2-why-is-woman-a-symptom-of-man">2 Why is Woman a Symptom of Man?</a></li>
-<li><a href="#2-1-why-is-suicide-the-only-successful-act">2.1 Why is Suicide the Only Successful Act?</a></li>
-<li><a href="#2-2-the-night-of-the-world">2.2 The Night of the World</a></li>
-<li><a href="#3-why-is-every-act-a-repetition">3 Why is Every Act a Repetition?</a></li>
-<li><a href="#3-1-beyond-distributive-justice">3.1 Beyond Distributive Justice</a></li>
-<li><a href="#3-2-identity-and-authority">3.2 Identity and Authority</a></li>
-<li><a href="#4-why-does-the-phallus-appear">4 Why Does the Phallus Appear?</a></li>
-<li><a href="#4-1-grimaces-of-the-real">4.1 Grimaces of the Real</a></li>
-<li><a href="#4-2-phallophany-of-the-anal-father">4.2 Phallophany of the Anal Father</a></li>
-<li><a href="#5-why-are-there-always-two-fathers">5 Why Are There Always Two Fathers?</a></li>
-<li><a href="#5-1-at-the-origins-of-noir-the-humiliated-father">5.1 At the Origins of Noir: The Humiliated Father</a></li>
-<li><a href="#5-2-die-versagung">5.2 Die Versagung</a></li>
-<li><a href="#6-why-is-reality-always-multiple">6 Why is Reality Always Multiple?</a></li>
-<li><a href="#6-1-is-there-a-proper-way-to-remake-a-hitchcock-film">6.1 Is There a Proper Way to Remake a Hitchcock Film?</a></li>
-<li><a href="#6-2-the-matrix-or-the-two-sides-of-perversion">6.2 The Matrix, Or the Two Sides of Perversion</a></li>
-<li><a href="#index">Index</a></li>
-</ol></section>
+<li class="nav-level-2"><a href="#preface-to-the-routledge-classics-edition">PREFACE TO THE ROUTLEDGE CLASSICS EDITION</a></li>
+<li class="nav-level-2"><a href="#introduction-to-the-new-revised-edition">INTRODUCTION TO THE NEW REVISED EDITION</a></li>
+<li class="nav-level-2"><a href="#introduction">INTRODUCTION</a></li>
+<li class="nav-level-2"><a href="#1-why-does-a-letter-always-arrive-at-its-destination">1 WHY DOES A LETTER ALWAYS ARRIVE AT ITS DESTINATION?</a></li>
+<li class="nav-level-3"><a href="#1-1-death-and-sublimation-the-final-scene-of-city-lights">1.1 Death and Sublimation: The Final Scene of City Lights</a></li>
+<li class="nav-level-3"><a href="#1-2-imaginary-symbolic-real">1.2 Imaginary, Symbolic, Real</a></li>
+<li class="nav-level-2"><a href="#2-why-is-woman-a-symptom-of-man">2 WHY IS WOMAN A SYMPTOM OF MAN?</a></li>
+<li class="nav-level-3"><a href="#2-1-why-is-suicide-the-only-successful-act">2.1 Why is Suicide the Only Successful Act?</a></li>
+<li class="nav-level-3"><a href="#2-2-the-night-of-the-world">2.2 The “Night of the World”</a></li>
+<li class="nav-level-2"><a href="#3-why-is-every-act-a-repetition">3 WHY IS EVERY ACT A REPETITION?</a></li>
+<li class="nav-level-3"><a href="#3-1-beyond-distributive-justice">3.1 Beyond “Distributive Justice”</a></li>
+<li class="nav-level-3"><a href="#3-2-identity-and-authority">3.2 Identity and Authority</a></li>
+<li class="nav-level-2"><a href="#4-why-does-the-phallus-appear">4 WHY DOES THE PHALLUS APPEAR?</a></li>
+<li class="nav-level-3"><a href="#4-1-grimaces-of-the-real">4.1 Grimaces of the Real</a></li>
+<li class="nav-level-3"><a href="#4-2-phallophany-of-the-anal-father">4.2 Phallophany of the Anal Father</a></li>
+<li class="nav-level-2"><a href="#5-why-are-there-always-two-fathers">5 WHY ARE THERE ALWAYS TWO FATHERS?</a></li>
+<li class="nav-level-3"><a href="#5-1-at-the-origins-of-noir-the-humiliated-father">5.1 At the Origins of Noir: The Humiliated Father</a></li>
+<li class="nav-level-3"><a href="#5-2-die-versagung">5.2 Die Versagung</a></li>
+<li class="nav-level-2"><a href="#6-why-is-reality-always-multiple">6 WHY IS REALITY ALWAYS MULTIPLE?</a></li>
+<li class="nav-level-3"><a href="#6-1-is-there-a-proper-way-to-remake-a-hitchcock-film">6.1 Is There a Proper Way to Remake a Hitchcock Film?</a></li>
+<li class="nav-level-3"><a href="#6-2-the-matrix-or-the-two-sides-of-perversion">6.2 The Matrix, Or the Two Sides of Perversion</a></li>
+<li class="nav-level-2"><a href="#index">Index</a></li>
+</ol>
+</section>
 <h2 id="preface-to-the-routledge-classics-edition">PREFACE TO THE ROUTLEDGE CLASSICS EDITION</h2>
 <p class="inset">Enjoy Your Symptom—or Your Fetish?</p>
 <p>1 There are two ways to understand the thesis that we live in a post-ideological world: either we take it in a naive post-political sense (finally liberated from the burden of great ideological narratives and causes, we can dedicate ourselves to solving pragmatically real problems), or, in a more critical way, as a sign of today’s predominant cynicism (today’s power no longer needs a consistent ideological edifice to legitimize its rule; it can afford to state directly the obvious truth—search for profits, brutal imposition of economic interests). According to the second reading, there is no longer a need for refined procedure of <em>Ideologiekritik</em>, for a “symptomal reading” that detects the faults in an ideological edifice: such a procedure knocks on an open door, since the thoroughly cynical power-discourse concedes all this in advance, like today’s analysant who calmly accepts the analyst’s suggestions about his innermost obscene desire, no longer being shocked by anything.</p>
@@ -1793,6 +1800,68 @@ sup{font-size:.72em;line-height:0}
   });
 })();
 
+(() => {
+  const links = Array.from(document.querySelectorAll('.page-nav a[href^="#"]'));
+  if (!links.length) return;
+  const byId = new Map();
+  for (const link of links) {
+    const id = decodeURIComponent(link.hash.slice(1));
+    if (!id) continue;
+    if (!byId.has(id)) byId.set(id, []);
+    byId.get(id).push(link);
+  }
+  const targets = Array.from(byId.keys())
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  if (!targets.length) return;
+  let activeId = "";
+  const setActive = (id) => {
+    if (!id || id === activeId) return;
+    activeId = id;
+    for (const link of links) {
+      const active = decodeURIComponent(link.hash.slice(1)) === id;
+      link.classList.toggle('is-active', active);
+      if (active) {
+        let parent = link.parentElement;
+        while (parent) {
+          if (parent.tagName === 'DETAILS') parent.open = true;
+          parent = parent.parentElement;
+        }
+      }
+    }
+  };
+  const currentTarget = () => {
+    const offset = Math.max(96, window.innerHeight * 0.22);
+    let current = targets[0];
+    for (const target of targets) {
+      if (target.getBoundingClientRect().top <= offset) current = target;
+      else break;
+    }
+    return current;
+  };
+  const update = () => setActive(currentTarget().id);
+  let scheduled = false;
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      update();
+    });
+  };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('hashchange', () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (byId.has(id)) setActive(id);
+    else schedule();
+  });
+  if (location.hash && byId.has(decodeURIComponent(location.hash.slice(1)))) {
+    setActive(decodeURIComponent(location.hash.slice(1)));
+  } else {
+    update();
+  }
+})();
 </script>
 </body>
 </html>

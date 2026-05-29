@@ -23,6 +23,7 @@ from book_conversion_toolkit import (
     clean_spaces,
     render_footnote_list,
     render_footnote_ref,
+    render_linked_contents,
     render_sublime_nav,
     slugify,
     wrap_html_document,
@@ -264,7 +265,7 @@ def build_html() -> str:
             soup = BeautifulSoup(archive.read(member).decode("utf-8", errors="replace"), "lxml")
             item = nav_by_member.get(member)
 
-            if member == "OEBPS/Text/chapter0002.html":
+            if member in {"OEBPS/Text/chapter0002.html", "OEBPS/Text/chapter0005.html"}:
                 continue
 
             if item is not None:
@@ -304,14 +305,13 @@ def build_html() -> str:
                 elif member == "OEBPS/Text/chapter0098.html":
                     css = ' class="index-subentry"' if "style1" in (tag.get("class") or []) else ' class="index-entry"'
                     body.append(f"<p{css}>{inline_markup(tag, member, notes, used_notes)}</p>")
-                elif member == "OEBPS/Text/chapter0005.html":
-                    css = ' class="contents-entry"' if "style2" in (tag.get("class") or []) else ' class="contents-detail"'
-                    body.append(f"<p{css}>{inline_markup(tag, member, notes, used_notes)}</p>")
                 else:
                     body.append(f"<p>{inline_markup(tag, member, notes, used_notes)}</p>")
 
+    nav_headings = [Heading(2, "Title", "title"), Heading(2, "Contents", "contents"), *headings]
+    body.insert(1, render_linked_contents(nav_headings))
     body.append(render_footnote_list(used_notes))
-    return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(headings), css=SUBLIME_BOOK_CSS)
+    return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(nav_headings), css=SUBLIME_BOOK_CSS)
 
 
 def main() -> None:

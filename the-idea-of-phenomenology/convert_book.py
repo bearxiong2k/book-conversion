@@ -13,7 +13,7 @@ sys.path.insert(0, "..")
 
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_linked_contents, render_sublime_nav, wrap_html_document
 
 
 PDF_PATH = next(Path(".").glob("*.pdf"))
@@ -514,17 +514,6 @@ def join_index_lines(lines: list[str]) -> list[str]:
     return joined
 
 
-def toc_html(text: str) -> str:
-    lines = text.splitlines()
-    items = []
-    for line in lines[1:]:
-        match = re.match(r"^(.*)\s+(\d+)$", line)
-        if match:
-            title, page = match.groups()
-            items.append(f"<li><span>{html.escape(title)}</span><span>{html.escape(page)}</span></li>")
-    return "<h2 id=\"contents\">Table of Contents</h2>\n<ol class=\"contents\">\n" + "\n".join(items) + "\n</ol>"
-
-
 def title_html(text: str) -> str:
     lines = [emphasize_foreign_terms(html.escape(line)) for line in text.splitlines()]
     return (
@@ -592,7 +581,6 @@ def render(elements: list[Element]) -> str:
             body.append(title_html(element.text))
         elif element.kind == "toc":
             headings.append(Heading(2, "Contents", "contents"))
-            body.append(f'<section aria-labelledby="{element.ident}">{toc_html(element.text)}</section>')
         elif element.kind in {"h2", "h3"}:
             tag = element.kind
             ident = f' id="{element.ident}"' if element.ident else ""
@@ -616,6 +604,7 @@ def render(elements: list[Element]) -> str:
     missing = [note.ident for note in FOOTNOTES if note.ident not in inserted_footnotes]
     if missing:
         raise RuntimeError(f"Could not place footnotes: {', '.join(missing)}")
+    body.insert(1, render_linked_contents(headings, title="Table of Contents"))
     body.append(footnotes_html())
     return wrap_html_document(
         "The Idea of Phenomenology",

@@ -20,6 +20,7 @@ from book_conversion_toolkit import (
     clean_spaces,
     render_footnote_list,
     render_footnote_ref,
+    render_linked_contents,
     render_sublime_nav,
     slugify,
     wrap_html_document,
@@ -249,19 +250,6 @@ def render_dedication(epub: ZipFile) -> str:
     return f'<p id="dedication" class="dedication">{html.escape(text, quote=False)}</p>'
 
 
-def render_contents(headings: list[Heading]) -> str:
-    rows = []
-    for heading in headings:
-        if heading.ident in {"title", "contents", "dedication"}:
-            continue
-        css = f' class="nav-level-{heading.level}"' if heading.level > 2 else ""
-        rows.append(
-            f'<li{css}><a href="#{html.escape(heading.ident, quote=True)}">'
-            f"{html.escape(heading.text, quote=False)}</a></li>"
-        )
-    return '<section aria-labelledby="contents">\n<h2 id="contents">Contents</h2>\n<ol class="contents">\n' + "\n".join(rows) + "\n</ol>\n</section>"
-
-
 def render_section(epub: ZipFile, section: Section, used_ids: set[str], used_notes: list[Footnote]) -> tuple[str, Heading]:
     soup = soup_for(epub, section.member)
     notes = extract_notes(soup)
@@ -315,7 +303,7 @@ def build_html() -> str:
             section_headings.append(heading)
 
     headings.extend(section_headings)
-    body.append(render_contents(headings))
+    body.append(render_linked_contents(headings))
     body.extend(section_html)
     body.append(render_footnote_list(used_notes))
 
@@ -327,8 +315,6 @@ def build_html() -> str:
         + "\n.reference-entry{font-size:.94rem;color:#39342f}"
         + "\n.index-entry{font-size:.94rem;line-height:1.35;margin:0 0 .28rem}"
         + "\n.epigraph{font-size:.96rem;color:#39342f}"
-        + "\n.contents a{color:#2f2a24;text-decoration:none}"
-        + "\n.contents a:hover,.contents a:focus{text-decoration:underline;text-underline-offset:3px}"
     )
     return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(headings), css=css)
 

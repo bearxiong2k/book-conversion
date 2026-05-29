@@ -209,6 +209,36 @@ def render_nav(headings: Iterable[Heading], title: str = "Contents") -> str:
     )
 
 
+def render_linked_contents(
+    headings: Iterable[Heading],
+    title: str = "Contents",
+    ident: str = "contents",
+    skip_idents: Iterable[str] = ("title", "contents", "dedication", "top", "footnotes", "footnotes-title"),
+    max_level: int = 3,
+) -> str:
+    """Render a generated contents list linked to final section IDs."""
+
+    skip = set(skip_idents)
+    rows: list[str] = []
+    seen: set[str] = set()
+    for heading in headings:
+        if heading.ident in skip or heading.ident in seen or heading.level > max_level:
+            continue
+        seen.add(heading.ident)
+        css = f' class="nav-level-{heading.level}"' if heading.level > 1 else ' class="nav-level-1"'
+        rows.append(
+            f'<li{css}><a href="#{html.escape(heading.ident, quote=True)}">'
+            f"{html.escape(heading.text, quote=False)}</a></li>"
+        )
+    return (
+        f'<section aria-labelledby="{html.escape(ident, quote=True)}">\n'
+        f'<h2 id="{html.escape(ident, quote=True)}">{html.escape(title, quote=False)}</h2>\n'
+        '<ol class="contents">\n'
+        + "\n".join(rows)
+        + "\n</ol>\n</section>"
+    )
+
+
 def render_sublime_nav(headings: Iterable[Heading]) -> str:
     """Render the fixed, expandable navigator first used by the Sublime conversion.
 
@@ -300,6 +330,7 @@ main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-he
 .page-nav .nav-level-3 a,.page-nav a.nav-level-3{padding-left:10px;color:#4b443b}
 .page-nav .nav-level-4 a,.page-nav a.nav-level-4{padding-left:20px;color:#5c5449;font-size:.8rem}
 .page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}
+.page-nav a.is-active{color:#7a3d00;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 h1,h2{font-weight:600;line-height:1.15;text-align:center}
 h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}
 h2{font-size:1.65rem;margin:56px 0 28px}
@@ -314,6 +345,10 @@ p{font-size:1.03rem;margin:0 0 1rem}
 .contents-detail{color:#5c5449}
 .contents{margin:24px auto 48px;max-width:560px}
 .contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}
+.contents a{display:block;width:100%;color:#2f2a24;text-decoration:none}
+.contents a:hover,.contents a:focus{text-decoration:underline;text-underline-offset:3px}
+.contents .nav-level-1{font-variant:small-caps;letter-spacing:.04em}
+.contents .nav-level-3{padding-left:18px;font-size:.95rem;color:#5c5449}
 .contents span:first-child{padding-right:16px}
 .part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}
 .index-entry,.index-subentry{margin-bottom:.22em;line-height:1.35}
@@ -435,6 +470,72 @@ document.querySelectorAll('.footnote-popover').forEach((wrap) => {
 """.strip()
 
 
+DEFAULT_NAV_JS = """
+(() => {
+  const links = Array.from(document.querySelectorAll('.page-nav a[href^="#"]'));
+  if (!links.length) return;
+  const byId = new Map();
+  for (const link of links) {
+    const id = decodeURIComponent(link.hash.slice(1));
+    if (!id) continue;
+    if (!byId.has(id)) byId.set(id, []);
+    byId.get(id).push(link);
+  }
+  const targets = Array.from(byId.keys())
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  if (!targets.length) return;
+  let activeId = "";
+  const setActive = (id) => {
+    if (!id || id === activeId) return;
+    activeId = id;
+    for (const link of links) {
+      const active = decodeURIComponent(link.hash.slice(1)) === id;
+      link.classList.toggle('is-active', active);
+      if (active) {
+        let parent = link.parentElement;
+        while (parent) {
+          if (parent.tagName === 'DETAILS') parent.open = true;
+          parent = parent.parentElement;
+        }
+      }
+    }
+  };
+  const currentTarget = () => {
+    const offset = Math.max(96, window.innerHeight * 0.22);
+    let current = targets[0];
+    for (const target of targets) {
+      if (target.getBoundingClientRect().top <= offset) current = target;
+      else break;
+    }
+    return current;
+  };
+  const update = () => setActive(currentTarget().id);
+  let scheduled = false;
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      update();
+    });
+  };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('hashchange', () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (byId.has(id)) setActive(id);
+    else schedule();
+  });
+  if (location.hash && byId.has(decodeURIComponent(location.hash.slice(1)))) {
+    setActive(decodeURIComponent(location.hash.slice(1)));
+  } else {
+    update();
+  }
+})();
+""".strip()
+
+
 def wrap_html_document(
     title: str,
     body_html: str,
@@ -458,7 +559,7 @@ def wrap_html_document(
         f"{nav}\n"
         f"<main>\n{body_html}\n</main>\n"
         "</div>\n"
-        f"<script>\n{script}\n</script>\n"
+        f"<script>\n{script}\n{DEFAULT_NAV_JS}\n</script>\n"
         "</body>\n"
         "</html>\n"
     )

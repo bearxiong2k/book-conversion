@@ -17,7 +17,7 @@ sys.path.insert(0, "..")
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # type: ignore
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_linked_contents, render_sublime_nav, wrap_html_document
 
 
 PDF_PATH = Path("A Clinical Introduction to Lacanian Psychoanalysis_ Theory.pdf")
@@ -724,6 +724,9 @@ def nav_headings(elements: list[Element]) -> list[Heading]:
 
 def render_html(elements: list[Element]) -> str:
     body = []
+    base_headings = nav_headings(elements)
+    headings = [base_headings[0], Heading(2, "Contents", "contents"), *base_headings[1:]]
+    contents_inserted = False
     for element in elements:
         if element.kind == "title":
             body.append(f'<header class="book-title" id="{element.ident}"><h1>{html.escape(element.text)}</h1>')
@@ -733,6 +736,8 @@ def render_html(elements: list[Element]) -> str:
             body.append(f'<p class="byline">{html.escape(element.text)}</p></header>')
         elif element.kind == "notice":
             body.append(f'<aside class="source-note">{html.escape(element.text)}</aside>')
+            body.append(render_linked_contents(headings))
+            contents_inserted = True
         elif element.kind == "part":
             body.append(f'<section class="part" id="{element.ident}"><h2>{html.escape(element.text)}</h2></section>')
         elif element.kind == "heading":
@@ -746,6 +751,8 @@ def render_html(elements: list[Element]) -> str:
         elif element.kind == "figure" and element.src:
             caption = f"<figcaption>{html.escape(element.caption)}</figcaption>" if element.caption else ""
             body.append(f'<figure><img src="{html.escape(element.src)}" alt="{html.escape(element.alt or "")}">{caption}</figure>')
+    if not contents_inserted:
+        body.insert(1, render_linked_contents(headings))
 
     extra_css = """
 .book-title{text-align:center;margin-bottom:24px;padding-bottom:28px;border-bottom:1px solid #ded6ca}
@@ -761,7 +768,7 @@ figcaption{margin-top:8px;color:#5c5449;font-family:-apple-system,BlinkMacSystem
     return wrap_html_document(
         "A Clinical Introduction to Lacanian Psychoanalysis",
         "\n".join(body),
-        render_sublime_nav(nav_headings(elements)),
+        render_sublime_nav(headings),
         css=SUBLIME_BOOK_CSS + "\n" + extra_css.strip(),
         script="",
     )

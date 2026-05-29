@@ -14,7 +14,7 @@ for dep_dir in (Path(".codex_deps"), Path("../sublime-object-of-ideaology/.codex
         sys.path.insert(0, str(dep_dir))
 sys.path.insert(0, "..")
 
-from book_conversion_toolkit import SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import SUBLIME_BOOK_CSS, render_linked_contents, render_sublime_nav, wrap_html_document
 
 try:
     import fitz  # type: ignore
@@ -427,13 +427,6 @@ def title_page() -> str:
 </section>"""
 
 
-def contents_html() -> str:
-    rows = []
-    for title, target in CONTENTS:
-        rows.append(f'<li><a href="#{target}">{html.escape(title, quote=False)}</a></li>')
-    return '<section aria-labelledby="contents"><h2 id="contents">Contents</h2>\n<ol class="contents">\n' + "\n".join(rows) + "\n</ol></section>"
-
-
 def classify_heading(blocks: list[dict], index: int) -> tuple[str | None, int]:
     block = blocks[index]
     text = block_text(block)
@@ -470,7 +463,7 @@ def classify_heading(blocks: list[dict], index: int) -> tuple[str | None, int]:
 
 
 def extract_body(doc: fitz.Document, notes: dict[str, dict[str, str]], state: ConvertState) -> list[str]:
-    out: list[str] = [title_page(), contents_html()]
+    out: list[str] = [title_page()]
     for section, start, end in BODY_RANGES:
         for page_index in range(start, end + 1):
             page = doc[page_index]
@@ -672,8 +665,9 @@ def build_html() -> str:
     if state.missing_notes:
         missing = ", ".join(state.missing_notes)
         raise RuntimeError(f"Missing note text for: {missing}")
-    body_html = repair_inline_symbols(chr(10).join(body))
     headings = [Heading(2, "Title", "title"), Heading(2, "Contents", "contents"), *state.headings]
+    body.insert(1, render_linked_contents(headings))
+    body_html = repair_inline_symbols(chr(10).join(body))
     return wrap_html_document(
         "Enjoy Your Symptom!",
         body_html,
