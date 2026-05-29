@@ -209,6 +209,136 @@ def render_nav(headings: Iterable[Heading], title: str = "Contents") -> str:
     )
 
 
+def render_sublime_nav(headings: Iterable[Heading]) -> str:
+    """Render the fixed, expandable navigator first used by the Sublime conversion.
+
+    Structure:
+    - top-level h2 items without children render as direct links;
+    - h2 items with h3/h4 children render as foldable groups with an overview link;
+    - h2 items whose text starts with "Part " group following h2 chapters until the next part.
+    """
+
+    items = list(headings)
+
+    def link(item: Heading, class_name: str | None = None) -> str:
+        class_attr = f' class="{class_name}"' if class_name else ""
+        return f'<a{class_attr} href="#{html.escape(item.ident, quote=True)}">{html.escape(item.text, quote=False)}</a>'
+
+    def has_children(index: int) -> bool:
+        if items[index].level != 2:
+            return False
+        probe = index + 1
+        while probe < len(items) and items[probe].level != 2:
+            if items[probe].level > 2:
+                return True
+            probe += 1
+        return False
+
+    def render_h2_group(index: int) -> tuple[list[str], int]:
+        item = items[index]
+        lines = ["<li><details open>", f"<summary>{html.escape(item.text, quote=False)}</summary>", "<ol>"]
+        lines.append(f'<li>{link(item, "nav-overview")}</li>')
+        index += 1
+        while index < len(items) and items[index].level != 2:
+            child = items[index]
+            lines.append(f'<li class="nav-level-{child.level}">{link(child)}</li>')
+            index += 1
+        lines.append("</ol></details></li>")
+        return lines, index
+
+    lines = [
+        '<nav class="page-nav" aria-label="Section navigation">',
+        '<p class="page-nav-title">Navigate</p>',
+        '<ol class="page-nav-list">',
+    ]
+    index = 0
+    while index < len(items):
+        item = items[index]
+        if item.level == 2 and item.text.startswith("Part "):
+            lines.append("<li><details open>")
+            lines.append(f"<summary>{html.escape(item.text, quote=False)}</summary>")
+            lines.append("<ol>")
+            index += 1
+            while index < len(items):
+                chapter = items[index]
+                if chapter.level == 2 and chapter.text.startswith("Part "):
+                    break
+                if chapter.level == 2 and has_children(index):
+                    group, index = render_h2_group(index)
+                    lines.extend(group)
+                else:
+                    css = f"nav-level-{chapter.level}" if chapter.level > 2 else None
+                    lines.append(f"<li>{link(chapter, css)}</li>")
+                    index += 1
+            lines.append("</ol></details></li>")
+            continue
+        if item.level == 2 and has_children(index):
+            group, index = render_h2_group(index)
+            lines.extend(group)
+            continue
+        css = f"nav-level-{item.level}" if item.level > 2 else None
+        lines.append(f"<li>{link(item, css)}</li>")
+        index += 1
+    lines += ["</ol>", "</nav>"]
+    return "\n".join(lines)
+
+
+SUBLIME_BOOK_CSS = """
+body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}
+.book-shell{display:block}
+main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}
+.page-nav{position:fixed;top:0;bottom:0;left:0;width:260px;box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
+.page-nav-title{margin:0 0 18px;font-size:.78rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5c5449}
+.page-nav ol{list-style:none;margin:0;padding:0}
+.page-nav li{margin:0 0 3px}
+.page-nav details{margin:0 0 8px}
+.page-nav summary{padding:5px 0;color:#2f2a24;font-size:.84rem;line-height:1.22;font-variant:small-caps;letter-spacing:.03em;cursor:pointer}
+.page-nav details details summary{font-variant:normal;letter-spacing:0;font-size:.86rem;color:#3f3931}
+.page-nav details ol{margin:2px 0 0 10px;padding-left:10px;border-left:1px solid #d8c7a8}
+.page-nav a{display:block;padding:4px 0;color:#3f3931;font-size:.84rem;line-height:1.22;text-decoration:none}
+.page-nav .nav-overview{color:#6c6256;font-style:italic}
+.page-nav .nav-level-3 a,.page-nav a.nav-level-3{padding-left:10px;color:#4b443b}
+.page-nav .nav-level-4 a,.page-nav a.nav-level-4{padding-left:20px;color:#5c5449;font-size:.8rem}
+.page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}
+h1,h2{font-weight:600;line-height:1.15;text-align:center}
+h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}
+h2{font-size:1.65rem;margin:56px 0 28px}
+h3{font-size:1.12rem;line-height:1.25;margin:34px 0 14px;text-align:left;font-style:italic}
+h4{font-size:1rem;line-height:1.25;margin:24px 0 10px;text-align:left;font-variant:small-caps;letter-spacing:.03em}
+.author{text-align:center;font-size:1.25rem;letter-spacing:.08em;margin-top:32px}
+.subtitle{text-align:center;font-size:1.08rem;margin:18px 0 0}
+.publisher{text-align:center;margin-top:72px;letter-spacing:.05em}
+.dedication{text-align:center;margin:52px 0 48px;color:#5c5449}
+p{font-size:1.03rem;margin:0 0 1rem}
+.contents-entry{margin-top:1.2em;font-weight:700}
+.contents-detail{color:#5c5449}
+.contents{margin:24px auto 48px;max-width:560px}
+.contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}
+.contents span:first-child{padding-right:16px}
+.part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}
+.index-entry,.index-subentry{margin-bottom:.22em;line-height:1.35}
+.index-subentry{padding-left:1.4em;color:#5c5449}
+.bullet{position:relative;padding-left:1.35rem}
+.bullet:before{content:'\\2022';position:absolute;left:0;color:#7a3d00}
+blockquote{margin:1rem 2rem;font-size:1rem}
+.book-figure{margin:1.25rem auto 1.75rem;text-align:center}
+.book-figure img{display:block;max-width:100%;height:auto;margin:0 auto}
+.book-figure figcaption{font-size:.88rem;color:#5c5449;margin-top:.45rem;font-style:italic}
+sup{font-size:.72em;line-height:0}
+.footnote-popover{display:inline;position:relative}
+.note-ref a{color:#7a3d00;text-decoration:none;border-bottom:1px solid rgba(122,61,0,.35);cursor:help}
+.floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(340px,calc(100vw - 32px));max-height:min(45vh,360px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text}
+.floating-note-number{font-weight:700;color:#7a3d00}
+.footnote-popover:hover .floating-note,.footnote-popover:focus-within .floating-note,.footnote-popover.is-open .floating-note{display:block}
+.footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
+.footnotes li{margin:.45rem 0}
+.backref{text-decoration:none;margin-left:.35em}
+@media (min-width:1220px){body{padding-left:260px}.footnotes{display:none}}
+@media (min-width:980px) and (max-width:1219px){.page-nav{display:none}.footnotes{display:none}}
+@media (max-width:979px){.page-nav{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
+""".strip()
+
+
 DEFAULT_BOOK_CSS = """
 :root {
   color-scheme: light;
@@ -219,7 +349,6 @@ DEFAULT_BOOK_CSS = """
   --accent: #365f8c;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--page);

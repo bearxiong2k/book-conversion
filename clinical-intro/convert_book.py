@@ -12,9 +12,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, ".codex_deps")
+sys.path.insert(0, "..")
 
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # type: ignore
 import fitz  # type: ignore
+
+from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
 
 
 PDF_PATH = Path("A Clinical Introduction to Lacanian Psychoanalysis_ Theory.pdf")
@@ -711,13 +714,12 @@ def emphasize_terms(text: str) -> str:
     return escaped
 
 
-def render_nav(elements: list[Element]) -> str:
-    items = []
+def nav_headings(elements: list[Element]) -> list[Heading]:
+    headings = [Heading(2, "Top", "top")]
     for element in elements:
         if element.kind in {"part", "heading"} and element.ident:
-            cls = "part-link" if element.kind == "part" else f"level-{element.level or 2}"
-            items.append(f'<a class="{cls}" href="#{element.ident}">{html.escape(element.text)}</a>')
-    return "\n".join(items)
+            headings.append(Heading(element.level or 2, element.text, element.ident))
+    return headings
 
 
 def render_html(elements: list[Element]) -> str:
@@ -745,154 +747,24 @@ def render_html(elements: list[Element]) -> str:
             caption = f"<figcaption>{html.escape(element.caption)}</figcaption>" if element.caption else ""
             body.append(f'<figure><img src="{html.escape(element.src)}" alt="{html.escape(element.alt or "")}">{caption}</figure>')
 
-    nav = render_nav(elements)
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>A Clinical Introduction to Lacanian Psychoanalysis</title>
-  <style>
-    :root {{
-      --paper: #f7f4ee;
-      --ink: #1f2528;
-      --muted: #6d6258;
-      --accent: #0d5d63;
-      --rule: #ded6ca;
-    }}
-    * {{ box-sizing: border-box; }}
-    body {{
-      margin: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: Charter, "Iowan Old Style", Georgia, serif;
-      line-height: 1.58;
-    }}
-    .layout {{
-      display: grid;
-      grid-template-columns: 280px minmax(0, 760px);
-      column-gap: 56px;
-      align-items: start;
-      max-width: 1160px;
-      margin: 0 auto;
-      padding: 36px 28px 72px;
-    }}
-    nav {{
-      position: sticky;
-      top: 24px;
-      max-height: calc(100vh - 48px);
-      overflow: auto;
-      padding-right: 18px;
-      border-right: 1px solid var(--rule);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 13px;
-      line-height: 1.35;
-    }}
-    nav a {{
-      display: block;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 5px 0;
-    }}
-    nav a:hover {{ color: var(--accent); }}
-    nav .part-link {{
-      color: var(--accent);
-      font-weight: 700;
-      margin-top: 16px;
-    }}
-    nav .level-2 {{ font-weight: 650; color: #3c4548; margin-top: 8px; }}
-    nav .level-3 {{ padding-left: 14px; }}
-    main {{
-      min-width: 0;
-      background: #fffdfa;
-      padding: 48px 58px 70px;
-      border: 1px solid var(--rule);
-      box-shadow: 0 18px 45px rgba(53, 44, 35, .08);
-    }}
-    .book-title {{
-      text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 28px;
-      border-bottom: 1px solid var(--rule);
-    }}
-    h1, h2, h3 {{ line-height: 1.2; font-weight: 600; letter-spacing: 0; }}
-    h1 {{ font-size: 42px; margin: 0 0 10px; color: #102f35; }}
-    .subtitle {{ color: var(--accent); font-size: 20px; margin: 0 0 8px; }}
-    .byline {{ color: var(--muted); margin: 0; }}
-    .source-note {{
-      border-left: 4px solid var(--accent);
-      padding: 12px 16px;
-      margin: 26px 0 42px;
-      color: #4e4740;
-      background: #f2eee7;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 14px;
-      line-height: 1.45;
-    }}
-    .part {{
-      margin: 54px -58px 32px;
-      padding: 28px 58px;
-      background: #edf3f2;
-      border-top: 1px solid #cfdddd;
-      border-bottom: 1px solid #cfdddd;
-    }}
-    .part h2 {{ color: var(--accent); margin: 0; text-transform: uppercase; font-size: 22px; }}
-    h2 {{ font-size: 30px; margin: 46px 0 20px; color: #17383c; }}
-    h3 {{ font-size: 21px; margin: 32px 0 14px; color: #2a373a; text-align: center; }}
-    p {{ margin: 0 0 15px; font-size: 18px; }}
-    blockquote {{
-      margin: 20px auto;
-      max-width: 620px;
-      color: #4c4640;
-      font-size: 17px;
-      text-align: center;
-      font-style: italic;
-    }}
-    figure {{
-      margin: 28px auto 30px;
-      text-align: center;
-    }}
-    figure img {{
-      max-width: min(100%, 560px);
-      height: auto;
-      border: 1px solid #e8e0d4;
-      background: white;
-    }}
-    figure:first-of-type img {{
-      max-width: min(100%, 420px);
-      border: 0;
-    }}
-    figcaption {{
-      margin-top: 8px;
-      color: var(--muted);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 13px;
-    }}
-    em {{ font-style: italic; }}
-    @media (max-width: 900px) {{
-      .layout {{ display: block; padding: 0; }}
-      nav {{ display: none; }}
-      main {{ border: 0; box-shadow: none; padding: 28px 22px 54px; }}
-      h1 {{ font-size: 34px; }}
-      h2 {{ font-size: 26px; }}
-      p {{ font-size: 17px; }}
-      .part {{ margin-left: -22px; margin-right: -22px; padding-left: 22px; padding-right: 22px; }}
-    }}
-  </style>
-</head>
-<body>
-  <div class="layout">
-    <nav aria-label="Table of contents">
-      <a class="level-2" href="#top">Top</a>
-      {nav}
-    </nav>
-    <main>
-      {"\n      ".join(body)}
-    </main>
-  </div>
-</body>
-</html>
+    extra_css = """
+.book-title{text-align:center;margin-bottom:24px;padding-bottom:28px;border-bottom:1px solid #ded6ca}
+.book-title h1{margin-bottom:10px}
+.byline{color:#5c5449;margin:0}
+.source-note{border-left:4px solid #7a3d00;padding:12px 16px;margin:26px 0 42px;color:#4e4740;background:#f2eee7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.45}
+.part{margin:54px 0 32px;padding:28px 0;border-top:1px solid #ded2bd;border-bottom:1px solid #ded2bd}
+.part h2{margin:0;text-transform:uppercase}
+figure{margin:28px auto 30px;text-align:center}
+figure img{max-width:min(100%,560px);height:auto;border:1px solid #e8e0d4;background:white}
+figcaption{margin-top:8px;color:#5c5449;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px}
 """
+    return wrap_html_document(
+        "A Clinical Introduction to Lacanian Psychoanalysis",
+        "\n".join(body),
+        render_sublime_nav(nav_headings(elements)),
+        css=SUBLIME_BOOK_CSS + "\n" + extra_css.strip(),
+        script="",
+    )
 
 
 def main() -> None:

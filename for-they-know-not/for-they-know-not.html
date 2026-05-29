@@ -5,107 +5,70 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>For They Know Not What They Do</title>
 <style>
-:root {
-  color-scheme: light;
-  --page: #f7f6f1;
-  --ink: #1f2428;
-  --muted: #66615a;
-  --line: #d7d0c0;
-  --accent: #2f6673;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--page);
-  color: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
-  line-height: 1.62;
-}
-.book-shell {
-  max-width: 1220px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 280px minmax(0, 780px);
-  gap: 52px;
-  padding: 36px 28px 84px;
-}
-.book-nav {
-  position: sticky;
-  top: 24px;
-  align-self: start;
-  max-height: calc(100vh - 48px);
-  overflow: auto;
-  padding-right: 18px;
-  border-right: 1px solid var(--line);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-  line-height: 1.35;
-}
-.book-nav ol { list-style: none; margin: 0; padding: 0; }
-.book-nav li { margin: 0 0 7px; }
-.book-nav a { color: var(--accent); text-decoration: none; }
-.nav-level-3 { padding-left: 14px; }
-.nav-level-4 { padding-left: 28px; font-size: 12px; }
-main { min-width: 0; }
-.title-page {
-  display: grid;
-  grid-template-columns: minmax(170px, 230px) minmax(0, 1fr);
-  gap: 32px;
-  align-items: end;
-  min-height: 520px;
-  padding-bottom: 34px;
-  border-bottom: 1px solid var(--line);
-}
-.cover { margin: 0; }
-.cover img { width: 100%; height: auto; display: block; box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18); }
-.author, .subtitle, .edition, .dedication { color: var(--muted); font-family: system-ui, sans-serif; }
-.author { text-transform: uppercase; letter-spacing: 0.08em; }
-.subtitle { font-size: 1.2rem; }
-.dedication { margin: 2em 0 3em; text-align: center; }
-h1, h2, h3, h4 { line-height: 1.2; margin: 2.2em 0 0.8em; }
-h1 { font-size: 2.7rem; margin: 0.2em 0; }
-h2 { font-size: 1.55rem; border-top: 1px solid var(--line); padding-top: 1.35em; }
-h3 { font-size: 1.25rem; }
-h4 { font-size: 1.05rem; font-style: italic; }
-p { margin: 0 0 1.05em; }
-.contents-entry { margin-top: 1.2em; font-weight: 700; }
-.contents-detail { color: var(--muted); }
-.index-entry, .index-subentry { margin-bottom: 0.22em; line-height: 1.35; }
-.index-subentry { padding-left: 1.4em; color: var(--muted); }
-.note-ref a { color: var(--accent); text-decoration: none; }
-.footnote-popover { position: relative; white-space: normal; }
-.floating-note {
-  display: none;
-  position: fixed;
-  z-index: 20;
-  max-width: min(440px, calc(100vw - 40px));
-  padding: 12px 14px;
-  background: #fffdf8;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
-  font-size: 0.92rem;
-  line-height: 1.45;
-}
-.footnote-popover:hover .floating-note,
-.footnote-popover:focus-within .floating-note,
-.floating-note.is-open { display: block; }
-.footnotes { border-top: 1px solid var(--line); margin-top: 3em; padding-top: 1em; }
-@media (max-width: 900px) {
-  .book-shell { display: block; padding: 24px 18px 64px; }
-  .book-nav { display: none; }
-  .title-page { grid-template-columns: 1fr; min-height: 0; }
-  .cover { max-width: 210px; }
-  .floating-note { display: none !important; }
-}
+body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}
+.book-shell{display:block}
+main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}
+.page-nav{position:fixed;top:0;bottom:0;left:0;width:260px;box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
+.page-nav-title{margin:0 0 18px;font-size:.78rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5c5449}
+.page-nav ol{list-style:none;margin:0;padding:0}
+.page-nav li{margin:0 0 3px}
+.page-nav details{margin:0 0 8px}
+.page-nav summary{padding:5px 0;color:#2f2a24;font-size:.84rem;line-height:1.22;font-variant:small-caps;letter-spacing:.03em;cursor:pointer}
+.page-nav details details summary{font-variant:normal;letter-spacing:0;font-size:.86rem;color:#3f3931}
+.page-nav details ol{margin:2px 0 0 10px;padding-left:10px;border-left:1px solid #d8c7a8}
+.page-nav a{display:block;padding:4px 0;color:#3f3931;font-size:.84rem;line-height:1.22;text-decoration:none}
+.page-nav .nav-overview{color:#6c6256;font-style:italic}
+.page-nav .nav-level-3 a,.page-nav a.nav-level-3{padding-left:10px;color:#4b443b}
+.page-nav .nav-level-4 a,.page-nav a.nav-level-4{padding-left:20px;color:#5c5449;font-size:.8rem}
+.page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}
+h1,h2{font-weight:600;line-height:1.15;text-align:center}
+h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}
+h2{font-size:1.65rem;margin:56px 0 28px}
+h3{font-size:1.12rem;line-height:1.25;margin:34px 0 14px;text-align:left;font-style:italic}
+h4{font-size:1rem;line-height:1.25;margin:24px 0 10px;text-align:left;font-variant:small-caps;letter-spacing:.03em}
+.author{text-align:center;font-size:1.25rem;letter-spacing:.08em;margin-top:32px}
+.subtitle{text-align:center;font-size:1.08rem;margin:18px 0 0}
+.publisher{text-align:center;margin-top:72px;letter-spacing:.05em}
+.dedication{text-align:center;margin:52px 0 48px;color:#5c5449}
+p{font-size:1.03rem;margin:0 0 1rem}
+.contents-entry{margin-top:1.2em;font-weight:700}
+.contents-detail{color:#5c5449}
+.contents{margin:24px auto 48px;max-width:560px}
+.contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}
+.contents span:first-child{padding-right:16px}
+.part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}
+.index-entry,.index-subentry{margin-bottom:.22em;line-height:1.35}
+.index-subentry{padding-left:1.4em;color:#5c5449}
+.bullet{position:relative;padding-left:1.35rem}
+.bullet:before{content:'\2022';position:absolute;left:0;color:#7a3d00}
+blockquote{margin:1rem 2rem;font-size:1rem}
+.book-figure{margin:1.25rem auto 1.75rem;text-align:center}
+.book-figure img{display:block;max-width:100%;height:auto;margin:0 auto}
+.book-figure figcaption{font-size:.88rem;color:#5c5449;margin-top:.45rem;font-style:italic}
+sup{font-size:.72em;line-height:0}
+.footnote-popover{display:inline;position:relative}
+.note-ref a{color:#7a3d00;text-decoration:none;border-bottom:1px solid rgba(122,61,0,.35);cursor:help}
+.floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(340px,calc(100vw - 32px));max-height:min(45vh,360px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text}
+.floating-note-number{font-weight:700;color:#7a3d00}
+.footnote-popover:hover .floating-note,.footnote-popover:focus-within .floating-note,.footnote-popover.is-open .floating-note{display:block}
+.footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
+.footnotes li{margin:.45rem 0}
+.backref{text-decoration:none;margin-left:.35em}
+@media (min-width:1220px){body{padding-left:260px}.footnotes{display:none}}
+@media (min-width:980px) and (max-width:1219px){.page-nav{display:none}.footnotes{display:none}}
+@media (max-width:979px){.page-nav{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
 </style>
 </head>
 <body>
 <div class="book-shell">
-<nav class="book-nav" aria-label="Contents">
+<nav class="page-nav" aria-label="Section navigation">
+<p class="page-nav-title">Navigate</p>
+<ol class="page-nav-list">
+<li><a href="#contents">Contents</a></li>
+<li><details open>
+<summary>Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</summary>
 <ol>
-<li class="nav-level-2"><a href="#contents">Contents</a></li>
-<li class="nav-level-2"><a href="#foreword-to-the-second-edition-enjoyment-within-the-limits-of-reason-alone">Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</a></li>
+<li><a class="nav-overview" href="#foreword-to-the-second-edition-enjoyment-within-the-limits-of-reason-alone">Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</a></li>
 <li class="nav-level-3"><a href="#the-hard-road-to-dialectical-materialism">The Hard Road to Dialectical Materialism</a></li>
 <li class="nav-level-3"><a href="#from-the-logic-of-the-signifier">From the Logic of the Signifier…</a></li>
 <li class="nav-level-3"><a href="#to-hegelian-dialectics">…to Hegelian Dialectics</a></li>
@@ -117,9 +80,15 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-3"><a href="#is-there-a-politics-of-subtraction">Is There a Politics of Subtraction?</a></li>
 <li class="nav-level-3"><a href="#lacan-and-badiou">Lacan and Badiou</a></li>
 <li class="nav-level-3"><a href="#surplus-enjoyment">Surplus-Enjoyment</a></li>
-<li class="nav-level-2"><a href="#introduction-destiny-of-a-joke">Introduction: Destiny of a Joke</a></li>
-<li class="nav-level-2"><a href="#part-i-e-pluribus-unum">Part I: E Pluribus Unum</a></li>
-<li class="nav-level-2"><a href="#1-on-the-one">1. On the One</a></li>
+</ol></details></li>
+<li><a href="#introduction-destiny-of-a-joke">Introduction: Destiny of a Joke</a></li>
+<li><details open>
+<summary>Part I: E Pluribus Unum</summary>
+<ol>
+<li><details open>
+<summary>1. On the One</summary>
+<ol>
+<li><a class="nav-overview" href="#1-on-the-one">1. On the One</a></li>
 <li class="nav-level-3"><a href="#i-the-birth-of-a-master-signifier">I. The Birth of a Master-Signifier</a></li>
 <li class="nav-level-4"><a href="#the-non-analysable-slovene">The non-analysable Slovene</a></li>
 <li class="nav-level-4"><a href="#let-the-emperor-have-his-clothes">Let the Emperor have his clothes!</a></li>
@@ -135,7 +104,11 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-4"><a href="#the-subjectivized-structure">The subjectivized structure</a></li>
 <li class="nav-level-4"><a href="#the-metaphor-of-the-subject">The “metaphor of the subject”</a></li>
 <li class="nav-level-4"><a href="#the-hegelian-one-one">The Hegelian “one One”</a></li>
-<li class="nav-level-2"><a href="#2-the-wanton-identity">2. The Wanton Identity</a></li>
+</ol></details></li>
+<li><details open>
+<summary>2. The Wanton Identity</summary>
+<ol>
+<li><a class="nav-overview" href="#2-the-wanton-identity">2. The Wanton Identity</a></li>
 <li class="nav-level-3"><a href="#i-impossibility">I. Impossibility</a></li>
 <li class="nav-level-4"><a href="#hegels-monism">Hegel’s “monism”</a></li>
 <li class="nav-level-4"><a href="#the-silent-weaving-of-the-spirit">The “silent weaving of the Spirit”</a></li>
@@ -146,8 +119,15 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-4"><a href="#the-abyss-re-marked">The abyss re-marked</a></li>
 <li class="nav-level-4"><a href="#from-failed-reflection-to-reflected-failure">From failed reflection to reflected failure</a></li>
 <li class="nav-level-4"><a href="#the-tain-of-the-mirror">The tain of the mirror</a></li>
-<li class="nav-level-2"><a href="#part-ii-dialectics-and-its-discontents">Part II: Dialectics and its Discontents</a></li>
-<li class="nav-level-2"><a href="#3-hegelian-llanguage">3. Hegelian Llanguage</a></li>
+</ol></details></li>
+</ol></details></li>
+<li><details open>
+<summary>Part II: Dialectics and its Discontents</summary>
+<ol>
+<li><details open>
+<summary>3. Hegelian Llanguage</summary>
+<ol>
+<li><a class="nav-overview" href="#3-hegelian-llanguage">3. Hegelian Llanguage</a></li>
 <li class="nav-level-3"><a href="#i-with-an-eye-to-our-gaze">I. With an Eye to Our Gaze</a></li>
 <li class="nav-level-4"><a href="#how-to-do-a-totality-with-failures">How to do a totality with failures</a></li>
 <li class="nav-level-4"><a href="#the-speculative-lack-of-identity">The speculative (lack of) identity</a></li>
@@ -158,7 +138,11 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-4"><a href="#the-paradoxes-of-sexuation">The paradoxes of sexuation</a></li>
 <li class="nav-level-4"><a href="#how-necessity-arises-out-of-contingency">How necessity arises out of contingency</a></li>
 <li class="nav-level-4"><a href="#in-father-more-than-father-himself">“In father more than father himself”</a></li>
-<li class="nav-level-2"><a href="#4-on-the-other">4. On the Other</a></li>
+</ol></details></li>
+<li><details open>
+<summary>4. On the Other</summary>
+<ol>
+<li><a class="nav-overview" href="#4-on-the-other">4. On the Other</a></li>
 <li class="nav-level-3"><a href="#i-hysteria-certainty-and-doubt">I. Hysteria, Certainty and Doubt</a></li>
 <li class="nav-level-4"><a href="#wittgenstein-as-a-hegelian">Wittgenstein as a Hegelian</a></li>
 <li class="nav-level-4"><a href="#hegels-hysterical-theatre">Hegel’s hysterical theatre</a></li>
@@ -170,8 +154,15 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-4"><a href="#saying-and-meaning-to-say">Saying and meaning-to-say</a></li>
 <li class="nav-level-4"><a href="#the-hegelian-performative">The Hegelian performative</a></li>
 <li class="nav-level-4"><a href="#cunning-of-reason-revisited">“Cunning of Reason” revisited</a></li>
-<li class="nav-level-2"><a href="#part-iii-cum-grano-praxis">Part III: Cum Grano Praxis</a></li>
-<li class="nav-level-2"><a href="#5-alls-well-that-ends-well">5. All’s Well That Ends Well?</a></li>
+</ol></details></li>
+</ol></details></li>
+<li><details open>
+<summary>Part III: Cum Grano Praxis</summary>
+<ol>
+<li><details open>
+<summary>5. All’s Well That Ends Well?</summary>
+<ol>
+<li><a class="nav-overview" href="#5-alls-well-that-ends-well">5. All’s Well That Ends Well?</a></li>
 <li class="nav-level-3"><a href="#i-why-should-a-dialectician-learn-to-count-to-four">I. Why Should a Dialectician Learn to Count to Four?</a></li>
 <li class="nav-level-4"><a href="#the-triad-and-its-excess">The triad and its excess</a></li>
 <li class="nav-level-4"><a href="#protestantism-jacobinism">Protestantism, Jacobinism…</a></li>
@@ -184,7 +175,11 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-4"><a href="#so-called-primitive-accumulation">So-called “primitive accumulation”</a></li>
 <li class="nav-level-4"><a href="#the-paradox-of-a-finite-totality">The paradox of a finite totality</a></li>
 <li class="nav-level-4"><a href="#the-kantian-thing">The Kantian Thing</a></li>
-<li class="nav-level-2"><a href="#6-much-ado-about-a-thing">6. Much Ado about a Thing</a></li>
+</ol></details></li>
+<li><details open>
+<summary>6. Much Ado about a Thing</summary>
+<ol>
+<li><a class="nav-overview" href="#6-much-ado-about-a-thing">6. Much Ado about a Thing</a></li>
 <li class="nav-level-3"><a href="#i-the-variants-of-the-fetishism-type">I. The Variants of the Fetishism-Type</a></li>
 <li class="nav-level-4"><a href="#why-is-sade-the-truth-of-kant">Why is Sade the truth of Kant?</a></li>
 <li class="nav-level-4"><a href="#the-totalitarian-object">The “totalitarian object”</a></li>
@@ -196,18 +191,17 @@ p { margin: 0 0 1.05em; }
 <li class="nav-level-4"><a href="#how-to-extract-the-people-from-within-the-people">How to extract the People from within the people?</a></li>
 <li class="nav-level-4"><a href="#the-hypothesis-of-the-master">The “Hypothesis of the Master”</a></li>
 <li class="nav-level-4"><a href="#the-king-is-a-place-holder-of-the-void">The King is a place-holder of the void</a></li>
-<li class="nav-level-2"><a href="#index">Index</a></li>
+</ol></details></li>
+<li><a href="#index">Index</a></li>
+</ol></details></li>
 </ol>
 </nav>
 <main>
 <section class="title-page" aria-labelledby="title">
-  <figure class="cover"><img src="assets/figures/cover.jpg" alt="For They Know Not What They Do cover"></figure>
-  <div>
-    <p class="author">Slavoj Žižek</p>
-    <h1 id="title">For They Know Not What They Do</h1>
-    <p class="subtitle">Enjoyment as a Political Factor</p>
-    <p class="edition">Second edition</p>
-  </div>
+  <h1 id="title">For They Know Not<br>What They Do</h1>
+  <p class="subtitle">Enjoyment as a Political Factor</p>
+  <p class="author">SLAVOJ ŽIŽEK</p>
+  <p class="publisher">VERSO<br>London - New York</p>
 </section>
 <p class="dedication">For Kostja, my son</p>
 <h2 id="contents">Contents</h2>
@@ -237,9 +231,6 @@ p { margin: 0 0 1.05em; }
 <p class="contents-detail">II   “THE KING IS A THING”:- The King’s two bodies – Lenin’s two bodies – How to extract the People from within the people? – The “Hypothesis of the Master” – The King is a place-holder of the void</p>
 <p class="contents-entry">Index</p>
 <h2 id="foreword-to-the-second-edition-enjoyment-within-the-limits-of-reason-alone">Foreword to the Second Edition: Enjoyment within the Limits of Reason Alone</h2>
-<p>Foreword to the Second Edition:</p>
-<p>Enjoyment within the Limits</p>
-<p>of Reason Alone</p>
 <p>There are philosophical books, minor classics even, which are widely known and referred to, although practically no one has actually read them page by page (John Rawls’s Theory of Justice, for example, or Robert Brandom’s Making It Explicit) – a nice example of interpassivity, where some figure of the Other is supposed to do the reading for us. I hope For they know not what they do avoided this fate by, at least, really being read. Although it was overshadowed by the more popular Sublime Object of Ideology, my first book in English published two years earlier, I always considered it a more substantial achievement: it is a book of theoretical work, in contrast to the succession of anecdotes and cinema references in The Sublime Object. For me, the reaction of individual readers to it was a kind of test: those who said: “I was disappointed by it, finding it a little bit boring after all the firecrackers of The Sublime Object,” obviously missed the crucial argument of both books. Even today, my attitude is: those who do not want to talk about For they know not what they do should remain silent about The Sublime Object.</p>
 <h3 id="the-hard-road-to-dialectical-materialism">The Hard Road to Dialectical Materialism</h3>
 <p>There is one additional feature which makes For they know not what they do crucial: it establishes a critical distance towards some of the key positions of The Sublime Object. Although I still stand by the basic insights of The Sublime Object, it is clear to me, with hindsight, that it contains a series of intertwined weaknesses. First, there is the philosophical weakness: it basically endorses a quasi-transcendental reading of Lacan, focused on the notion of the Real as the impossible Thing-in-itself; in so doing, it opens the way to the celebration of failure: to the idea that every act ultimately misfires, and that the proper ethical stance is heroically to accept this failure. The Sublime Object fails to deploy the complex interconnections within the triad Real-Imaginary-Symbolic: the entire triad is reflected within each of its three elements.</p>
@@ -482,12 +473,8 @@ p { margin: 0 0 1.05em; }
 <p>What gives the book its “specific flavour”, however, is not so much its content as its place of enunciation. It conveys the text of lectures delivered on six consecutive Mondays in the winter semester of 1989–90 in Ljubljana, Yugoslavia. The lectures served as an introductory course to Lacan, organized by the Slovene Society for Theoretical Psychoanalysis and aimed at the “benevolently neutral” public of intellectuals who were the moving force of the drive for democracy; in other words, far from assuming the position of a Master “supposed to know”, the lecturer acted as the analysand addressing the analyst composed of his public. The lectures were delivered in the unique atmosphere of those months: a time of intense political ferment, with “free elections” only weeks ahead, when all options still seemed open, the time of a “short circuit” blending together political activism, the “highest” theory (Hegel, Lacan) and unrestrained enjoyment in the “lowest” popular culture – a unique utopian moment which is now, after the electoral victory of the nationalist-populist coalition and the advent of a new “scoundrel time”, not only over but even more and more invisible, erased from the memory like a “vanishing mediator”.</p>
 <p>Each lecture is composed of two parts, since it took three hours to deliver it – from seven to ten, with a break in the middle; it was, to use an expression from cinema, a theoretical double bill. Although the lectures are now “put in order”, rewritten and edited with proper references, and so on, there is still in them more than a trace of the chaotic circumstances of their origins. These traces have been preserved deliberately, as a kind of monument to the unique moment of their enunciation.</p>
 <h2 id="part-i-e-pluribus-unum">Part I: E Pluribus Unum</h2>
-<p>PART I</p>
 <h2 id="1-on-the-one">1. On the One</h2>
-<p>1</p>
-<p>On the One</p>
 <h3 id="i-the-birth-of-a-master-signifier">I. The Birth of a Master-Signifier</h3>
-<p>I   THE BIRTH OF A MASTER-SIGNIFIER</p>
 <h4 id="the-non-analysable-slovene">The non-analysable Slovene</h4>
 <p>Let us begin with our place of enunciation – Slovenia. What does it mean, psychoanalytically speaking, to be a Slovene?</p>
 <p>There is only one mention of a “Slovene” in Freud’s entire opus, and that is in a letter to the Trieste psychoanalyst Edoardo Weiss on 28 May 1922; however, this one mention is itself more than enough, since it condenses within it a whole series of key questions of psychoanalytic theory and practice, from the ambiguity of the superego to the problem of the mother as the bearer of the Law/Prohibition in Slovene tradition. So it’s worth taking a closer look at it.</p>
@@ -571,7 +558,6 @@ p { margin: 0 0 1.05em; }
 <p>This turnround, this point of reversal at which the law itself appears as the only true transgression, corresponds exactly to what Hegel designated as the “negation of the negation”. First, we have the simple opposition between the position and its negation – in our case, between the positive, appeasing law and the multitude of its particular transgressions, crimes; the “negation of the negation” occurs when one notices that the only true transgression, the only true negativity, is that of the law itself which changes all the ordinary criminal transgressions into an indolent positivity. In this precise sense, “negation of the negation” designates “self-relating negativity”: the moment when the external negative relationship between law and crime turns into law’s internal self-negation – when law appears as the sole true transgression.</p>
 <p>That is why Lacanian theory is irreducible to any variant of transgressism, of anti-Oedipism, and so on: the only true anti-Oedipus is Oedipus itself, its superegotistical reverse.… One can follow this “Hegelian” economy of Lacan up to his purely organizational decisions: the dissolution of the École freudienne de Paris and the constitution of the Cause freudienne in 1980 could have given the impression of a liberating act – Cause instead of School; an end to bureaucratization and regimentation of the school.… Yet a couple of months later, the new organization was rebaptized École de la Cause freudienne: the School of the Cause itself, incomparably more severe than all other schools, just as the surpassing of earthly fears by divine love presupposes the intervention of the fear of God Himself, incomparably more horrifying than all earthly fears.</p>
 <h3 id="ii-how-to-count-zero-for-one">II. How to Count Zero for One?</h3>
-<p>II   HOW TO COUNT ZERO FOR ONE?</p>
 <h4 id="derrida-is-a-reader-of-hegel">Derrida is a reader of Hegel</h4>
 <p>Derrida as a reader of Hegel</p>
 <p>In defence of Derrida against the traditional philosophical criticism – represented, for example, by Habermas in his Philosophical Discourse of Modernity – it should be pointed out that Derridean “deconstruction” has nothing in common with the assertion of an all-embracing “textuality” or “writing” in which the frontiers separating literature from science, metaphor from literal sense, myth from logos, rhetoric from truth, and so on, are abolished – that is to say, in which science is reduced to a species of literature, literal sense to a special case of metaphor, logos (rational thinking) to the “mythology of the Western man”, truth to a special rhetorical effect, and so forth. Derrida’s line of argument is here far more refined. Apropos of the difference between truth and rhetoric, for example, what Derrida endeavours to demonstrate is how the very opposition of truth and “mere rhetoric” – the establishment of truth as something which is prior to and independent of “secondary” rhetorical effects and figures – is founded upon a radical rhetorical gesture.<span class="footnote-popover"><sup id="fnref-ch0028-25" class="note-ref"><a href="#fn-ch0028-25">25</a></sup><span class="floating-note" id="sn-ch0028-25" role="note"><span class="floating-note-number">25</span> Incidentally, this was already Adorno’s thesis – in his Negative Dialectics (New York: Continuum 1973) he pointed out how the traditional philosophical depreciation of rhetoric as a secondary tool which does nothing but disturb the direct approach to Truth is itself dependent on rhetoric. The supreme rhetorical gesture is that of renouncing itself – of referring to itself in a negative way (“What I will say now is not mere rhetoric, I mean it seriously …”).</span></span> It is the same with all other couples we have mentioned: philosophical logos implies an inverted “white mythology” [mythologie blanche], and so on.</p>
@@ -651,10 +637,7 @@ p { margin: 0 0 1.05em; }
 <p>The role played by the unique German expression Was fur ein Ding … in the passage of being-for-other into being-for-self cannot but evoke cynical remarks on how “according to Hegel, the Absolute speaks German”. Furthermore, this is not the only instance: a whole series of notional “passages” in Hegel’s Logic rely on wordplays or ambiguities proper to German: the three meanings of Aufhebung (annihilate, maintain, elevate), the way the category of Grund (Reason-Ground) is deduced from reading the German verb zugrundegehen (decompose, disintegrate) as zu-Grunde-gehen (reaching one’s ground), and so on. Yet Hegel in no way conceives these features as a kind of writ of privilege of German (as Heidegger does for Greek and German): for him, they remain felicitous encounters where, totally by chance, the meaning of some word (more precisely: the split of its meaning) comes to exhibit a speculative dimension. The usual, everyday meanings of words move on the level of Understanding, and the “exact” scientific definitions only harden the non-dialectical inclosure; the speculative meaning which, in principle, eludes words (notions) as well as propositions, since it comes through only in the completed movement of syllogism – this meaning can sometimes, due to a contingent fortunate encounter, emerge at the level of words alone.</p>
 <p>We can see how far Hegel is from the standard picture of the “panlogicism” attributed to him: “speculative truth”, expression of the Absolute itself, has to rely on such frivolous resources as wordplays and contingent ambiguities! Here, Hegel undermines Plato’s opposition (from Cratyle) of the “natural” and “arbitrary” characters of language, the opposition which later, in modern thought, evolved into the two fundamentally divergent notions of language: the “rationalist” one (reduction of language to a system of arbitrary, available signs, the meaning of which is conventional and which, consequently, carry no intrinsic Truth) versus the “romantic” one (according to which language cannot be reduced to an external tool or medium since, deep in itself, it carries an original Sense forgotten by the progress of history). Hegel’s position with regard to this alternative is paradoxical: language does contain an intrinsic Truth, yet it is not to be sought in obscure Origins, in an original inveteracy dissipated by progressive instrumentalization; this Truth rather results from contingent encounters which occur afterwards. In principle, language “lies”, it renders invisible the dialectical movement of notions, yet sometimes, by means of some felicitous accident, the speculative content can emerge. Contrary to the Platonic tradition, Truth is not contained in the Universal as such: its emergence is strictly a matter of particular conjunctures.</p>
 <h2 id="2-the-wanton-identity">2. The Wanton Identity</h2>
-<p>2</p>
-<p>The Wanton Identity</p>
 <h3 id="i-impossibility">I. Impossibility</h3>
-<p>I   IMPOSSIBILITY</p>
 <h4 id="hegels-monism">Hegel’s “monism”</h4>
 <p>The doxa on Hegel against which the whole of our interpretation is directed – a doxa which is today a commonplace on all sides of the philosophical spectrum, from Adorno to “post-structuralism” – reads as follows: it is true that Hegel asserts the right of the Particular – that he, so to speak, opens the door to its wealth and conceives the network of differences as something inherent to the universal Notion, as resulting from the self-articulation of its immanent content; yet it is precisely through this operation that the phenomenal exterior is reduced to the self-mediation of the inner Notion, all differences are “sublated” in advance in so far as they are posited as ideal moments of the Notion’s mediated identity with itself.… The logic involved here is of course that of the fetishistic disavowal, conveyed by the formula “je sais bien, mais quand même…”: I know very well that Hegel asserts difference and negativity; nevertheless … (by means of the Notion’s self-relation, this negativity is ultimately reduced to an abstract moment of the Identity’s self-differentiation).</p>
 <p>What lies behind this disavowal is the fear of “absolute knowledge” as a monster threatening to suppress all particular, contingent content in the self-mediation of the absolute Idea, and thus to “swallow” our most intimate freedom and unique individuality; a fear which acquires the form of the well-known paradox of the prohibition of the impossible: “absolute knowledge” is impossible, an unattainable Ideal, a philosophical pipe dream – and it is precisely for that reason that we must fight its temptation.… In short, “absolute knowledge” is the Real of its critics: the construction of an “impossible”, untenable theoretical position which these critics must presuppose in order to define their own position by distancing themselves from it – by asserting, for example, the positivity of the “effective life-process” irreducible to the Notion’s logical movement.<span class="footnote-popover"><sup id="fnref-ch0038-1" class="note-ref"><a href="#fn-ch0038-1">1</a></sup><span class="floating-note" id="sn-ch0038-1" role="note"><span class="floating-note-number">1</span> Such a paradoxical status of the Real qua construction could be exemplified by the mathematical notion of the “non-constructive proof”, elaborated by Michael Dum-mett apropos of intuitionism (see his Truth and Other Enigmas, Cambridge, MA: Harvard University Press 1978). Dummett has in mind a procedure whereby we can prove (construct) the existence of a certain mathematical entity (of a certain number, for example), although we are not able to exhibit this entity (number) in its positive determination-statements of the type “it is hereby proven that a cardinal number must exist which is a multiple of …” which are fully valid notwithstanding the fact that we will never be able to state precisely what this number is. The status of the Freudian-Lacanian Real (the traumatism of the primal parricide, for example) is exactly the same. We can deduce the fact of the parricide by means of a “non-constructive proof”; we can prove that the parricide must be presupposed for (subsequent) history to retain its consistency, although we will never be able to exhibit its empirical reality; and, incidentally, in his “A Child Is Being Beaten”, Freud describes in the same way the status of the middle term in the fantasy chain which runs from “father beats a child” to “a child is being beaten”; the scene “father is beating me” is wholly inaccessible to the consciousness, but we must construct it to be able to account for the passage from the first to the third form.</span></span></p>
@@ -689,7 +672,6 @@ p { margin: 0 0 1.05em; }
 <p>This paradoxical logic could be further exemplified via a notion which is a kind of analytical-philosophy pendant to the Hegelian “cunning of Reason”, that of the “states that are essentially by-products” elaborated by Jon Elster.<span class="footnote-popover"><sup id="fnref-ch0041-8" class="note-ref"><a href="#fn-ch0041-8">8</a></sup><span class="floating-note" id="sn-ch0041-8" role="note"><span class="floating-note-number">8</span> Jon Elster, Sour Grapes, Cambridge: Cambridge University Press 1983.</span></span> When, as a result of the subject’s activity, a certain non-intended state of things emerges (when, for example, in a “totalitarian” state in disintegration, an attempt at intimidation backfires and strengthens the forces of democratic opposition, like the murder of Chamorro during the last months of the Somoza dictatorship in Nicaragua), the subject has no right to say: “I didn’t intend thisl” and thus elude his responsibility. In so far as “actuality is rational”, it is precisely the external, social realization of our aims and intentions that testifies to their true meaning – when we realize our intention, we are confronted with its “truth”.</p>
 <p>This is also the way to conceive the famous Lacanian proposition that the speaker receives from the other (his addressee) his own message in its inverted – its true – form. The subject whose activity misfires, who achieves the opposite of what he intended, must gather enough strength to acknowledge in this unlooked-for result the truth of his intention. That is to say, truth is always the truth of the symbolic “big Other”; it does not occur in the intimacy of my inner self-experience, it results from the way my activity is inscribed in the “public” field of intersubjective relations. To quote the famous final phrase of Lacan’s Seminar on “The Purloined Letter”, “a letter always arrives at its destination”. Although the Beautiful Soul is not prepared to recognize itself as the addressee of the letter returned by (social) reality, although it refuses to decipher in the disorder of the world the truth of its own subjective position, the letter nevertheless reaches its destination: the disorder of the world is a message testifying to the truth of the subject’s position – the more this message is ignored, the more it insists and pursues its “silent weaving”.</p>
 <h3 id="ii-reflection">II. Reflection</h3>
-<p>II   REFLECTION</p>
 <h4 id="the-logic-of-remark">The logic of remark</h4>
 <p>The lesson to be drawn from what we have elaborated so far is that Hegel is to be read carefully and literally. When, for example, he says that the hardest nut of the speculative approach is to recognize the identity of the contraries as contraries, to uncover the positivity in the negative itself, this does not mean that the contraries are to be somehow united, harmonized (against which we could always retort that this operation never works out without some remainder resisting synthesis), or that the negative force is to be somehow “inverted” into positivity, “encompassed” by it (against which we could again always retort that there is an excess of negativity resisting absorption into the positivity of the dialectically mediated identity). As we have seen apropos of the “cunning of Reason”, the crucial gesture of the dialectical approach is to exhibit the “positive” (enabling, “productive”) dimension that pertains to the Negative as such; to grasp how what appeared at first a purely negative (impending) agency functions as a positive “condition of possibility” of the entity it impedes.</p>
 <p>The inappropriateness of the current doxa on Hegel emerges most clearly at this point – apropos of the Negative’s inversion into positivity. The hardest nut for the non-dialectical approach is to reconcile it with the Hegelian affirmation of the “infinite force of the Negative”. That is to say, it is not sufficient to conceive Hegel as the “thinker of negativity”, as the philosopher who displayed the bacchanalian dance of Negativity which sweeps away every positive-substantial identity. What escapes such an approach is simply identity itself, the way identity is constituted through the reflexive self-relationship of the Negative. We shall endeavour to shed light on this hardest nut by a symptomatic impasse of the Derridean reading of Hegel.</p>
@@ -744,14 +726,8 @@ p { margin: 0 0 1.05em; }
 <p>In Kafka’s apologue about the Door of the Law (from his Trial) the man from the country occupies, until the final dénouement, the position of “external reflection”. He is confronted with the transcendent image of the Palace of Law where, behind every door, there is another door hiding an unapproachable Secret, and whose representative (the doorkeeper) treats him with utter indifference and contempt. The crucial reversal takes place when the doorkeeper explains to the dying man that the Door was meant only for him from the very beginning – in other words, the Law that the man from the country viewed with awed respect, assuming automatically that it did not even notice his presence, had regarded him from the very beginning; precisely as excluded, he was always-already taken into account. “Absolute reflection” is simply the name for this experience of how the subject, by means of his very failure to grasp the secret of the Other, is already inscribed in the Other’s “accountancy”, reflected into the Other: the experience of how his “external” reflection of the Other is already a “reflective determination” of the Other itself.</p>
 <p>Hegel’s often quoted and even more often misunderstood proposition from the Introduction to Phenomenology of Spirit that it would be vain for the subject to try to grasp the Absolute if the Absolute were not and did not want to be in- and for-itself already with us, has to be comprehended against this background. By restating it as “the Absolute is always with us”, even Heidegger misses its crucial point. What is at stake here is not the notion that the Absolute is (always) with us, still less the notion that, by means of a final synthesis – reconciliation – it will be with us, but the experience of how it always-already was with us. Our experience of the “loss”, of the fissure between us (the subject) and the Absolute, is the very way the Absolute is already with us. In this sense, the final assertion of the doorkeeper that from the very beginning the Door was meant only for the man from the country is Kafka’s version of the Hegelian proposition that the Absolute was always-already with us. The very appearance of the inaccessible transcendence, of the Secret hidden beyond the endless series of Doors, is an appearance “for the consciousness” – it is the way the Law addresses the subject. This is how we should grasp the passage of “external” into “determining” (absolute) reflection. The notion of the inaccessible, transcendent Absolute makes sense only in so far as the subject’s gaze is already here – in its very notion, the inaccessible Other implies a relation to its own other (the subject). The subject does not “internalize”, “mediate”, the Being-in-itself of the Absolute; it simply takes cognizance of the fact that this In-itself is in-itself for the subject.</p>
 <h2 id="part-ii-dialectics-and-its-discontents">Part II: Dialectics and its Discontents</h2>
-<p>PART II</p>
-<p>Dialectics and its</p>
-<p>Discontents</p>
 <h2 id="3-hegelian-llanguage">3. Hegelian Llanguage</h2>
-<p>3</p>
-<p>Hegelian Llanguage</p>
 <h3 id="i-with-an-eye-to-our-gaze">I. With an Eye to Our Gaze</h3>
-<p>I   WITH AN EYE TO OUR GAZE</p>
 <h4 id="how-to-do-a-totality-with-failures">How to do a totality with failures</h4>
 <p>Today’s “post-modern” thought seems to be dominated by the alternative of dialectical totalization and dissemination: is it possible to “mediate” the heterogeneous elements that we encounter in our experience, to posit them as ideal moments of a rational totality, or are we condemned to an interplay of fragments that can never be totalized? The way one raises this question is of course far from neutral, since it clearly gives predominance to the second term of the alternative: following the post-modern pop-ideological topic on “the end of big stories”, it silently assumes that every attempt at rational totalization is in advance doomed to failure, that there is always some leftover that eludes the totalizing seizure, and so on.</p>
 <p>The problem with this alternative, however, is not in the advance choice it implies but in the fact that it falsifies the choice by crucially misrepresenting the authentic Hegelian notion of a rational totality. Hegel knows very well that every attempt at rational totalization ultimately fails, this failure is the very impetus of the “dialectical progress”; his “wager” is located on another level – it concerns, so to speak, the “squared totalization”: the possibility of “making a system” out of the very series of failed totalizations, to enchain them in a rational way, to discern the strange “logic” that regulates the process by means of which the breakdown of a totalization itself begets another totalization. What is Phenomenology of Spirit ultimately if not the presentation of a series of aborted attempts by the subject to define the Absolute and thus arrive at the longed-for synchronism of subject and object? This is why its final outcome (“absolute knowledge”) does not bring about a finally found harmony but rather entails a kind of reflective inversion: it confronts the subject with the fact that the true Absolute is nothing but the logical disposition of its previous failed attempts to conceive the Absolute – that is, with the vertiginous experience that Truth itself coincides with the path towards Truth.</p>
@@ -798,7 +774,6 @@ p { margin: 0 0 1.05em; }
 <p>Let us indicate its contours by means of a comparison between Don Giovanni and Casanova. That is to say, Casanova is Don Giovanni’s exact opposite: a merry swindler and impostor, an epicure who irradiates simple pleasure and leaves behind no bitter taste of revenge, and whose libertinage presents no serious threat to the environs. He is a kind of correlate to the eighteenth-century freethinkers from the bourgeois salon: full of irony and wit, calling into question every established view; yet his trespassing of what is socially acceptable never assumes the shape of a firm position which would pose a serious threat to the existing order. His libertinage lacks the fanatic-methodical note, his spirit is that of permisiveness, not of purges; it is “freedom for all”, not yet “no freedom for the enemies of freedom”. Casanova remains a parasite feeding on the decaying body of his enemy and as such deeply attached to it: no wonder he condemned the “horrors” of the French Revolution, since it swept away the only universe in which he could prosper. It was only Don Giovanni who brought libertinage to the point of its “self-negation” and transformed resistance to Duty into the Duty to resist: his conquests are not a matter of enjoying simple life-pleasures but stricto sensu a matter of a compulsive Duty. To use Kantian terms: they are strictly “non-pathological”, he is driven by an inner compulsion which is “beyond the pleasure principle”.</p>
 <p>In short, if Casanova was a correlate to the pre-revolutionary free-thinking salon, (Mozart’s) Don Giovanni is a correlate to Jacobinism, a kind of “Jacobin of the libidinal economy” – the paradox of a puritan débauché. The Jacobins cut off the heads of citizens who yielded to decadent pleasures and never fully assumed the ideal of Citizen; Don Giovanni rejected with contempt women who never lived up to Woman. This homology is, however, mediated by an impossibility: Don Giovanni’s “Jacobinism of the libidinal economy” can never meet the “real”, political Jacobinism. Because of his social position (a member of the ruling class in decay) Don Giovanni carried out Jacobinism in the only field open to him, that of sexuality.<span class="footnote-popover"><sup id="fnref-ch0053-14" class="note-ref"><a href="#fn-ch0053-14">14</a></sup><span class="floating-note" id="sn-ch0053-14" role="note"><span class="floating-note-number">14</span> The relationship here is the same as that between French politics and German philosophy in the epoch of the French Revolution: the great German idealists thought out the philosophical foundations of the French Revolution not in spite of the German political backwardness but precisely because the political blockage left open only the path of theory.</span></span> This is why his ultimate fate was the same as that of the Jacobins: an annoying “excess”, a “vanishing mediator” shoved away as soon as the ideological hegemony of the bourgeois intimate love couple was established.</p>
 <h3 id="ii-judgement-by-default">II. Judgement by Default</h3>
-<p>II   JUDGEMENT BY DEFAULT</p>
 <h4 id="the-word-is-an-elephant">“The word is an elephant”</h4>
 <p>“Lack of identity” as a key component of speculative identity finds its clearest expression in Hegel’s theory of judgement, in the fact – surprising for those who always expect the same infamous “triad” from Hegel – that there are four types of judgement and not three: the judgement of existence, the judgement of reflection, the judgement of necessity and the judgement of the Notion. Let us immediately show our cards: the three judgements actually acquire the fourth because “Substance is Subject”; in other words, the “lack of identity” between subject and predicate is posited as such in the fourth judgement (that of the Notion).<span class="footnote-popover"><sup id="fnref-ch0055-15" class="note-ref"><a href="#fn-ch0055-15">15</a></sup><span class="floating-note" id="sn-ch0055-15" role="note"><span class="floating-note-number">15</span> Let us recall that in the last section of his Science of Logic, Hegel says that we can consider the moments of the dialectic process to be three or four – the subject is actually that fourth surplus-moment, that “nothing”, self-referential negativity, which none the less counts as “something”. (See also Chapter 5 below.)</span></span></p>
 <p>Let us begin with the first form, the judgement of existence. This form derives directly from the Individual as the last (third) moment of the Notion. Hegel starts the section on judgement with the proposition: “The judgement is the determinatedness of the Notion posited in the Notion itself.”<span class="footnote-popover"><sup id="fnref-ch0055-16" class="note-ref"><a href="#fn-ch0055-16">16</a></sup><span class="floating-note" id="sn-ch0055-16" role="note"><span class="floating-note-number">16</span> Hegel’s Science of Logic, London: Allen &amp; Unwin, 1978, p. 623.</span></span> The judgement [Urteil] originally divides [ur-teilen] the Notion (yet another of Hegel’s famous wordplays) into subject and predicate – that is, the determinatedness of an individuality (of a self-subsistent, substantial entity as the final moment of the notional triad Universal-Particular-Individual) is externalized, opposed to individuality, and thereby posited as such: the individual subject is that predicate (this or that abstract-universal determination). In Hegel’s example: “The rose is red.”</p>
@@ -860,10 +835,7 @@ p { margin: 0 0 1.05em; }
 <figure class="book-figure"><img src="assets/figures/image-7LN5JNAD.jpg" alt="Figure from For They Know Not What They Do" loading="lazy" decoding="async"></figure>
 <p>The fundamental category of the judgement of existence is that of impossibility (its “truth” is the infinite judgement where the relationship between subject and predicate is posited as impossible); the judgement of reflection is characterized by possibility (namely, the possibility of the ever-more-comprehensible correspondence between subject and predicate); the judgement of necessity asserts a necessary relationship between subject and predicate (as is evident from its very name), whereas the judgement of Notion exhibits the ultimate contingency upon which necessity itself depends. Do we have to add how this notional apparatus is related to the Lacanian triad of ISR? The status of impossibility is real (“real as impossible”); every necessity is ultimately a symbolic one; imaginary is the domain of what is “possible”, whereas the emergence of the symptom which links together the three dimensions of ISR is radically contingent.</p>
 <h2 id="4-on-the-other">4. On the Other</h2>
-<p>4</p>
-<p>On the Other</p>
 <h3 id="i-hysteria-certainty-and-doubt">I. Hysteria, Certainty and Doubt</h3>
-<p>I   HYSTERIA, CERTAINTY AND DOUBT</p>
 <h4 id="wittgenstein-as-a-hegelian">Wittgenstein as a Hegelian</h4>
 <p>In Logic, Hegel “stages” identity (imagines a subject saying “Plant is … a plant”) and thus arrives at its truth – that is to say, demonstrates that identity-with-itself consists in the absolute contradiction, in the coincidence of the (logical) subject with the void at the place of the expected, but failed, predicate. By translating the identity of an object with itself into the satirical scene of a subject’s procedure, Wittgenstein of the Philosophical Investigations is here extremely close to Hegel:</p>
 <p>“A thing is identical with itself.” – There is no finer example of a useless proposition, which yet is connected with a certain play of the imagination. It is as if in imagination we put a thing into its own shape and saw that it fitted. [We might also say: “Every thing fits into itself.” Or again: “Every thing fits into its own shape.” At the same time we look at a thing and imagine that there was a blank left for it, and that now it fits into it exactly.] Does this spot • “fit” into its white surrounding? – But that is just how it would look if there had been a hole in its place and it then fitted into the hole…<span class="footnote-popover"><sup id="fnref-ch0061-1" class="note-ref"><a href="#fn-ch0061-1">1</a></sup><span class="floating-note" id="sn-ch0061-1" role="note"><span class="floating-note-number">1</span> Ludwig Wittgenstein, Philosophical Investigations, Oxford: Blackwell 1976, para. 216.</span></span></p>
@@ -912,7 +884,6 @@ p { margin: 0 0 1.05em; }
 <p>As Lacan points out in his analysis of Hamlet,<span class="footnote-popover"><sup id="fnref-ch0065-23" class="note-ref"><a href="#fn-ch0065-23">23</a></sup><span class="floating-note" id="sn-ch0065-23" role="note"><span class="floating-note-number">23</span> See his unpublished seminar Désir et son interprétation (1958–9).</span></span> phrases like “I, Ludwig Wittgenstein,…” attest the subject’s ability to “pass to the act”, founded in the certainty of symbolic identification – of fully assuming a symbolic mandate. Hamlet himself, the very embodiment of obsessive procrastination, unable to “pass to the act”, becomes capable of acting at the exact moment when, in the last act of the play, he answers the rhetorical question “Who am I?”: “What is he whose grief / Bears such an emphasis? …/… this is I, Hamlet the Dane.” It is the split between “I” and “Hamlet the Dane”, between the vanishing point of the subject of the enunciation and his support in symbolic identification, which is primordial: the moment of “passage to the act” is nothing but an illusory moment of decision when the subject’s being seems to coincide without remainder with his symbolic mandate. Wittgenstein is quite clear and univocal in his insistence on the primordial character of this split: “The word T does not mean the same as ‘L.W.’ even if I am L.W., nor does it mean the same as the expression ‘the person who is now speaking’.”<span class="footnote-popover"><sup id="fnref-ch0065-24" class="note-ref"><a href="#fn-ch0065-24">24</a></sup><span class="floating-note" id="sn-ch0065-24" role="note"><span class="floating-note-number">24</span> Ludwig Wittgenstein, The Blue and The Brown Books, Oxford: Blackwell 1958, para. 67.</span></span></p>
 <p>So we find ourselves back at the beginning, since it is precisely this split – the resistance, the hesitation of the subject fully to assume his symbolic mandate – which defines the position of a hysteric: what is a hysteric if not an “I” who resists full identification with the mandate “Ludwig Wittgenstein” (“father”, “wife”, “son”, “leader”, “pupil” …)? And what is hysterical theatre if not a staging of this resistance? This is the ultimate domain of doubt and certainty: a certainty that “I” am my symbolic mandate, a doubt if “I” really am that.</p>
 <h3 id="ii-the-formal-aspect">II. The “Formal Aspect”</h3>
-<p>II   THE “FORMAL ASPECT”</p>
 <h4 id="history-of-an-apparition">History of an apparition</h4>
 <p>What is the first “materialist reversal” of Hegel? One can locate it exactly: it occurred on 26 May 1828, in the central square of Nuremberg. On this day a young man appeared there, singularly dressed, of stiff, unnatural gestures; his entire language consisted of a few fragments of the Lord’s Prayer learnt by heart and pronounced with grammatical errors, and of the enigmatic phrase “I want to become such a knight as was my father”, the design of an identification with the Ego-Ideal; in his left hand, he carried a paper with his name – Kaspar Hauser – and the address of a Captain of the Nuremberg cavalry. Later, when he learnt to speak “properly”, Kaspar told his story: he had spent all his life alone in a “dark cave” where a mysterious “black man” procured food and drink for him, until the very day when he dressed him and took him to Nuremberg, teaching him a few phrases on the way.… He was entrusted to the Daumer family, quickly “humanized” himself and became a celebrity: an object of philosophical, psychological, pedagogical and medical research, even the object of political speculation about his origin (was he the missing Prince of Baden?). After a couple of quiet years, on the afternoon of 14 December 1833, he was found mortally wounded with a knife; on his deathbed, he announced that his murderer was the same “black man” who had brought him to the central square of Nuremberg five years earlier …</p>
 <p>Although the sudden apparition of Kaspar Hauser provoked a shock that pertains to this kind of brutal encounter with a real-impossible which seems to interrupt the symbolic circuit of cause and effect, the most surprising thing about it was that, in a sense, his arrival was awaited: precisely as a surprise, he arrived on time. It is not only that Kaspar realized the millenary myth of a child of royal origins abandoned in a wild place and then found at the age of adolescence (remember the rumour that he was the Prince of Baden), or that the fact that the only objects in his “dark cave” were a couple of wooden animal figures pathetically realizes the myth of a hero saved by the animals who take care of him. The point is rather that towards the end of the eighteenth century, the theme of a child living excluded from human community became the object of numerous literary and scientific texts: it staged in a pure, “experimental” way the theoretical question of how to distinguish in man the part that belongs to Culture from the part that belongs to Nature.</p>
@@ -958,12 +929,8 @@ p { margin: 0 0 1.05em; }
 <p>Such a paradoxical logic implies a kind of temporal paradox. What we are looking for is created by the very process of our search; it is at work in a series of jokes, like the one about the conscript who tries to evade military service by pretending to be mad. His symptom is that he compulsively checks all the pieces of paper he can lay his hands on, constantly repeating: “That’s not it!” He is sent to the military psychiatrist, in whose office he also examines all the papers around, including those in the wastepaper basket, repeating all the time: “That’s not it!” The psychiatrist, finally convinced that he really is mad, gives him a written warrant releasing him from military service. The conscript casts a look at it and says cheerfully: “That’s it!”<span class="footnote-popover"><sup id="fnref-ch0070-41" class="note-ref"><a href="#fn-ch0070-41">41</a></sup><span class="floating-note" id="sn-ch0070-41" role="note"><span class="floating-note-number">41</span> For a reading of this joke different from that proposed here, see Žižek, The Sublime Object of Ideology, pp. 160–61.</span></span></p>
 <p>When Hegel speaks about “error” being “a necessary dynamic element of Truth”, when he writes that “truth can only be where it makes itself its own result”, and so forth, these strange-sounding propositions should be grasped against the background of the logic proper to the joke about the conscript: without error, without the illusion of the persons around the conscript that he was looking for an already-existing paper, this paper would not have been produced at the end (as with the October Revolution, which would not have taken place without its participants’ illusion that they were fulfilling a historical necessity). In this precise sense, truth “makes itself its own result” – the paper which finally satisfies the conscript is not simply found but is literally the result of all the fuss about it: of the confusion the conscript has provoked by means of his “mad” search for it. This is how the ill-famed Hegelian “teleology of Reason” has to be grasped: the End towards which the movement tends is not given in advance, it is so to speak created by the movement itself – the necessary deception consists in the fact that for this movement to take place, the subjects must overlook how their own search created what they “find” at the end. The Lacanian name for this structural deception is sujet supposé savoir, “the subject supposed to know”, and what Hegel calls “absolute knowledge” is precisely the fall of the subject supposed to know. That is to say, the starting point of the dialectical process is of course the presupposition of knowledge; the trust that the knowledge we are looking for is already present in the Other: as Hegel points out again and again, the dialectician does not apply an external method on the object, his sole presupposition is that “Reason governs actuality” – that actuality is already in itself “reasonable” (it is the same in psychoanalysis, where the presupposition of the so-called “free associations” is that there is a meaning hidden beneath their apparent chaos). This is why the dialectician can limit his role to that of a pure observer discovering the inherent rationality of the Real. At the end of the dialectical process, this presupposition loses ground: the subject discovers that from the very beginning there was no support in the Other, that he was himself producing the “discovered” meaning. And finally, one should not forget that in the case of the joke about the conscript, the object created through search is none other than a letter, an official communication, so that this joke is ultimately a joke about how a letter always arrives at its destination.</p>
 <h2 id="part-iii-cum-grano-praxis">Part III: Cum Grano Praxis</h2>
-<p>PART III</p>
 <h2 id="5-alls-well-that-ends-well">5. All’s Well That Ends Well?</h2>
-<p>5</p>
-<p>All’s Well That Ends Well?</p>
 <h3 id="i-why-should-a-dialectician-learn-to-count-to-four">I. Why Should a Dialectician Learn to Count to Four?</h3>
-<p>I   WHY SHOULD A DIALECTICIAN LEARN TO COUNT TO FOUR?</p>
 <h4 id="the-triad-and-its-excess">The triad and its excess</h4>
 <p>How far must a Hegelian dialectician learn to count? Most of the interpreters of Hegel, not to mention his critics, try to convince us in unison that the right answer reads: to three (the dialectical triad, and so on). Moreover, they vie with each other in who will call our attention more convincingly to the “fourth side”, the non-dialecticizable excess, the place of death (of the dummy – in French le mort – in bridge), supposedly eluding the dialectical grasp, although (or, more precisely, in so far as) it is the inherent condition of possibility of the dialectical movement: the negativity of a pure expenditure that cannot be sublated [aufgehoben], re-collected, in its Result.</p>
 <p>Unfortunately, as is the custom with criticism of Hegel, the trouble with Hegel is here the same as the trouble with Harry in Alfred Hitchcock’s film of the same title: he does not consent to his burial so easily – on a closer look, it soon becomes obvious that the supposedly annihilating reproach drawn by the critics from their hats actually forms the crucial aspect of the very dialectical movement. That is to say, a careful reader will immediately recall not only numerous particular cases like the four types of judgement from the first part of “subjective logic”, but also the fact that Hegel thematizes a quadruplicity proper to the dialectical movement as such: the excess of the pure nothingness of self-relating negativity which vanishes, becomes invisible, in the final Result. In the last chapter of his Logic, apropos of the elementary matrix of the dialectical process, he points out that the moments of this process could be counted as three or as four, with the subject as the surplus-moment which “counts for nothing”:</p>
@@ -1029,7 +996,6 @@ p { margin: 0 0 1.05em; }
 <figure class="book-figure"><img src="assets/figures/image-IG8357NA.jpg" alt="Figure from For They Know Not What They Do" loading="lazy" decoding="async"></figure>
 <p>We even lack an appropriate term for this X, for the strange status of what is “not prescribed”, “facultative”, and yet not simply “permitted” – like, for example, the emergence of some hitherto forbidden knowledge in the psychoanalytic cure which holds up to ridicule the Prohibition, lays bare its hidden mechanism, without thereby changing into a neutral “permissiveness”. The difference between the two pertains to the different relationship towards the universal Order: “permissiveness” is warranted by it, whereas this guarantee lacks in the case of “you may…” which Lacan designates as scilicet: you may know (the truth about your desire) – if you take the risk upon yourself. This scilicet is perhaps the ultimate recourse of the critical thought.</p>
 <h3 id="ii-the-missing-link-of-ideology">II. The “Missing Link” of Ideology</h3>
-<p>II   THE “MISSING LINK” OF IDEOLOGY</p>
 <h4 id="the-self-referring-structure-and-its-void">The self-referring structure and its void</h4>
 <p>The basic paradox of the psychoanalytic notion of fantasy consists in a kind of time loop – the “original fantasy” is always the fantasy of the origins – that is to say, the elementary skeleton of the fantasy-scene is for the subject to be present as a pure gaze before its own conception or, more precisely, at the very act of its own conception. The Lacanian formula of fantasy (a) denotes such a paradoxical conjunction of the subject and the object qua this impossible gaze: the “object” of fantasy is not the fantasy-scene itself, its content (the parental coitus, for example), but the impossible gaze witnessing it.</p>
 <p>To exemplify the “travel in the past” constituent of the fantasy-constellation, let us just recall the famous scene from David Lynch’s Blue Velvet in which the hero watches through a fissure in the closet door the sadomasochistic sexual play between Isabella Rossellini and Denis Hopper, games in which Hopper relates to Rossellini alternately as his mother and his daughter. This game is the “subject”, the topic, the content of the fantasy, whereas its object is the hero himself reduced to the presence of a pure gaze.<span class="footnote-popover"><sup id="fnref-ch0080-20" class="note-ref"><a href="#fn-ch0080-20">20</a></sup><span class="floating-note" id="sn-ch0080-20" role="note"><span class="floating-note-number">20</span> The time paradox implied here emerges directly in a series of recent films centred around the motif of time travel (Back to the Future, Terminator, etc.): their matrix is always that of a subject who, by means of a voyage into the past, endeavours to witness his own conception, as in Back to the Future, in which the hero arranges the matching of his parents and thus provides for his own existence …. Terminator, on the contrary, stages an inverted situation: the cyborg arriving from the future is charged with a mission to prevent the conception of a future leader. See Chapter 7 (“Time Travel, Primal Scene, and the Critical Dystopia”) of Constance Penley, The Future of An Illusion: Film, Feminism and Psychoanalysis, Minneapolis: University of Minnesota Press 1989.</span></span> The basic paradox of the fantasy consists precisely in this “nonsensical” temporal short circuit whereby the subject qua pure gaze so to speak precedes itself and witnesses its own origin.</p>
@@ -1113,10 +1079,7 @@ p { margin: 0 0 1.05em; }
 <p>Let us just recall Freud’s analysis of the Wolf Man: the paternal coitus a tergo was first perceived as something neutral, a trace without any libidinal weight, and it was only years later, with the further elaboration of the child’s sexual “theories”, that it acquired its traumatic status: only at this later stage did it become possible for the child to “do something with it”, to fit it into a symbolic frame in the form of a traumatic wound. Here again, Hegel’s proposition that what is lost comes to be through being lost receives its full value: an event is experienced as “traumatic” afterwards, with the advent of a symbolic space within which it cannot be fully integrated.</p>
 <p>And is it ultimately not the same with the act of freedom? An act is never fully “present”, the subjects are never fully aware that what they are doing “now” is the foundation of a new symbolic order – it is only afterwards that they take note of the true dimension of what they have already done. The common wisdom about how history in actu is experienced as the domain of freedom, whereas retroactively we are able to perceive its causal determination, is therefore idiotic after all and should be reversed: when we are caught in the flow of events, we act “automatically”, as if under the impression that it is not possible to do otherwise, that there is really no choice; whereas the retrospective view displays how the events could have taken a radically different turn – how what we perceived as necessity was actually a free decision of ours. In other words, what we encounter here is another confirmation of the fact that the time of the subject is never “present” – the subject never “is”, it only “will have been”: we never are free, it is only afterwards that we discover how we have been free.<span class="footnote-popover"><sup id="fnref-ch0084-46" class="note-ref"><a href="#fn-ch0084-46">46</a></sup><span class="floating-note" id="sn-ch0084-46" role="note"><span class="floating-note-number">46</span> As to this problem of the temporality of freedom, see Slavoj Žižek, The Sublime Object of Ideology, London: Verso 1989, pp. 165–9.</span></span> This is the ultimate meaning of the “missing link”: it is never missing “now” – “now”, in present time, the chain is always completed; it is only afterwards, when we endeavour to reconstruct the chain, that we discover how “something is missing”.</p>
 <h2 id="6-much-ado-about-a-thing">6. Much Ado about a Thing</h2>
-<p>6</p>
-<p>Much Ado about a Thing</p>
 <h3 id="i-the-variants-of-the-fetishism-type">I. The Variants of the Fetishism-Type</h3>
-<p>I   THE VARIANTS OF THE FETISHISM-TYPE</p>
 <h4 id="why-is-sade-the-truth-of-kant">Why is Sade the truth of Kant?</h4>
 <p>It is of course a commonplace to ascertain that psychoanalysis arose as the final outcome of a long “incubation period”. However, answers differ as to where and when, in the “history of ideas”, the process was set in motion which finally gave birth to psychoanalysis. In his “Kant avec Sade”, Lacan provides an unequivocal, albeit unexpected, answer to this question: Immanuel Kant’s Critique of Practical Reason. The gist of Lacan’s argument is that Kant was the first to outline the dimension of what Freud later designated as “beyond the pleasure principle”.</p>
 <p>Kant’s starting point is the question: What is the impetus of our will, of our practical activity? His answer is: a representation [Vorstellung] which determines our will by means of the sentiment of pleasure or displeasure it brings about in the subject. We represent to ourselves an object and the pleasure or displeasure attached to its representation sets off our activity. Such a determinateness of our will is, however, always empirical, linked to contingent circumstances – that is to say: “pathological” in the Kantian sense of the term. Man as finite being is limited by his phenomenal, temporal-spatial experience; he has no access to the “Thing-in-itself” which transcends the horizon of his possible experience. This means that the Supreme Good – the a priori object which sustains itself on its inherent necessity and, consequently, does not depend on any external conditions – is irrepresentable, out of reach to our consciousness: if Kant did not formulate the notion of A barré (the barred big Other), he at least conceived of the barred G [Good].</p>
@@ -1196,7 +1159,6 @@ p { margin: 0 0 1.05em; }
 <p>There is a point in Nineteen Eighty-Four at which Orwell “produces his own symptom”, says more than he is aware of saying: it is an insertion which in its form already operates as something exceptional, an extrusion – namely, the so-called “Goldstein’s book”, the theoretical treatise of a “dissident” which clarifies the “real nature” of totalitarian society: that it is concerned with power for its own sake, and so on. What is its place in the universe of “1984”? Towards the end of Nineteen Eighty-Four we learn that this book was not written by Goldstein at all, but fabricated by the Party itself – why? The first answer is, of course, that it is an old, regular tactic of a totalitarian Party in power: if there is no opposition it must be invented, since the Party needs external and internal enemies so that, in the name of this danger, it can maintain the state of emergency and total unity; “Goldstein’s book” is intended to encourage the formation of opposition groups and thus create the excuse for incessant purges, the settling of internal accounts. However, this answer, although valid, is not enough: in “Goldstein’s book” there is “something more”: it contains primarily a truth about the working of a totalitarian system – from where does this “compulsion” of the Party come, to produce a Text which expresses its own truth?</p>
 <p>Nineteen Eighty-Four belongs to the so-called “last-man novels” (it should not be forgotten that one of its provisional titles was The Last Man): novels which describe some catastrophic situation in which “the last living beings” exert all their force to tell others – posterity – the truth of what happened. This catastrophic situation can be of the most varied nature: from natural catastrophes which destroy some group, to concentration camps (where, as is well known, a number of prisoners held on to life only by the desire to pass on to posterity the truth of their experiences) and similar social catastrophes, like the emergence of a totalitarian society as perceived by the “last man” who still resists its closure. If this paradigm is applied to Nineteen Eighty-Four, then a paradoxical result is achieved: the “last man” is not so much the unhappy Winston Smith with his diary as primarily the Party itself with its “Goldstein’s book”. This book “settles acounts” with the big Other, the guarantor of truth: it lays out the “real state of things” as for the “Last Judgement”. It is for this that the Party needs “dissidents”, for this that it needs “Goldstein”: it cannot express its truth in the first person – even in the “innermost circle” it can never come to the point at which “the Party knows how matters actually stand”, at which it would recognize the tautological truth that the aim of its power is just power itself – so it can achieve it only as a construction imputed to someone else. The circle of totalitarian ideology is thus never closed – it necessarily contains what Edgar Allan Poe would call its “imp of perversity” compelling it to confess the truth about itself.</p>
 <h3 id="ii-the-king-is-a-thing">II. “The King is a Thing”</h3>
-<p>II   “THE KING IS A THING”</p>
 <h4 id="the-kings-two-bodies">The King’s two bodies</h4>
 <p>According to Saint-Just’s famous motto, Revolution has established happiness as a political factor. What Saint-Just meant by “happiness” has of course little to do with enjoyment: it implies revolutionary Virtue, a radical renunciation of the decadent pleasures of the ancien régime. In the Jacobinical universe, this surplus of enjoyment corrupting the sound body of the People is incarnated in the person of the King: it is as if the very body of the King condenses in itself the secret cause of the People’s enslavement to the forces of corruption and tyranny. The Jacobins effectuated here a kind of anamorphotic reversal: what appeared in the traditional perspective as the charismatic embodiment of the People, as the point at which the People’s “life-substance” acquired immediate existence, changes now, when viewed from another perspective, into a cancerous protuberance contaminating the body of the People – which is why the purification of the People demands that this protuberance be cut off. To paraphrase Saint-Just: if the Republic is to survive, this man – the King – must be put to death, because his very existence poses a threat to the Republic.</p>
 <p>It is a commonplace that with this logic of the King’s necessary execution, the Jacobins reached an impasse; however, this impasse is more sophisticated than it may seem. At first sight, it appears that the Jacobins succumbed to the illusion indicated, among others, by Marx in a note to Chapter 1 of Capital: they overlooked that “to be a king” is not an immediate natural property of the person of a king but a “determination-of-reflection” – that a king is a king because his subjects treat him like one, and not the reverse. The proper way to get rid of this illusion is thus not the murder of the king but the dissolution of the network of social relations within which a certain person acquires the status of a king – as soon as this symbolic network loses its performative power, we suddenly see how the person who previously provoked such fascination is really an individual like others; we are confronted with the material remainder which was stuck on the symbolic function.<span class="footnote-popover"><sup id="fnref-ch0092-36" class="note-ref"><a href="#fn-ch0092-36">36</a></sup><span class="floating-note" id="sn-ch0092-36" role="note"><span class="floating-note-number">36</span> In short, the Jacobins were caught in the following paradox: is the King effectively a king or just an impostor? If he is effectively a king, then there is no sense in killing him because he does not cheat – i.e. he is what he claims to be; if, on the contrary, he is an impostor, then there is again no reason to kill him because he does not present any real danger – it is enough to unmask his imposture …. The Jacobins’ solution is that the King is a deceptive semblance which ontologically does not exist, and it is precisely for that reason that it is so dangerous – i.e. it is precisely because of its ontological delusiveness (a nothing claiming to be something, a “thing of nothing”) that it must be fought by every means. In other words, the real mystery of the King’s charisma is that of servitude volontaire: how was it possible for a pure impostor without any substance to fascinate and dominate people for such a long time?</span></span> It is true that we thus reach the comforting conclusion that the greatest punishment for the king is to let him live outside his symbolic function, as an ordinary citizen, which is at the same time supposed to be the most successful way to dispense with the symbolic efficiency of the function “king”; however, such a distinction between king as a symbolic function and its empirical bearer misses a paradox that we could designate by the term “chiasmic exchange of properties” introduced by Andrzej Warminski.<span class="footnote-popover"><sup id="fnref-ch0092-37" class="note-ref"><a href="#fn-ch0092-37">37</a></sup><span class="floating-note" id="sn-ch0092-37" role="note"><span class="floating-note-number">37</span> Andrzej Warminski, Readings in Interpretation, Minneapolis: University of Minnesota Press 1987, pp. 110–11.</span></span></p>

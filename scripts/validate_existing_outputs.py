@@ -57,7 +57,7 @@ CASES = [
     },
     {
         "path": ROOT / "for-they-know-not/for-they-know-not.html",
-        "figures": 12,
+        "figures": 11,
         "notes": 371,
         "scan": [
             r"Roudedge",
@@ -68,6 +68,7 @@ CASES = [
             r"silendy",
             r"Weatherhilt",
             r"suiprising",
+            r"scroll-behavior",
         ],
     },
 ]

@@ -19,10 +19,11 @@ from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # type: ignore
 from book_conversion_toolkit import (
     Footnote,
     Heading,
+    SUBLIME_BOOK_CSS,
     clean_spaces,
     render_footnote_list,
     render_footnote_ref,
-    render_nav,
+    render_sublime_nav,
     slugify,
     wrap_html_document,
 )
@@ -126,16 +127,6 @@ def apply_text_replacements(text: str) -> str:
     return text
 
 
-def extract_cover() -> str:
-    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
-    target = FIGURE_DIR / "cover.jpg"
-    with zipfile.ZipFile(EPUB_PATH) as archive:
-        data = archive.read("OEBPS/Images/image-0YETYSV2.jpg")
-    if not target.exists() or target.read_bytes() != data:
-        target.write_bytes(data)
-    return target.as_posix()
-
-
 def render_image(tag, member: str) -> str:
     with zipfile.ZipFile(EPUB_PATH) as archive:
         src = tag.get("src")
@@ -231,29 +222,40 @@ def heading_level(item: NavItem) -> int:
     return min(4, item.depth + 2)
 
 
-def render_title_page(cover_src: str) -> str:
+def render_title_page() -> str:
     return f"""
 <section class="title-page" aria-labelledby="title">
-  <figure class="cover"><img src="{html.escape(cover_src, quote=True)}" alt="{html.escape(TITLE, quote=True)} cover"></figure>
-  <div>
-    <p class="author">{html.escape(AUTHOR, quote=False)}</p>
-    <h1 id="title">{html.escape(TITLE, quote=False)}</h1>
-    <p class="subtitle">{html.escape(SUBTITLE, quote=False)}</p>
-    <p class="edition">Second edition</p>
-  </div>
+  <h1 id="title">For They Know Not<br>What They Do</h1>
+  <p class="subtitle">{html.escape(SUBTITLE, quote=False)}</p>
+  <p class="author">{html.escape(AUTHOR.upper(), quote=False)}</p>
+  <p class="publisher">VERSO<br>London - New York</p>
 </section>
 <p class="dedication">For Kostja, my son</p>
 """.strip()
 
 
+def compact_title(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", text.lower())
+
+
+def is_title_fragment(text: str, item: NavItem | None) -> bool:
+    if item is None:
+        return False
+    text_key = compact_title(text)
+    label_key = compact_title(item.label)
+    return bool(text_key) and text_key in label_key
+
+
 def build_html() -> str:
+    if FIGURE_DIR.exists():
+        shutil.rmtree(FIGURE_DIR)
     nav_items = parse_nav()
     nav_by_member = {item.member: item for item in nav_items}
     notes = parse_notes()
     used_ids: dict[str, int] = {"title": 1}
     headings: list[Heading] = []
     used_notes: list[Footnote] = []
-    body: list[str] = [render_title_page(extract_cover())]
+    body: list[str] = [render_title_page()]
 
     with zipfile.ZipFile(EPUB_PATH) as archive:
         for member in parse_spine():
@@ -278,15 +280,20 @@ def build_html() -> str:
                 skip_heading_texts.add("INTRODUCTION")
                 skip_heading_texts.add(item.label.split(": ", 1)[1])
 
+            seen_content = False
             for tag in soup.find_all(["p", "h2", "h3", "img"]):
                 if tag.name == "img":
                     figure = render_image(tag, member)
                     if figure:
                         body.append(figure)
+                        seen_content = True
                     continue
                 text = apply_text_replacements(tag.get_text(" ", strip=True))
                 if not text or text in skip_heading_texts:
                     continue
+                if not seen_content and tag.name == "p" and is_title_fragment(text, item):
+                    continue
+                seen_content = True
                 if member == "OEBPS/Text/chapter0005.html" and text == "Contents":
                     continue
                 if tag.name in {"h2", "h3"}:
@@ -304,105 +311,7 @@ def build_html() -> str:
                     body.append(f"<p>{inline_markup(tag, member, notes, used_notes)}</p>")
 
     body.append(render_footnote_list(used_notes))
-    css = CUSTOM_CSS
-    return wrap_html_document(TITLE, "\n".join(body), render_nav(headings), css=css)
-
-
-CUSTOM_CSS = """
-:root {
-  color-scheme: light;
-  --page: #f7f6f1;
-  --ink: #1f2428;
-  --muted: #66615a;
-  --line: #d7d0c0;
-  --accent: #2f6673;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--page);
-  color: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
-  line-height: 1.62;
-}
-.book-shell {
-  max-width: 1220px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 280px minmax(0, 780px);
-  gap: 52px;
-  padding: 36px 28px 84px;
-}
-.book-nav {
-  position: sticky;
-  top: 24px;
-  align-self: start;
-  max-height: calc(100vh - 48px);
-  overflow: auto;
-  padding-right: 18px;
-  border-right: 1px solid var(--line);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
-  line-height: 1.35;
-}
-.book-nav ol { list-style: none; margin: 0; padding: 0; }
-.book-nav li { margin: 0 0 7px; }
-.book-nav a { color: var(--accent); text-decoration: none; }
-.nav-level-3 { padding-left: 14px; }
-.nav-level-4 { padding-left: 28px; font-size: 12px; }
-main { min-width: 0; }
-.title-page {
-  display: grid;
-  grid-template-columns: minmax(170px, 230px) minmax(0, 1fr);
-  gap: 32px;
-  align-items: end;
-  min-height: 520px;
-  padding-bottom: 34px;
-  border-bottom: 1px solid var(--line);
-}
-.cover { margin: 0; }
-.cover img { width: 100%; height: auto; display: block; box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18); }
-.author, .subtitle, .edition, .dedication { color: var(--muted); font-family: system-ui, sans-serif; }
-.author { text-transform: uppercase; letter-spacing: 0.08em; }
-.subtitle { font-size: 1.2rem; }
-.dedication { margin: 2em 0 3em; text-align: center; }
-h1, h2, h3, h4 { line-height: 1.2; margin: 2.2em 0 0.8em; }
-h1 { font-size: 2.7rem; margin: 0.2em 0; }
-h2 { font-size: 1.55rem; border-top: 1px solid var(--line); padding-top: 1.35em; }
-h3 { font-size: 1.25rem; }
-h4 { font-size: 1.05rem; font-style: italic; }
-p { margin: 0 0 1.05em; }
-.contents-entry { margin-top: 1.2em; font-weight: 700; }
-.contents-detail { color: var(--muted); }
-.index-entry, .index-subentry { margin-bottom: 0.22em; line-height: 1.35; }
-.index-subentry { padding-left: 1.4em; color: var(--muted); }
-.note-ref a { color: var(--accent); text-decoration: none; }
-.footnote-popover { position: relative; white-space: normal; }
-.floating-note {
-  display: none;
-  position: fixed;
-  z-index: 20;
-  max-width: min(440px, calc(100vw - 40px));
-  padding: 12px 14px;
-  background: #fffdf8;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
-  font-size: 0.92rem;
-  line-height: 1.45;
-}
-.footnote-popover:hover .floating-note,
-.footnote-popover:focus-within .floating-note,
-.floating-note.is-open { display: block; }
-.footnotes { border-top: 1px solid var(--line); margin-top: 3em; padding-top: 1em; }
-@media (max-width: 900px) {
-  .book-shell { display: block; padding: 24px 18px 64px; }
-  .book-nav { display: none; }
-  .title-page { grid-template-columns: 1fr; min-height: 0; }
-  .cover { max-width: 210px; }
-  .floating-note { display: none !important; }
-}
-""".strip()
+    return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(headings), css=SUBLIME_BOOK_CSS)
 
 
 def main() -> None:

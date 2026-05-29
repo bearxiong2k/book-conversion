@@ -5,57 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Idea of Phenomenology</title>
 <style>
-:root{color-scheme:light;--paper:#fffdfa;--ink:#171717;--muted:#686058;--line:#ded7cb;--nav:#f2eee6}
-*{box-sizing:border-box}
-body{margin:0;background:#f7f3ec;color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.58}
-main{max-width:780px;margin:0 auto;padding:48px 26px 84px;background:var(--paper);min-height:100vh}
-.page-nav{position:fixed;inset:0 auto 0 0;width:260px;padding:28px 18px;background:var(--nav);border-right:1px solid var(--line);overflow:auto}
-.page-nav p{margin:0 0 16px;font:700 .76rem/1.2 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}
+.book-shell{display:block}
+main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}
+.page-nav{position:fixed;top:0;bottom:0;left:0;width:260px;box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
+.page-nav-title{margin:0 0 18px;font-size:.78rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5c5449}
 .page-nav ol{list-style:none;margin:0;padding:0}
-.page-nav li{margin:0 0 4px}
-.page-nav a{display:block;padding:4px 0;color:#38322c;text-decoration:none;font-size:.86rem;line-height:1.25}
-.page-nav a:hover,.page-nav a:focus{text-decoration:underline;text-underline-offset:3px}
-h1,h2,h3{line-height:1.18}
-h1{font-size:2.3rem;text-align:center;margin:14px 0 26px;letter-spacing:.03em;text-transform:uppercase}
-h2{font-size:1.55rem;text-align:center;margin:54px 0 24px}
-h3{font-size:1.05rem;text-align:center;margin:34px 0 16px;letter-spacing:.03em}
-p{font-size:1.02rem;margin:0 0 1rem}
+.page-nav li{margin:0 0 3px}
+.page-nav details{margin:0 0 8px}
+.page-nav summary{padding:5px 0;color:#2f2a24;font-size:.84rem;line-height:1.22;font-variant:small-caps;letter-spacing:.03em;cursor:pointer}
+.page-nav details details summary{font-variant:normal;letter-spacing:0;font-size:.86rem;color:#3f3931}
+.page-nav details ol{margin:2px 0 0 10px;padding-left:10px;border-left:1px solid #d8c7a8}
+.page-nav a{display:block;padding:4px 0;color:#3f3931;font-size:.84rem;line-height:1.22;text-decoration:none}
+.page-nav .nav-overview{color:#6c6256;font-style:italic}
+.page-nav .nav-level-3 a,.page-nav a.nav-level-3{padding-left:10px;color:#4b443b}
+.page-nav .nav-level-4 a,.page-nav a.nav-level-4{padding-left:20px;color:#5c5449;font-size:.8rem}
+.page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}
+h1,h2{font-weight:600;line-height:1.15;text-align:center}
+h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}
+h2{font-size:1.65rem;margin:56px 0 28px}
+h3{font-size:1.12rem;line-height:1.25;margin:34px 0 14px;text-align:left;font-style:italic}
+h4{font-size:1rem;line-height:1.25;margin:24px 0 10px;text-align:left;font-variant:small-caps;letter-spacing:.03em}
+.author{text-align:center;font-size:1.25rem;letter-spacing:.08em;margin-top:32px}
+.subtitle{text-align:center;font-size:1.08rem;margin:18px 0 0}
+.publisher{text-align:center;margin-top:72px;letter-spacing:.05em}
+.dedication{text-align:center;margin:52px 0 48px;color:#5c5449}
+p{font-size:1.03rem;margin:0 0 1rem}
+.contents-entry{margin-top:1.2em;font-weight:700}
+.contents-detail{color:#5c5449}
+.contents{margin:24px auto 48px;max-width:560px}
+.contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}
+.contents span:first-child{padding-right:16px}
+.part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}
+.index-entry,.index-subentry{margin-bottom:.22em;line-height:1.35}
+.index-subentry{padding-left:1.4em;color:#5c5449}
+.bullet{position:relative;padding-left:1.35rem}
+.bullet:before{content:'\2022';position:absolute;left:0;color:#7a3d00}
+blockquote{margin:1rem 2rem;font-size:1rem}
+.book-figure{margin:1.25rem auto 1.75rem;text-align:center}
+.book-figure img{display:block;max-width:100%;height:auto;margin:0 auto}
+.book-figure figcaption{font-size:.88rem;color:#5c5449;margin-top:.45rem;font-style:italic}
 sup{font-size:.72em;line-height:0}
-.title-page{text-align:center;min-height:78vh;display:flex;flex-direction:column;justify-content:center}
-.title-page p{font-size:1.04rem}
-.author,.credit,.publisher{letter-spacing:.06em;text-transform:uppercase}
-.publisher{margin-top:40px}
-.contents{max-width:560px;margin:0 auto 44px;padding:0;list-style:none}
-.contents li{display:flex;justify-content:space-between;gap:20px;border-bottom:1px dotted #b8afa3;padding:5px 0}
-.note{font-size:.92rem;color:#39342f;margin-top:-.35rem}
 .footnote-popover{display:inline;position:relative}
 .note-ref a{color:#7a3d00;text-decoration:none;border-bottom:1px solid rgba(122,61,0,.35);cursor:help}
-.floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(360px,calc(100vw - 32px));max-height:min(45vh,360px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text;text-align:left}
-.floating-note-number,.footnote-list-number{font-weight:700;color:#7a3d00}
-.footnote-popover.is-open .floating-note,.footnote-popover:focus-within .floating-note{display:block}
+.floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(340px,calc(100vw - 32px));max-height:min(45vh,360px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text}
+.floating-note-number{font-weight:700;color:#7a3d00}
+.footnote-popover:hover .floating-note,.footnote-popover:focus-within .floating-note,.footnote-popover.is-open .floating-note{display:block}
 .footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
 .footnotes li{margin:.45rem 0}
 .backref{text-decoration:none;margin-left:.35em}
-.index-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}
-.index-columns pre{white-space:pre-wrap;margin:0;font:0.88rem/1.35 Georgia,"Times New Roman",serif}
 @media (min-width:1220px){body{padding-left:260px}.footnotes{display:none}}
-@media (max-width:1219px){.page-nav{display:none}}
-@media (min-width:681px) and (max-width:1219px){.footnotes{display:none}}
-@media (max-width:680px){main{padding:32px 18px 64px}.index-columns{grid-template-columns:1fr}h1{font-size:1.9rem}.floating-note{display:none}.footnotes{display:block}}
+@media (min-width:980px) and (max-width:1219px){.page-nav{display:none}.footnotes{display:none}}
+@media (max-width:979px){.page-nav{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
+.index-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}
+.index-columns pre{white-space:pre-wrap;margin:0;font:0.88rem/1.35 Georgia,'Times New Roman',serif}
+.note{font-size:.92rem;color:#39342f;margin-top:-.35rem}
+@media (max-width:680px){.index-columns{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<nav class="page-nav" aria-label="Book navigation"><p>Navigate</p><ol><li><a href="#title">Title</a></li>
-<li><a href="#contents">Table of Contents</a></li>
-<li><a href="#translators-introduction">Translator&#x27;s Introduction</a></li>
-<li><a href="#lecture-i">Lecture I</a></li>
-<li><a href="#lecture-ii">Lecture II</a></li>
-<li><a href="#lecture-iii">Lecture III</a></li>
-<li><a href="#lecture-iv">Lecture IV</a></li>
-<li><a href="#lecture-v">Lecture V</a></li>
-<li><a href="#addenda">Addenda</a></li>
-<li><a href="#train-of-thought">The Train of Thought</a></li>
-<li><a href="#index">Index</a></li></ol></nav>
+<div class="book-shell">
+<nav class="page-nav" aria-label="Section navigation">
+<p class="page-nav-title">Navigate</p>
+<ol class="page-nav-list">
+<li><a href="#title">Title</a></li>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#translators-introduction">TRANSLATOR’S INTRODUCTION</a></li>
+<li><a href="#lecture-i">LECTURE I</a></li>
+<li><a href="#lecture-ii">LECTURE II</a></li>
+<li><a href="#lecture-iii">LECTURE III</a></li>
+<li><a href="#lecture-iv">LECTURE IV</a></li>
+<li><a href="#lecture-v">LECTURE V</a></li>
+<li><a href="#addenda">ADDENDA</a></li>
+<li><details open>
+<summary>ADDENDUM I</summary>
+<ol>
+<li><a class="nav-overview" href="#addendum-i">ADDENDUM I</a></li>
+<li class="nav-level-3"><a href="#addendum-ii">ADDENDUM II</a></li>
+<li class="nav-level-3"><a href="#addendum-iii">ADDENDUM III</a></li>
+</ol></details></li>
+<li><details open>
+<summary>THE TRAIN OF THOUGHT IN THE LECTURES</summary>
+<ol>
+<li><a class="nav-overview" href="#train-of-thought">THE TRAIN OF THOUGHT IN THE LECTURES</a></li>
+<li class="nav-level-3"><a href="#train-first-step">A. THE FIRST STEP IN THE PHENOMENOLOGICAL CONSIDERATION</a></li>
+<li class="nav-level-3"><a href="#train-second-step">B. THE SECOND STEP IN THE PHENOMENOLOGICAL CONSIDERATION</a></li>
+<li class="nav-level-3"><a href="#train-third-step">C. THE THIRD STEP IN THE PHENOMENOLOGICAL CONSIDERATION</a></li>
+</ol></details></li>
+<li><a href="#index">Index</a></li>
+</ol>
+</nav>
 <main>
 <section class="title-page" aria-labelledby="title">
 <p class="author">EDMUND HUSSERL</p>
@@ -371,7 +410,9 @@ Value theory, 40</pre></div>
 <li id="fn-lecture-ii-1"><span class="footnote-list-number">1.</span> See Addendum III. <a class="backref" href="#fnref-lecture-ii-1">↩</a></li>
 <li id="fn-train-1"><span class="footnote-list-number">1.</span> In the manuscript “transcendent.” <a class="backref" href="#fnref-train-1">↩</a></li></ol></section>
 </main>
+</div>
 <script>
+
 (() => {
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const closeLater = (wrap) => {
@@ -406,6 +447,7 @@ Value theory, 40</pre></div>
     note.addEventListener('mouseleave', () => closeLater(wrap));
   });
 })();
+
 </script>
 </body>
 </html>

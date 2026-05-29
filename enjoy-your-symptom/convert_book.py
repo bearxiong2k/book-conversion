@@ -12,6 +12,9 @@ import xml.etree.ElementTree as ET
 for dep_dir in (Path(".codex_deps"), Path("../sublime-object-of-ideaology/.codex_deps")):
     if dep_dir.exists():
         sys.path.insert(0, str(dep_dir))
+sys.path.insert(0, "..")
+
+from book_conversion_toolkit import SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
 
 try:
     import fitz  # type: ignore
@@ -621,72 +624,6 @@ def footnotes_html(state: ConvertState) -> str:
     return '<section class="footnotes" aria-labelledby="footnotes"><h2 id="footnotes">Footnotes</h2><ol>\n' + "\n".join(items) + "\n</ol></section>"
 
 
-def nav_html(headings: list[Heading]) -> str:
-    items = ['<li><a class="nav-level-2" href="#title">Title</a></li>', '<li><a class="nav-level-2" href="#contents">Contents</a></li>']
-    for heading in headings:
-        if heading.level <= 4:
-            items.append(
-                f'<li><a class="nav-level-{heading.level}" href="#{heading.ident}">{html.escape(heading.text, quote=False)}</a></li>'
-            )
-    return '<nav class="page-nav" aria-label="Book navigation"><p>Navigate</p><ol>' + "\n".join(items) + "</ol></nav>"
-
-
-STYLE = r"""
-:root{color-scheme:light;--paper:#fffdf9;--ink:#171717;--muted:#655f56;--line:#ded5c8;--nav:#f0ece4;--accent:#7a3d00}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:#f6f1e9;color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.58}
-main{max-width:800px;margin:0 auto;padding:50px 28px 88px;background:var(--paper);min-height:100vh}
-.page-nav{position:fixed;inset:0 auto 0 0;width:286px;padding:28px 20px;background:var(--nav);border-right:1px solid var(--line);overflow:auto}
-.page-nav p{margin:0 0 16px;font:700 .76rem/1.2 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.page-nav ol{list-style:none;margin:0;padding:0}
-.page-nav li{margin:0 0 3px}
-.page-nav a{display:block;padding:3px 0;color:#38322c;text-decoration:none;font-size:.84rem;line-height:1.25}
-.page-nav a:hover,.page-nav a:focus{text-decoration:underline;text-underline-offset:3px}
-.nav-level-3{padding-left:14px!important}
-.nav-level-4{padding-left:28px!important;color:#5d554b!important;font-size:.79rem!important}
-h1,h2,h3,h4{line-height:1.18}
-h1{font-size:2.45rem;text-align:center;margin:14px 0 12px;letter-spacing:.02em}
-h2{font-size:1.5rem;text-align:center;margin:56px 0 24px;text-transform:uppercase}
-h3{font-size:1.1rem;text-align:center;margin:38px 0 18px;text-transform:uppercase}
-h4{font-size:1rem;text-align:left;margin:30px 0 13px}
-p{font-size:1.02rem;margin:0 0 1rem}
-p.inset{margin-left:1.7rem}
-p.section-number{text-align:center;margin:1.6rem 0 1rem;font-size:1.05rem}
-em{font-style:italic}
-sub{font-size:.72em;line-height:0}
-sup{font-size:.72em;line-height:0}
-.title-page{text-align:center;min-height:78vh;display:flex;flex-direction:column;justify-content:center}
-.title-page p{font-size:1.04rem}
-.author{font-size:1.16rem;letter-spacing:.08em;text-transform:uppercase}
-.subtitle{font-size:1.22rem;margin-top:0}
-.contents{max-width:620px;margin:0 auto 44px;padding:0;list-style:none}
-.contents li{border-bottom:1px dotted #b8afa3}
-.contents a{display:block;padding:5px 0;color:#28231f;text-decoration:none}
-.contents a:hover,.contents a:focus{text-decoration:underline;text-underline-offset:3px}
-.footnote-popover{display:inline;position:relative}
-.note-ref a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(122,61,0,.35);cursor:help}
-.floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(390px,calc(100vw - 32px));max-height:min(48vh,390px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text;text-align:left}
-.floating-note-number,.footnote-list-number{font-weight:700;color:var(--accent)}
-.footnote-popover.is-open .floating-note,.footnote-popover:focus-within .floating-note{display:block}
-.footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
-.footnotes li{margin:.45rem 0}
-.backref{text-decoration:none;margin-left:.35em}
-.index-columns{margin-top:18px}
-.index-columns pre{white-space:pre-wrap;margin:0;font:.88rem/1.38 Georgia,"Times New Roman",serif}
-.index-list{margin-top:18px}
-.index-note{font-size:.9rem;color:var(--muted)}
-.index-entry{font-size:.9rem;line-height:1.38;margin:0 0 .28rem}
-.book-figure{margin:24px auto 26px;text-align:center}
-.book-figure img{display:block;max-width:min(100%,520px);height:auto;margin:0 auto}
-.math-symbol{font-style:italic}
-@media (min-width:1240px){body{padding-left:286px}.footnotes{display:none}}
-@media (max-width:1239px){.page-nav{display:none}}
-@media (min-width:681px) and (max-width:1239px){.footnotes{display:none}}
-@media (max-width:680px){main{padding:32px 18px 64px}h1{font-size:2rem}h2{font-size:1.28rem}.floating-note{display:none}.footnotes{display:block}p.inset{margin-left:0}}
-"""
-
-
 SCRIPT = r"""
 (() => {
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -736,24 +673,14 @@ def build_html() -> str:
         missing = ", ".join(state.missing_notes)
         raise RuntimeError(f"Missing note text for: {missing}")
     body_html = repair_inline_symbols(chr(10).join(body))
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:,">
-<title>Enjoy Your Symptom!</title>
-<style>{STYLE}</style>
-</head>
-<body>
-{nav_html(state.headings)}
-<main>
-{body_html}
-</main>
-<script>{SCRIPT}</script>
-</body>
-</html>
-"""
+    headings = [Heading(2, "Title", "title"), Heading(2, "Contents", "contents"), *state.headings]
+    return wrap_html_document(
+        "Enjoy Your Symptom!",
+        body_html,
+        render_sublime_nav(headings),
+        css=SUBLIME_BOOK_CSS,
+        script=SCRIPT,
+    )
 
 
 def main() -> None:

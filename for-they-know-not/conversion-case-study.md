@@ -16,8 +16,9 @@ This first conversion uses the EPUB as the text authority. The PDF text layer wa
 5. Converted the EPUB nav map into stable HTML headings and a left navigation rail.
 6. Parsed the notes chapter by source chapter and note number because note labels restart by section.
 7. Replaced Unicode superscript note references with hover popovers and fallback footnotes.
-8. Copied EPUB inline images into `assets/figures/` in source order.
+8. Copied EPUB inline content images into `assets/figures/` in source order.
 9. Preserved the EPUB index as structured paragraphs with indented subentries.
+10. Matched the Sublime Object UI conventions: simple text title page, fixed expandable navigator, and direct anchor jumps without smooth scrolling.
 
 ## Validation
 
@@ -27,7 +28,7 @@ Run after regeneration:
 python3 convert_book.py
 cd ..
 python3 -m book_conversion_toolkit validate-html for-they-know-not/for-they-know-not.html \
-  --expect-figures 12 \
+  --expect-figures 11 \
   --scan Roudedge \
   --scan direcdy \
   --scan detaded \
@@ -42,7 +43,7 @@ Current validation result:
 
 - Broken anchors: `0`
 - Duplicate IDs: `0`
-- Figures: `12`
+- Figures: `11`
 - Note references: `371`
 - Floating notes: `371`
 - Fallback notes: `371`

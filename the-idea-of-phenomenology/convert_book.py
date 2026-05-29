@@ -9,8 +9,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, "../sublime-object-of-ideaology/.codex_deps")
+sys.path.insert(0, "..")
 
 import fitz  # type: ignore
+
+from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
 
 
 PDF_PATH = next(Path(".").glob("*.pdf"))
@@ -579,38 +582,23 @@ def footnotes_html() -> str:
     )
 
 
-def nav_html() -> str:
-    links = [
-        ("Title", "title"),
-        ("Table of Contents", "contents"),
-        ("Translator's Introduction", "translators-introduction"),
-        ("Lecture I", "lecture-i"),
-        ("Lecture II", "lecture-ii"),
-        ("Lecture III", "lecture-iii"),
-        ("Lecture IV", "lecture-iv"),
-        ("Lecture V", "lecture-v"),
-        ("Addenda", "addenda"),
-        ("The Train of Thought", "train-of-thought"),
-        ("Index", "index"),
-    ]
-    items = "\n".join(f'<li><a href="#{ident}">{html.escape(label)}</a></li>' for label, ident in links)
-    return f'<nav class="page-nav" aria-label="Book navigation"><p>Navigate</p><ol>{items}</ol></nav>'
-
-
 def render(elements: list[Element]) -> str:
-    body: list[str] = [nav_html(), "<main>"]
+    body: list[str] = []
+    headings: list[Heading] = [Heading(2, "Title", "title")]
     current_section: str | None = None
     inserted_footnotes: set[str] = set()
     for element in elements:
         if element.kind == "title":
             body.append(title_html(element.text))
         elif element.kind == "toc":
+            headings.append(Heading(2, "Contents", "contents"))
             body.append(f'<section aria-labelledby="{element.ident}">{toc_html(element.text)}</section>')
         elif element.kind in {"h2", "h3"}:
             tag = element.kind
             ident = f' id="{element.ident}"' if element.ident else ""
             if element.ident:
                 current_section = element.ident
+                headings.append(Heading(2 if tag == "h2" else 3, element.text, element.ident))
             body.append(f"<{tag}{ident}>{html.escape(element.text)}</{tag}>")
         elif element.kind == "index":
             left, right = element.text.split("\n\n", 1)
@@ -629,59 +617,16 @@ def render(elements: list[Element]) -> str:
     if missing:
         raise RuntimeError(f"Could not place footnotes: {', '.join(missing)}")
     body.append(footnotes_html())
-    body.append("</main>")
-    return HTML_TEMPLATE.replace("{{ body }}", "\n".join(body))
+    return wrap_html_document(
+        "The Idea of Phenomenology",
+        "\n".join(body),
+        render_sublime_nav(headings),
+        css=SUBLIME_BOOK_CSS + "\n.index-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}\n.index-columns pre{white-space:pre-wrap;margin:0;font:0.88rem/1.35 Georgia,'Times New Roman',serif}\n.note{font-size:.92rem;color:#39342f;margin-top:-.35rem}\n@media (max-width:680px){.index-columns{grid-template-columns:1fr}}",
+        script=HTML_SCRIPT,
+    )
 
 
-HTML_TEMPLATE = """<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Idea of Phenomenology</title>
-<style>
-:root{color-scheme:light;--paper:#fffdfa;--ink:#171717;--muted:#686058;--line:#ded7cb;--nav:#f2eee6}
-*{box-sizing:border-box}
-body{margin:0;background:#f7f3ec;color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.58}
-main{max-width:780px;margin:0 auto;padding:48px 26px 84px;background:var(--paper);min-height:100vh}
-.page-nav{position:fixed;inset:0 auto 0 0;width:260px;padding:28px 18px;background:var(--nav);border-right:1px solid var(--line);overflow:auto}
-.page-nav p{margin:0 0 16px;font:700 .76rem/1.2 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.page-nav ol{list-style:none;margin:0;padding:0}
-.page-nav li{margin:0 0 4px}
-.page-nav a{display:block;padding:4px 0;color:#38322c;text-decoration:none;font-size:.86rem;line-height:1.25}
-.page-nav a:hover,.page-nav a:focus{text-decoration:underline;text-underline-offset:3px}
-h1,h2,h3{line-height:1.18}
-h1{font-size:2.3rem;text-align:center;margin:14px 0 26px;letter-spacing:.03em;text-transform:uppercase}
-h2{font-size:1.55rem;text-align:center;margin:54px 0 24px}
-h3{font-size:1.05rem;text-align:center;margin:34px 0 16px;letter-spacing:.03em}
-p{font-size:1.02rem;margin:0 0 1rem}
-sup{font-size:.72em;line-height:0}
-.title-page{text-align:center;min-height:78vh;display:flex;flex-direction:column;justify-content:center}
-.title-page p{font-size:1.04rem}
-.author,.credit,.publisher{letter-spacing:.06em;text-transform:uppercase}
-.publisher{margin-top:40px}
-.contents{max-width:560px;margin:0 auto 44px;padding:0;list-style:none}
-.contents li{display:flex;justify-content:space-between;gap:20px;border-bottom:1px dotted #b8afa3;padding:5px 0}
-.note{font-size:.92rem;color:#39342f;margin-top:-.35rem}
-.footnote-popover{display:inline;position:relative}
-.note-ref a{color:#7a3d00;text-decoration:none;border-bottom:1px solid rgba(122,61,0,.35);cursor:help}
-.floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(360px,calc(100vw - 32px));max-height:min(45vh,360px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text;text-align:left}
-.floating-note-number,.footnote-list-number{font-weight:700;color:#7a3d00}
-.footnote-popover.is-open .floating-note,.footnote-popover:focus-within .floating-note{display:block}
-.footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
-.footnotes li{margin:.45rem 0}
-.backref{text-decoration:none;margin-left:.35em}
-.index-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}
-.index-columns pre{white-space:pre-wrap;margin:0;font:0.88rem/1.35 Georgia,"Times New Roman",serif}
-@media (min-width:1220px){body{padding-left:260px}.footnotes{display:none}}
-@media (max-width:1219px){.page-nav{display:none}}
-@media (min-width:681px) and (max-width:1219px){.footnotes{display:none}}
-@media (max-width:680px){main{padding:32px 18px 64px}.index-columns{grid-template-columns:1fr}h1{font-size:1.9rem}.floating-note{display:none}.footnotes{display:block}}
-</style>
-</head>
-<body>
-{{ body }}
-<script>
+HTML_SCRIPT = """
 (() => {
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const closeLater = (wrap) => {
@@ -716,9 +661,6 @@ sup{font-size:.72em;line-height:0}
     note.addEventListener('mouseleave', () => closeLater(wrap));
   });
 })();
-</script>
-</body>
-</html>
 """
 
 
