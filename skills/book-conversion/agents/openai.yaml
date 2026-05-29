@@ -1,0 +1,6 @@
+interface:
+  display_name: "Book Conversion"
+  short_description: "Reproducible scholarly book-to-HTML workflow"
+  default_prompt: "Use $book-conversion to convert this book source into a validated single-file HTML edition."
+policy:
+  allow_implicit_invocation: true

@@ -183,6 +183,7 @@ REPLACEMENTS = {
     "l.acan": "Lacan",
     "l.acanian": "Lacanian",
     "dtfense": "defense",
+    "Jonissance": "Jouissance",
     "jonissance": "jouissance",
     "nlisrecognition": "misrecognition",
     "Desire cones from": "Desire comes from",
