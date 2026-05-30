@@ -26,11 +26,23 @@ Keep book-specific configuration local to each converter:
 Keep reusable mechanics in `book_conversion_toolkit`:
 
 - whitespace cleanup and line joining;
-- stable ID generation;
+- stable section ID generation;
+- annotation anchor insertion for external note apps;
 - PDF positioned line extraction;
 - EPUB spine/member reading;
 - HTML wrapping, nav, and footnote rendering;
 - validation.
+
+## Annotation Anchors
+
+Every generated book HTML should expose stable block-level anchors for external annotation systems. Use `wrap_html_document`, which calls `add_annotation_anchors` automatically. If a converter assembles the full document manually, run `add_annotation_anchors(markup)` just before writing the file.
+
+The convention is:
+
+- authored headings keep their existing section IDs and also receive `data-anchor-id`;
+- paragraph-like reading blocks without IDs receive deterministic IDs shaped like `ann-{section}-{tag}-{hash}`;
+- the hash is based on normalized block text and scoped to the nearest section, so unrelated edits elsewhere in the book do not shift anchors;
+- generated IDs are real `id` attributes as well as `data-anchor-id`, making them usable by hash links and annotation stores.
 
 ## Footnotes
 

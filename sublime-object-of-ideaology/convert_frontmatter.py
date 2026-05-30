@@ -6,8 +6,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, ".codex_deps")
+sys.path.insert(0, "..")
 
 import fitz  # type: ignore
+
+from book_conversion_toolkit import add_annotation_anchors
 
 
 PDF_PATH = Path("The Sublime Object of Ideology.pdf")
@@ -2857,7 +2860,7 @@ def main() -> None:
     page_nav = render_page_nav()
     parts = [line for part in parts for line in (page_nav if part == "__PAGE_NAV__" else [part])]
 
-    OUTPUT_PATH.write_text("\n".join(parts), encoding="utf-8")
+    OUTPUT_PATH.write_text(add_annotation_anchors("\n".join(parts)), encoding="utf-8")
     print(OUTPUT_PATH)
 
 

@@ -49,7 +49,8 @@ Use this skill when converting books like the four repository examples into read
 6. Insert footnotes by stable target strings or real PDF superscript metadata. Fail loudly when a target or note is missing.
 7. Extract or copy meaningful figures into `assets/figures/`; reject tiny glyph fragments and decorative scans.
 8. Generate the nav from final headings, not a separate hand-maintained outline.
-9. Regenerate and validate after each significant section.
+9. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
+10. Regenerate and validate after each significant section.
 
 ## Toolkit Commands
 
@@ -85,6 +86,7 @@ Always check:
 - Footnote reference, hover popover, and fallback list counts match when that output uses hover notes.
 - Known OCR/text-layer artifacts do not remain.
 - Excluded metadata/copyright/catalog pages did not leak into the reading text.
+- Annotation anchors are present on generated reading blocks. The toolkit adds `data-anchor-id` and, when needed, deterministic `ann-...` IDs scoped to the nearest section.
 
 Use browser/Playwright checks when CSS, navigation, hover notes, mobile behavior, or figures changed.
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass, field
@@ -38,6 +39,7 @@ class HtmlValidationReport:
     empty_images: list[str] = field(default_factory=list)
     artifact_hits: list[str] = field(default_factory=list)
     expectation_failures: list[str] = field(default_factory=list)
+    annotation_anchors: int = 0
 
     @property
     def ok(self) -> bool:
@@ -61,6 +63,7 @@ class HtmlValidationReport:
             f"validation: {status}",
             f"ids={self.ids} links={self.links} figures={self.figures}",
             f"note_refs={self.note_refs} floating_notes={self.floating_notes} fallback_notes={self.fallback_notes}",
+            f"annotation_anchors={self.annotation_anchors}",
         ]
         for label, values in (
             ("broken anchors", self.broken_anchors),
@@ -87,6 +90,7 @@ class _BookHtmlParser(HTMLParser):
         self.fallback_notes = 0
         self.figures = 0
         self.images: list[str] = []
+        self.annotation_anchors = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         data = {key: value or "" for key, value in attrs}
@@ -106,6 +110,8 @@ class _BookHtmlParser(HTMLParser):
             self.figures += 1
         if tag == "img" and data.get("src"):
             self.images.append(data["src"])
+        if data.get("data-anchor-id"):
+            self.annotation_anchors += 1
 
 
 def validate_html(
@@ -135,6 +141,7 @@ def validate_html(
         floating_notes=parser.floating_notes,
         fallback_notes=parser.fallback_notes,
         figures=parser.figures,
+        annotation_anchors=parser.annotation_anchors,
     )
 
     if check_images:
@@ -237,6 +244,95 @@ def render_linked_contents(
         + "\n".join(rows)
         + "\n</ol>\n</section>"
     )
+
+
+def _attr_value(attrs: str, name: str) -> str | None:
+    match = re.search(rf'\s{name}="([^"]*)"', attrs)
+    return html.unescape(match.group(1)) if match else None
+
+
+def _set_attr(attrs: str, name: str, value: str) -> str:
+    escaped = html.escape(value, quote=True)
+    if re.search(rf'\s{name}="[^"]*"', attrs):
+        return re.sub(rf'\s{name}="[^"]*"', f' {name}="{escaped}"', attrs, count=1)
+    return attrs.rstrip() + f' {name}="{escaped}"'
+
+
+def _annotation_text(markup: str) -> str:
+    text = re.sub(r"<script\b.*?</script>", " ", markup, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r"<style\b.*?</style>", " ", text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def _annotation_slug(value: str, fallback: str = "section") -> str:
+    value = html.unescape(value).lower().replace("'", "").replace("’", "")
+    value = re.sub(r"[^a-z0-9]+", "-", value).strip("-")
+    return value or fallback
+
+
+def add_annotation_anchors(markup: str) -> str:
+    """Add deterministic block IDs for external annotation anchoring.
+
+    Headings keep their authored IDs. Paragraph-like reading blocks receive
+    content-derived IDs scoped to the nearest section, so regenerated HTML keeps
+    anchors stable when unrelated sections change.
+    """
+
+    main_match = re.search(r"(<main\b[^>]*>)(?P<body>.*?)(</main>)", markup, flags=re.DOTALL | re.IGNORECASE)
+    if not main_match:
+        return markup
+
+    existing_ids = set(re.findall(r'\sid="([^"]+)"', markup))
+    used_ids = set(existing_ids)
+
+    def unique_ident(base: str) -> str:
+        candidate = base
+        index = 2
+        while candidate in used_ids:
+            candidate = f"{base}-{index}"
+            index += 1
+        used_ids.add(candidate)
+        return candidate
+
+    current_section = "front"
+    token = re.compile(
+        r"<(?P<tag>h[1-6]|p|pre|figure)\b(?P<attrs>[^>]*)>(?P<inner>.*?)</(?P=tag)>",
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal current_section
+        tag = match.group("tag").lower()
+        attrs = match.group("attrs")
+        inner = match.group("inner")
+
+        ident = _attr_value(attrs, "id")
+        text = _annotation_text(inner)
+        if tag.startswith("h"):
+            if not ident:
+                digest = hashlib.sha1(text.encode("utf-8")).hexdigest()[:10]
+                ident = unique_ident(f"ann-{tag}-{_annotation_slug(text, tag)}-{digest}")
+                attrs = _set_attr(attrs, "id", ident)
+            current_section = _annotation_slug(ident, "front")
+            anchor = ident
+        else:
+            if ident:
+                anchor = ident
+            else:
+                digest_source = text or f"{tag}:{match.start()}"
+                digest = hashlib.sha1(digest_source.encode("utf-8")).hexdigest()[:12]
+                base = f"ann-{current_section}-{tag}-{digest}"
+                anchor = unique_ident(base)
+                attrs = _set_attr(attrs, "id", anchor)
+
+        if not _attr_value(attrs, "data-anchor-id"):
+            attrs = _set_attr(attrs, "data-anchor-id", anchor)
+        return f"<{tag}{attrs}>{inner}</{tag}>"
+
+    body = token.sub(replace, main_match.group("body"))
+    start, end = main_match.span("body")
+    return markup[:start] + body + markup[end:]
 
 
 def render_sublime_nav(headings: Iterable[Heading]) -> str:
@@ -545,7 +641,7 @@ def wrap_html_document(
     lang: str = "en",
 ) -> str:
     nav = nav_html or ""
-    return (
+    markup = (
         "<!doctype html>\n"
         f'<html lang="{html.escape(lang, quote=True)}">\n'
         "<head>\n"
@@ -563,3 +659,4 @@ def wrap_html_document(
         "</body>\n"
         "</html>\n"
     )
+    return add_annotation_anchors(markup)
