@@ -85,6 +85,19 @@ CASES = [
             r"dano ferentes",
         ],
     },
+    {
+        "path": ROOT / "philosophy-of-right/philosophy-of-right.html",
+        "figures": 0,
+        "scan": [
+            r"This page intentionally",
+            r"Great Clarendon",
+            r"All rights reserved",
+            r"ﬁ",
+            r"ﬂ",
+            r"Contents vi",
+            r"scroll-behavior",
+        ],
+    },
 ]
 
 
