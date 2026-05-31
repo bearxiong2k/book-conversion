@@ -39,6 +39,7 @@ class HtmlValidationReport:
     empty_images: list[str] = field(default_factory=list)
     artifact_hits: list[str] = field(default_factory=list)
     expectation_failures: list[str] = field(default_factory=list)
+    navigator_failures: list[str] = field(default_factory=list)
     annotation_anchors: int = 0
 
     @property
@@ -50,6 +51,7 @@ class HtmlValidationReport:
             or self.empty_images
             or self.artifact_hits
             or self.expectation_failures
+            or self.navigator_failures
         )
 
     def to_json(self) -> str:
@@ -72,6 +74,7 @@ class HtmlValidationReport:
             ("empty images", self.empty_images),
             ("artifact hits", self.artifact_hits),
             ("expectation failures", self.expectation_failures),
+            ("navigator failures", self.navigator_failures),
         ):
             if values:
                 lines.append(f"{label}: " + ", ".join(values[:20]))
@@ -120,6 +123,7 @@ def validate_html(
     expected_note_refs: int | None = None,
     expected_figures: int | None = None,
     check_images: bool = True,
+    require_sublime_nav: bool = False,
 ) -> HtmlValidationReport:
     path = Path(path)
     markup = path.read_text(encoding="utf-8")
@@ -170,6 +174,22 @@ def validate_html(
         report.expectation_failures.append(
             f"note ref/fallback mismatch: {parser.note_refs} refs, {parser.fallback_notes} fallback notes"
         )
+    if require_sublime_nav:
+        required_fragments = {
+            "book shell wrapper": '<div class="book-shell">',
+            "fixed page navigator": '<nav class="page-nav" aria-label="Section navigation">',
+            "navigator list": '<ol class="page-nav-list">',
+            "shared active-link styling": ".page-nav a.is-active",
+            "navigator link collector": "document.querySelectorAll('.page-nav a[href^=\"#\"]')",
+            "navigator parent details expansion": "parent.tagName === 'DETAILS'",
+            "navigator hashchange handling": "hashchange",
+            "navigator animation-frame throttling": "requestAnimationFrame",
+        }
+        for label, fragment in required_fragments.items():
+            if fragment not in markup:
+                report.navigator_failures.append(f"missing {label}")
+        if re.search(r"scroll-behavior\s*:", markup, flags=re.IGNORECASE):
+            report.navigator_failures.append("smooth scrolling is not allowed for Sublime navigator outputs")
     return report
 
 

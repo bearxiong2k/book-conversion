@@ -10,7 +10,7 @@ sys.path.insert(0, "..")
 
 import fitz  # type: ignore
 
-from book_conversion_toolkit import add_annotation_anchors
+from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
 
 
 PDF_PATH = Path("The Sublime Object of Ideology.pdf")
@@ -55,6 +55,44 @@ FIGURES = {
         "caption": "Schema from Seminar Encore",
     },
 }
+
+
+FOOTNOTE_SCRIPT = """
+(() => {
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const closeLater = (wrap) => {
+    clearTimeout(wrap._noteTimer);
+    wrap._noteTimer = setTimeout(() => wrap.classList.remove('is-open'), 120);
+  };
+  document.querySelectorAll('.footnote-popover').forEach((wrap) => {
+    const ref = wrap.querySelector('.note-ref');
+    const note = wrap.querySelector('.floating-note');
+    const open = (event) => {
+      clearTimeout(wrap._noteTimer);
+      wrap.classList.add('is-open');
+      note.style.visibility = 'hidden';
+      note.style.display = 'block';
+      const width = note.offsetWidth || 340;
+      const height = note.offsetHeight || 120;
+      const source = event.type.startsWith('focus') ? ref.getBoundingClientRect() : null;
+      const x = source ? source.left : event.clientX;
+      const y = source ? source.bottom : event.clientY;
+      const left = clamp(x - 16, 12, window.innerWidth - width - 12);
+      const top = clamp(y + 14, 12, window.innerHeight - height - 12);
+      note.style.setProperty('--note-left', `${left}px`);
+      note.style.setProperty('--note-top', `${top}px`);
+      note.style.visibility = '';
+      note.style.display = '';
+    };
+    ref.addEventListener('mouseenter', open);
+    ref.addEventListener('focusin', open);
+    ref.addEventListener('mouseleave', () => closeLater(wrap));
+    ref.addEventListener('focusout', () => closeLater(wrap));
+    note.addEventListener('mouseenter', () => { clearTimeout(wrap._noteTimer); wrap.classList.add('is-open'); });
+    note.addEventListener('mouseleave', () => closeLater(wrap));
+  });
+})();
+""".strip()
 
 
 FOOTNOTES = {
@@ -2465,6 +2503,7 @@ def main() -> None:
     chapter_six_paragraphs = extract_chapter_six(doc)
     used_heading_ids = {
         "contents",
+        "title",
         "preface",
         "introduction",
         "part-i",
@@ -2496,9 +2535,9 @@ def main() -> None:
     def append_generated_heading(level: int, prefix: str, title: str) -> None:
         parts.append(f'<h{level} id="{heading_id(prefix, title)}">{title}</h{level}>')
 
-    def render_page_nav() -> list[str]:
+    def collect_nav_headings() -> list[Heading]:
         heading_pattern = re.compile(r'<h([234]) id="([^"]+)">(.+)</h\1>')
-        headings = []
+        headings: list[Heading] = []
         for part in parts:
             match = heading_pattern.fullmatch(part)
             if not match:
@@ -2506,109 +2545,12 @@ def main() -> None:
             level, id_, title = int(match.group(1)), match.group(2), heading_text(match.group(3))
             if id_ == "footnotes":
                 continue
-            headings.append({"level": level, "id": id_, "title": title})
-
-        def link(item: dict[str, object], class_name: str | None = None) -> str:
-            class_attr = f' class="{class_name}"' if class_name else ""
-            return f'<a{class_attr} href="#{item["id"]}">{html.escape(str(item["title"]), quote=False)}</a>'
-
-        lines = [
-            '<nav class="page-nav" aria-label="Section navigation">',
-            '<p class="page-nav-title">Navigate</p>',
-            '<ol class="page-nav-list">',
-        ]
-        index = 0
-        while index < len(headings):
-            item = headings[index]
-            if item["level"] == 2 and str(item["id"]).startswith("part-"):
-                lines.append("<li><details open>")
-                lines.append(f'<summary>{html.escape(str(item["title"]), quote=False)}</summary>')
-                lines.append("<ol>")
-                index += 1
-                while index < len(headings):
-                    chapter = headings[index]
-                    if chapter["level"] == 2 and str(chapter["id"]).startswith("part-"):
-                        break
-                    if chapter["level"] == 2 and str(chapter["id"]).startswith("chapter-"):
-                        lines.append("<li><details open>")
-                        lines.append(f'<summary>{html.escape(str(chapter["title"]), quote=False)}</summary>')
-                        lines.append("<ol>")
-                        lines.append(f'<li>{link(chapter, "nav-overview")}</li>')
-                        index += 1
-                        while index < len(headings) and headings[index]["level"] != 2:
-                            child = headings[index]
-                            lines.append(f'<li class="nav-level-{child["level"]}">{link(child)}</li>')
-                            index += 1
-                        lines.append("</ol></details></li>")
-                    else:
-                        lines.append(f"<li>{link(chapter)}</li>")
-                        index += 1
-                lines.append("</ol></details></li>")
-                continue
-            lines.append(f"<li>{link(item)}</li>")
-            index += 1
-        lines += ["</ol>", "</nav>"]
-        return lines
+            headings.append(Heading(level, title, id_))
+        return headings
 
     parts = [
-        "<!doctype html>",
-        '<html lang="en">',
-        "<head>",
-        '<meta charset="utf-8">',
-        '<meta name="viewport" content="width=device-width, initial-scale=1">',
-        "<title>The Sublime Object of Ideology - Front Matter</title>",
-        "<style>",
-        "body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}",
-        "main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}",
-        ".page-nav{position:fixed;top:0;bottom:0;left:0;width:260px;box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}",
-        ".page-nav-title{margin:0 0 18px;font-size:.78rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5c5449}",
-        ".page-nav ol{list-style:none;margin:0;padding:0}",
-        ".page-nav li{margin:0 0 3px}",
-        ".page-nav details{margin:0 0 8px}",
-        ".page-nav summary{padding:5px 0;color:#2f2a24;font-size:.84rem;line-height:1.22;font-variant:small-caps;letter-spacing:.03em;cursor:pointer}",
-        ".page-nav details details summary{font-variant:normal;letter-spacing:0;font-size:.86rem;color:#3f3931}",
-        ".page-nav details ol{margin:2px 0 0 10px;padding-left:10px;border-left:1px solid #d8c7a8}",
-        ".page-nav a{display:block;padding:4px 0;color:#3f3931;font-size:.84rem;line-height:1.22;text-decoration:none}",
-        ".page-nav .nav-overview{color:#6c6256;font-style:italic}",
-        ".page-nav .nav-level-4 a{padding-left:10px;color:#5c5449;font-size:.8rem}",
-        ".page-nav a:hover,.page-nav a:focus{color:#7a3d00;text-decoration:underline;text-underline-offset:3px}",
-        "h1,h2{font-weight:600;line-height:1.15;text-align:center}",
-        "h1{font-size:2.4rem;margin:80px 0 20px;letter-spacing:.04em;text-transform:uppercase}",
-        "h2{font-size:1.65rem;margin:56px 0 28px}",
-        "h3{font-size:1.12rem;line-height:1.25;margin:34px 0 14px;text-align:left;font-style:italic}",
-        "h4{font-size:1rem;line-height:1.25;margin:24px 0 10px;text-align:left;font-variant:small-caps;letter-spacing:.03em}",
-        ".author{text-align:center;font-size:1.25rem;letter-spacing:.08em;margin-top:32px}",
-        ".publisher{text-align:center;margin-top:72px;letter-spacing:.05em}",
-        ".contents{margin:24px auto 48px;max-width:560px}",
-        ".contents li{display:flex;gap:16px;justify-content:space-between;border-bottom:1px dotted #bbb;padding:5px 0}",
-        ".contents span:first-child{padding-right:16px}",
-        ".part{font-variant:small-caps;letter-spacing:.04em;margin-top:18px}",
-        "p{font-size:1.03rem;margin:0 0 1rem}",
-        ".bullet{position:relative;padding-left:1.35rem}",
-        ".bullet:before{content:'•';position:absolute;left:0;color:#7a3d00}",
-        "blockquote{margin:1rem 2rem;font-size:1rem}",
-        ".book-figure{margin:1.25rem auto 1.75rem;text-align:center}",
-        ".book-figure img{display:block;max-width:100%;height:auto;margin:0 auto}",
-        ".book-figure figcaption{font-size:.88rem;color:#5c5449;margin-top:.45rem;font-style:italic}",
-        "sup{font-size:.72em;line-height:0}",
-        ".footnote-popover{display:inline;position:relative}",
-        ".note-ref a{color:#7a3d00;text-decoration:none;border-bottom:1px solid rgba(122,61,0,.35);cursor:help}",
-        ".floating-note{position:fixed;left:var(--note-left,0);top:var(--note-top,0);z-index:20;display:none;width:min(340px,calc(100vw - 32px));max-height:min(45vh,360px);overflow:auto;padding:10px 12px 11px;border:1px solid #d8c7a8;border-radius:3px;background:#fffdf8;box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:.82rem;line-height:1.4;color:#4f493f;user-select:text}",
-        ".floating-note-number{font-weight:700;color:#7a3d00}",
-        ".footnote-popover.is-open .floating-note,.footnote-popover:focus-within .floating-note{display:block}",
-        ".footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}",
-        ".footnotes li{margin:.45rem 0}",
-        ".backref{text-decoration:none;margin-left:.35em}",
-        "@media (min-width:1220px){body{padding-left:260px}.footnotes{display:none}}",
-        "@media (min-width:980px) and (max-width:1219px){.page-nav{display:none}.footnotes{display:none}}",
-        "@media (max-width:979px){.page-nav{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}",
-        "</style>",
-        "</head>",
-        "<body>",
-        "__PAGE_NAV__",
-        "<main>",
         "<section>",
-        "<h1>The Sublime Object<br>of Ideology</h1>",
+        '<h1 id="title">The Sublime Object<br>of Ideology</h1>',
         '<p class="author">SLAVOJ ŽIŽEK</p>',
         '<p class="publisher">VERSO<br>London - New York</p>',
         "</section>",
@@ -2773,6 +2715,7 @@ def main() -> None:
             parts.append(f"<p>{escaped}</p>")
 
     parts += [
+        "</section>",
         '<section class="footnotes" aria-labelledby="footnotes">',
         '<h2 id="footnotes">Footnotes</h2>',
         "<ol>",
@@ -2817,50 +2760,17 @@ def main() -> None:
     parts += [
         "</ol>",
         "</section>",
-        "</section>",
-        "</main>",
-        "<script>",
-        "(() => {",
-        "  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);",
-        "  const closeLater = (wrap) => {",
-        "    clearTimeout(wrap._noteTimer);",
-        "    wrap._noteTimer = setTimeout(() => wrap.classList.remove('is-open'), 120);",
-        "  };",
-        "  document.querySelectorAll('.footnote-popover').forEach((wrap) => {",
-        "    const ref = wrap.querySelector('.note-ref');",
-        "    const note = wrap.querySelector('.floating-note');",
-        "    const open = (event) => {",
-        "      clearTimeout(wrap._noteTimer);",
-        "      wrap.classList.add('is-open');",
-        "      note.style.visibility = 'hidden';",
-        "      note.style.display = 'block';",
-        "      const width = note.offsetWidth || 340;",
-        "      const height = note.offsetHeight || 120;",
-        "      const source = event.type.startsWith('focus') ? ref.getBoundingClientRect() : null;",
-        "      const x = source ? source.left : event.clientX;",
-        "      const y = source ? source.bottom : event.clientY;",
-        "      const left = clamp(x - 16, 12, window.innerWidth - width - 12);",
-        "      const top = clamp(y + 14, 12, window.innerHeight - height - 12);",
-        "      note.style.setProperty('--note-left', `${left}px`);",
-        "      note.style.setProperty('--note-top', `${top}px`);",
-        "      note.style.visibility = '';",
-        "      note.style.display = '';",
-        "    };",
-        "    ref.addEventListener('mouseenter', open);",
-        "    ref.addEventListener('focusin', open);",
-        "    ref.addEventListener('mouseleave', () => closeLater(wrap));",
-        "    ref.addEventListener('focusout', () => closeLater(wrap));",
-        "    note.addEventListener('mouseenter', () => { clearTimeout(wrap._noteTimer); wrap.classList.add('is-open'); });",
-        "    note.addEventListener('mouseleave', () => closeLater(wrap));",
-        "  });",
-        "})();",
-        "</script>",
-        "</body></html>",
     ]
-    page_nav = render_page_nav()
-    parts = [line for part in parts for line in (page_nav if part == "__PAGE_NAV__" else [part])]
 
-    OUTPUT_PATH.write_text(add_annotation_anchors("\n".join(parts)), encoding="utf-8")
+    nav_headings = [Heading(2, "Title", "title"), *collect_nav_headings()]
+    markup = wrap_html_document(
+        "The Sublime Object of Ideology - Front Matter",
+        "\n".join(parts),
+        render_sublime_nav(nav_headings),
+        css=SUBLIME_BOOK_CSS,
+        script=FOOTNOTE_SCRIPT,
+    )
+    OUTPUT_PATH.write_text(markup, encoding="utf-8")
     print(OUTPUT_PATH)
 
 

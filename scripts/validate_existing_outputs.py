@@ -20,6 +20,7 @@ CASES = [
             r"jonissance",
             r"DSM-Ill",
         ],
+        "require_sublime_nav": True,
     },
     {
         "path": ROOT / "enjoy-your-symptom/enjoy-your-symptom.html",
@@ -31,6 +32,7 @@ CASES = [
             r"Idealogy",
             r"Kierkegaard's materialist r<",
         ],
+        "require_sublime_nav": True,
     },
     {
         "path": ROOT / "the-idea-of-phenomenology/the-idea-of-phenomenology.html",
@@ -42,6 +44,7 @@ CASES = [
             r"Jiirgen",
             r"Phanomen",
         ],
+        "require_sublime_nav": True,
     },
     {
         "path": ROOT / "sublime-object-of-ideaology/the-sublime-object-frontmatter.html",
@@ -54,6 +57,7 @@ CASES = [
             r"copyright",
             r"ISBN",
         ],
+        "require_sublime_nav": True,
     },
     {
         "path": ROOT / "for-they-know-not/for-they-know-not.html",
@@ -70,6 +74,7 @@ CASES = [
             r"suiprising",
             r"scroll-behavior",
         ],
+        "require_sublime_nav": True,
     },
     {
         "path": ROOT / "how-to-read/how-to-read-lacan.html",
@@ -84,6 +89,7 @@ CASES = [
             r"llamella",
             r"dano ferentes",
         ],
+        "require_sublime_nav": True,
     },
     {
         "path": ROOT / "philosophy-of-right/philosophy-of-right.html",
@@ -97,6 +103,7 @@ CASES = [
             r"Contents vi",
             r"scroll-behavior",
         ],
+        "require_sublime_nav": True,
     },
 ]
 
@@ -114,6 +121,7 @@ def main() -> int:
             artifact_patterns=case.get("scan", []),
             expected_note_refs=case.get("notes"),
             expected_figures=case.get("figures"),
+            require_sublime_nav=case.get("require_sublime_nav", False),
         )
         print(f"\n{path.relative_to(ROOT)}")
         print("\n".join(report.summary_lines()))

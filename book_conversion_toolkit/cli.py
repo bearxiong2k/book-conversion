@@ -28,6 +28,7 @@ def cmd_validate_html(args: argparse.Namespace) -> int:
         expected_note_refs=args.expect_note_refs,
         expected_figures=args.expect_figures,
         check_images=not args.no_image_check,
+        require_sublime_nav=args.require_sublime_nav,
     )
     if args.json:
         print(report.to_json())
@@ -59,6 +60,11 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--expect-note-refs", type=int)
     validate.add_argument("--expect-figures", type=int)
     validate.add_argument("--no-image-check", action="store_true")
+    validate.add_argument(
+        "--require-sublime-nav",
+        action="store_true",
+        help="Require the shared fixed navigator, active-link behavior, and no smooth scrolling.",
+    )
     validate.add_argument("--json", action="store_true")
     validate.set_defaults(func=cmd_validate_html)
 
