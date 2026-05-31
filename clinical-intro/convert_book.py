@@ -11,13 +11,13 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-sys.path.insert(0, ".codex_deps")
+sys.path.insert(0, "../.codex_deps")
 sys.path.insert(0, "..")
 
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # type: ignore
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_linked_contents, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
 
 
 PDF_PATH = Path("A Clinical Introduction to Lacanian Psychoanalysis_ Theory.pdf")
@@ -768,8 +768,8 @@ figcaption{margin-top:8px;color:#5c5449;font-family:-apple-system,BlinkMacSystem
     return wrap_html_document(
         "A Clinical Introduction to Lacanian Psychoanalysis",
         "\n".join(body),
-        render_sublime_nav(headings),
-        css=SUBLIME_BOOK_CSS + "\n" + extra_css.strip(),
+        render_standard_nav(headings),
+        css=STANDARD_BOOK_CSS + "\n" + extra_css.strip(),
         script="",
     )
 

@@ -9,18 +9,16 @@ from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 
 
-for dep_dir in (Path(".codex_deps"), Path("../sublime-object-of-ideaology/.codex_deps")):
-    if dep_dir.exists():
-        sys.path.insert(0, str(dep_dir))
+sys.path.insert(0, "../.codex_deps")
 sys.path.insert(0, "..")
 
-from book_conversion_toolkit import SUBLIME_BOOK_CSS, render_linked_contents, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
 
 try:
     import fitz  # type: ignore
 except ModuleNotFoundError as exc:  # pragma: no cover
     raise SystemExit(
-        "PyMuPDF is required. Install it with `python3 -m pip install --target .codex_deps pymupdf`."
+        "PyMuPDF is required. Install it with `python3 -m pip install --target ../.codex_deps pymupdf`."
     ) from exc
 
 
@@ -671,8 +669,8 @@ def build_html() -> str:
     return wrap_html_document(
         "Enjoy Your Symptom!",
         body_html,
-        render_sublime_nav(headings),
-        css=SUBLIME_BOOK_CSS,
+        render_standard_nav(headings),
+        css=STANDARD_BOOK_CSS,
         script=SCRIPT,
     )
 

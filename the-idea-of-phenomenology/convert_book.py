@@ -8,12 +8,12 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-sys.path.insert(0, "../sublime-object-of-ideaology/.codex_deps")
+sys.path.insert(0, "../.codex_deps")
 sys.path.insert(0, "..")
 
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_linked_contents, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
 
 
 PDF_PATH = next(Path(".").glob("*.pdf"))
@@ -609,8 +609,8 @@ def render(elements: list[Element]) -> str:
     return wrap_html_document(
         "The Idea of Phenomenology",
         "\n".join(body),
-        render_sublime_nav(headings),
-        css=SUBLIME_BOOK_CSS + "\n.index-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}\n.index-columns pre{white-space:pre-wrap;margin:0;font:0.88rem/1.35 Georgia,'Times New Roman',serif}\n.note{font-size:.92rem;color:#39342f;margin-top:-.35rem}\n@media (max-width:680px){.index-columns{grid-template-columns:1fr}}",
+        render_standard_nav(headings),
+        css=STANDARD_BOOK_CSS + "\n.index-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}\n.index-columns pre{white-space:pre-wrap;margin:0;font:0.88rem/1.35 Georgia,'Times New Roman',serif}\n.note{font-size:.92rem;color:#39342f;margin-top:-.35rem}\n@media (max-width:680px){.index-columns{grid-template-columns:1fr}}",
         script=HTML_SCRIPT,
     )
 

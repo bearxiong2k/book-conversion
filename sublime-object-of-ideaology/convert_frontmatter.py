@@ -5,12 +5,12 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, ".codex_deps")
+sys.path.insert(0, "../.codex_deps")
 sys.path.insert(0, "..")
 
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, SUBLIME_BOOK_CSS, render_sublime_nav, wrap_html_document
+from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_standard_nav, wrap_html_document
 
 
 PDF_PATH = Path("The Sublime Object of Ideology.pdf")
@@ -2766,8 +2766,8 @@ def main() -> None:
     markup = wrap_html_document(
         "The Sublime Object of Ideology - Front Matter",
         "\n".join(parts),
-        render_sublime_nav(nav_headings),
-        css=SUBLIME_BOOK_CSS,
+        render_standard_nav(nav_headings),
+        css=STANDARD_BOOK_CSS,
         script=FOOTNOTE_SCRIPT,
     )
     OUTPUT_PATH.write_text(markup, encoding="utf-8")

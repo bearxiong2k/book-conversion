@@ -16,12 +16,12 @@ from bs4 import BeautifulSoup, NavigableString, Tag  # type: ignore
 from book_conversion_toolkit import (
     Footnote,
     Heading,
-    SUBLIME_BOOK_CSS,
+    STANDARD_BOOK_CSS,
     clean_spaces,
     render_footnote_list,
     render_footnote_ref,
     render_linked_contents,
-    render_sublime_nav,
+    render_standard_nav,
     slugify,
     wrap_html_document,
 )
@@ -308,7 +308,7 @@ def build_html() -> str:
     body.append(render_footnote_list(used_notes))
 
     css = (
-        SUBLIME_BOOK_CSS
+        STANDARD_BOOK_CSS
         + "\n.title-page{min-height:76vh;display:flex;flex-direction:column;justify-content:center;text-align:center}"
         + "\n.title-page .series{font-variant:small-caps;letter-spacing:.12em;color:#5c5449}"
         + "\n.signature{text-align:right;font-style:italic}"
@@ -316,7 +316,7 @@ def build_html() -> str:
         + "\n.index-entry{font-size:.94rem;line-height:1.35;margin:0 0 .28rem}"
         + "\n.epigraph{font-size:.96rem;color:#39342f}"
     )
-    return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(headings), css=css)
+    return wrap_html_document(TITLE, "\n".join(body), render_standard_nav(headings), css=css)
 
 
 def main() -> None:

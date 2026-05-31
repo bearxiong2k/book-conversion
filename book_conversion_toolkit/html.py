@@ -123,7 +123,7 @@ def validate_html(
     expected_note_refs: int | None = None,
     expected_figures: int | None = None,
     check_images: bool = True,
-    require_sublime_nav: bool = False,
+    require_standard_nav: bool = False,
 ) -> HtmlValidationReport:
     path = Path(path)
     markup = path.read_text(encoding="utf-8")
@@ -174,7 +174,7 @@ def validate_html(
         report.expectation_failures.append(
             f"note ref/fallback mismatch: {parser.note_refs} refs, {parser.fallback_notes} fallback notes"
         )
-    if require_sublime_nav:
+    if require_standard_nav:
         required_fragments = {
             "book shell wrapper": '<div class="book-shell">',
             "fixed page navigator": '<nav class="page-nav" aria-label="Section navigation">',
@@ -189,7 +189,7 @@ def validate_html(
             if fragment not in markup:
                 report.navigator_failures.append(f"missing {label}")
         if re.search(r"scroll-behavior\s*:", markup, flags=re.IGNORECASE):
-            report.navigator_failures.append("smooth scrolling is not allowed for Sublime navigator outputs")
+            report.navigator_failures.append("smooth scrolling is not allowed for standard navigator outputs")
     return report
 
 
@@ -355,8 +355,8 @@ def add_annotation_anchors(markup: str) -> str:
     return markup[:start] + body + markup[end:]
 
 
-def render_sublime_nav(headings: Iterable[Heading]) -> str:
-    """Render the fixed, expandable navigator first used by the Sublime conversion.
+def render_standard_nav(headings: Iterable[Heading]) -> str:
+    """Render the standard fixed, expandable book navigator.
 
     Structure:
     - top-level h2 items without children render as direct links;
@@ -429,7 +429,7 @@ def render_sublime_nav(headings: Iterable[Heading]) -> str:
     return "\n".join(lines)
 
 
-SUBLIME_BOOK_CSS = """
+STANDARD_BOOK_CSS = """
 body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}
 .book-shell{display:block}
 main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}

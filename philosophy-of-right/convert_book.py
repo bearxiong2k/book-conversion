@@ -13,10 +13,10 @@ import fitz  # type: ignore
 
 from book_conversion_toolkit import (
     Heading,
-    SUBLIME_BOOK_CSS,
+    STANDARD_BOOK_CSS,
     clean_spaces,
     render_linked_contents,
-    render_sublime_nav,
+    render_standard_nav,
     slugify,
     wrap_html_document,
 )
@@ -478,7 +478,7 @@ def build_html() -> str:
 
     body = merge_body_fragments(body)
     css = (
-        SUBLIME_BOOK_CSS
+        STANDARD_BOOK_CSS
         + "\n.title-page{min-height:72vh;display:flex;flex-direction:column;justify-content:center;text-align:center}"
         + "\n.title-page .series{font-variant:small-caps;letter-spacing:.12em;color:#5c5449}"
         + "\n.addition{margin-left:1.25rem;font-size:.96rem;color:#39342f}"
@@ -488,7 +488,7 @@ def build_html() -> str:
         + "\n.index-columns pre{white-space:pre-wrap;margin:0;font:.84rem/1.32 Georgia,'Times New Roman',serif}"
         + "\n@media (max-width:680px){.index-columns{grid-template-columns:1fr}}"
     )
-    return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(headings), css=css)
+    return wrap_html_document(TITLE, "\n".join(body), render_standard_nav(headings), css=css)
 
 
 def main() -> None:

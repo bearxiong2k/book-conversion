@@ -1,26 +1,21 @@
 ---
 name: book-conversion
-description: Convert scholarly/theory books from PDF, EPUB, or OCR into reproducible single-file HTML editions with selectable text, navigation, figures, footnotes, validation, and reusable cleanup logic. Use for future book conversion projects based on the examples in this repository.
+description: Convert scholarly/theory books from PDF, EPUB, or OCR into reproducible single-file HTML editions with selectable text, navigation, figures, footnotes, validation, and reusable cleanup logic.
 ---
 
 # Book Conversion
 
-Use this skill when converting books like the four repository examples into readable, selectable HTML. The quality bar is script-driven reproducibility: every correction, omission, figure, footnote, and heading decision belongs in code or documented configuration, not in manual edits to generated HTML.
+Use this skill when converting books into readable, selectable HTML. The quality bar is script-driven reproducibility: every correction, omission, figure, footnote, and heading decision belongs in code or documented configuration, not in manual edits to generated HTML.
 
 ## Start
 
-1. Read the relevant prior case studies:
-   - `clinical-intro/conversion-case-study.md` for EPUB-authoritative conversion.
-   - `enjoy-your-symptom/conversion-case-study.md` for PDF text-layer plus EPUB figures/index.
-   - `the-idea-of-phenomenology/conversion-case-study.md` for OCR-first extraction and index TSV handling.
-   - `sublime-object-of-ideaology/conversion-case-study.md` for noisy PDF text, explicit footnotes, and figure audit.
-2. Bootstrap dependencies if the root `.codex_deps/` does not exist:
+1. Bootstrap dependencies if the root `.codex_deps/` does not exist:
 
    ```bash
    bash scripts/bootstrap_deps.sh
    ```
 
-3. In a new book sub-project, insert both paths before imports:
+2. In a new book sub-project, insert both paths before imports:
 
    ```python
    import sys
@@ -28,7 +23,7 @@ Use this skill when converting books like the four repository examples into read
    sys.path.insert(0, "..")
    ```
 
-4. Use `book_conversion_toolkit` for shared text cleanup, slug generation, PDF line inspection, EPUB spine/member reads, footnote rendering, navigation rendering, and HTML validation.
+3. Use `book_conversion_toolkit` for shared text cleanup, slug generation, PDF line inspection, EPUB spine/member reads, footnote rendering, navigation rendering, and HTML validation.
 
 ## Conversion Workflow
 
@@ -48,7 +43,7 @@ Use this skill when converting books like the four repository examples into read
 5. Parse structural elements into an intermediate list such as `title`, `part`, `heading`, `paragraph`, `quote`, `figure`, and `index`.
 6. Insert footnotes by stable target strings or real PDF superscript metadata. Fail loudly when a target or note is missing.
 7. Extract or copy meaningful figures into `assets/figures/`; reject tiny glyph fragments and decorative scans.
-8. Generate the nav from final headings, not a separate hand-maintained outline. Use the shared Sublime-style shell by default: `SUBLIME_BOOK_CSS`, `render_sublime_nav`, and `wrap_html_document`, so fixed navigation, active-link behavior, details expansion, and direct anchor jumps stay consistent with `for-they-know-not`.
+8. Generate the nav from final headings, not a separate hand-maintained outline. Use the shared standard shell by default: `STANDARD_BOOK_CSS`, `render_standard_nav`, and `wrap_html_document`, so fixed navigation, active-link behavior, details expansion, and direct anchor jumps stay consistent across outputs.
 9. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
 10. Regenerate and validate after each significant section.
 
@@ -60,11 +55,11 @@ Validate an output:
 python3 -m book_conversion_toolkit validate-html output.html \
   --expect-note-refs 11 \
   --expect-figures 5 \
-  --require-sublime-nav \
+  --require-standard-nav \
   --scan "known_bad_ocr"
 ```
 
-Validate all current example outputs:
+Validate all current generated outputs:
 
 ```bash
 python3 scripts/validate_existing_outputs.py
@@ -88,10 +83,10 @@ Always check:
 - Known OCR/text-layer artifacts do not remain.
 - Excluded metadata/copyright/catalog pages did not leak into the reading text.
 - Annotation anchors are present on generated reading blocks. The toolkit adds `data-anchor-id` and, when needed, deterministic `ann-...` IDs scoped to the nearest section.
-- The shared Sublime-style navigator is present and behavior-ready. Run validation with `--require-sublime-nav` for all standard generated book outputs; this checks the fixed nav shell, active-link CSS, hashchange handling, details auto-expansion, animation-frame throttling, and absence of smooth scrolling.
+- The shared standard navigator is present and behavior-ready. Run validation with `--require-standard-nav` for all standard generated book outputs; this checks the fixed nav shell, active-link CSS, hashchange handling, details auto-expansion, animation-frame throttling, and absence of smooth scrolling.
 
 Use browser/Playwright checks when CSS, navigation, hover notes, mobile behavior, or figures changed.
 
 ## Detailed Lessons
 
-Read `references/case-lessons.md` when choosing between PDF, EPUB, OCR, or hybrid extraction, or when debugging paragraph merging, note leakage, image extraction, or foreign-language term cleanup.
+Read `references/conversion-guidance.md` when choosing between PDF, EPUB, OCR, or hybrid extraction, or when debugging paragraph merging, note leakage, image extraction, or foreign-language term cleanup.

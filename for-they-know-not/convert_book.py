@@ -19,12 +19,12 @@ from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # type: ignore
 from book_conversion_toolkit import (
     Footnote,
     Heading,
-    SUBLIME_BOOK_CSS,
+    STANDARD_BOOK_CSS,
     clean_spaces,
     render_footnote_list,
     render_footnote_ref,
     render_linked_contents,
-    render_sublime_nav,
+    render_standard_nav,
     slugify,
     wrap_html_document,
 )
@@ -311,7 +311,7 @@ def build_html() -> str:
     nav_headings = [Heading(2, "Title", "title"), Heading(2, "Contents", "contents"), *headings]
     body.insert(1, render_linked_contents(nav_headings))
     body.append(render_footnote_list(used_notes))
-    return wrap_html_document(TITLE, "\n".join(body), render_sublime_nav(nav_headings), css=SUBLIME_BOOK_CSS)
+    return wrap_html_document(TITLE, "\n".join(body), render_standard_nav(nav_headings), css=STANDARD_BOOK_CSS)
 
 
 def main() -> None:
