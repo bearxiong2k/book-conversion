@@ -622,7 +622,7 @@ def build_elements(doc: fitz.Document, figures: list[Figure]) -> list[Element]:
 
 
 def epub_spine(zip_file: zipfile.ZipFile) -> list[str]:
-    soup = BeautifulSoup(zip_file.read("content.opf"), "xml")
+    soup = BeautifulSoup(zip_file.read("content.opf"), "html.parser")
     manifest = {item["id"]: item["href"] for item in soup.find_all("item") if item.get("id") and item.get("href")}
     return [manifest[item["idref"]] for item in soup.find_all("itemref") if item.get("idref") in manifest]
 
@@ -667,7 +667,7 @@ def build_elements_from_epub() -> list[Element]:
                 if element.ident:
                     used_ids.add(element.ident)
 
-            soup = BeautifulSoup(zip_file.read(href), "lxml")
+            soup = BeautifulSoup(zip_file.read(href), "html.parser")
             paragraphs = soup.find_all("p")
             skip_indexes: set[int] = set()
 

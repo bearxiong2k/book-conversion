@@ -162,7 +162,7 @@ def parse_notes() -> dict[tuple[str, str], Footnote]:
     current_member: str | None = None
     current_parts: list[str] = []
     with zipfile.ZipFile(EPUB_PATH) as archive:
-        soup = BeautifulSoup(archive.read("OEBPS/Text/chapter0097.html").decode("utf-8", errors="replace"), "lxml")
+        soup = BeautifulSoup(archive.read("OEBPS/Text/chapter0097.html").decode("utf-8", errors="replace"), "html.parser")
 
     def flush() -> None:
         nonlocal current_label, current_member, current_parts
@@ -262,7 +262,7 @@ def build_html() -> str:
         for member in parse_spine():
             if member in OMIT_MEMBERS:
                 continue
-            soup = BeautifulSoup(archive.read(member).decode("utf-8", errors="replace"), "lxml")
+            soup = BeautifulSoup(archive.read(member).decode("utf-8", errors="replace"), "html.parser")
             item = nav_by_member.get(member)
 
             if member in {"OEBPS/Text/chapter0002.html", "OEBPS/Text/chapter0005.html"}:
@@ -317,8 +317,9 @@ def build_html() -> str:
 def main() -> None:
     markup = build_html()
     OUTPUT_PATH.write_text(markup, encoding="utf-8")
+    note_refs = markup.count('class="note-ref"')
     print(f"Wrote {OUTPUT_PATH}")
-    print(f"Notes: {markup.count('class=\"note-ref\"')}")
+    print(f"Notes: {note_refs}")
     print(f"Figures: {markup.count('<figure')}")
 
 

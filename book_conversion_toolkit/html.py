@@ -184,11 +184,21 @@ def validate_html(
             "navigator parent details expansion": "parent.tagName === 'DETAILS'",
             "navigator hashchange handling": "hashchange",
             "navigator animation-frame throttling": "requestAnimationFrame",
+            "disabled overscroll behavior": "overscroll-behavior:none",
+            "in-body linked contents section": '<ol class="contents">',
+            "draggable nav/text separator": 'class="page-nav-resizer"',
+            "resizable nav width variable": "--page-nav-width",
+            "resizable main width variable": "--main-text-width",
+            "nav resize controller": "bookNavLayout",
+            "navigator collapse threshold": "collapseThreshold",
+            "hidden navigator class": "is-nav-collapsed",
         }
         for label, fragment in required_fragments.items():
             if fragment not in markup:
                 report.navigator_failures.append(f"missing {label}")
-        if re.search(r"scroll-behavior\s*:", markup, flags=re.IGNORECASE):
+        if not re.search(r'<ol class="contents">.*?<a href="#[^"]+"', markup, flags=re.IGNORECASE | re.DOTALL):
+            report.navigator_failures.append("missing linked entries in in-body contents")
+        if re.search(r"(?<!over)scroll-behavior\s*:", markup, flags=re.IGNORECASE):
             report.navigator_failures.append("smooth scrolling is not allowed for standard navigator outputs")
     return report
 
@@ -430,10 +440,19 @@ def render_standard_nav(headings: Iterable[Heading]) -> str:
 
 
 STANDARD_BOOK_CSS = """
+:root{--page-nav-width:260px;--main-text-width:760px}
+html,body{overscroll-behavior:none}
 body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}
 .book-shell{display:block}
-main{max-width:760px;margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}
-.page-nav{position:fixed;top:0;bottom:0;left:0;width:260px;box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
+main{max-width:var(--main-text-width);margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}
+.page-nav{position:fixed;top:0;bottom:0;left:0;width:var(--page-nav-width);box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
+.page-nav-resizer{position:fixed;z-index:30;top:0;bottom:0;left:var(--page-nav-width);width:10px;margin-left:-5px;cursor:col-resize;user-select:none;touch-action:none}
+.page-nav-resizer:after{content:"";position:absolute;top:0;bottom:0;left:4px;border-left:1px solid rgba(122,61,0,.42)}
+.page-nav-resizer:hover:after,.page-nav-resizer.is-dragging:after{left:3px;border-left-width:3px;border-left-color:rgba(122,61,0,.76)}
+body.is-nav-collapsed .page-nav{visibility:hidden;padding-left:0;padding-right:0;border-right:0;overflow:hidden}
+body.is-nav-collapsed .page-nav-resizer{left:0;width:14px;margin-left:0}
+body.is-nav-collapsed .page-nav-resizer:after{left:5px;border-left-style:dashed}
+body.is-resizing-layout{cursor:col-resize}
 .page-nav-title{margin:0 0 18px;font-size:.78rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5c5449}
 .page-nav ol{list-style:none;margin:0;padding:0}
 .page-nav li{margin:0 0 3px}
@@ -484,9 +503,9 @@ sup{font-size:.72em;line-height:0}
 .footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
 .footnotes li{margin:.45rem 0}
 .backref{text-decoration:none;margin-left:.35em}
-@media (min-width:1220px){body{padding-left:260px}.footnotes{display:none}}
-@media (min-width:980px) and (max-width:1219px){.page-nav{display:none}.footnotes{display:none}}
-@media (max-width:979px){.page-nav{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
+@media (min-width:1220px){body{padding-left:var(--page-nav-width)}.footnotes{display:none}}
+@media (min-width:980px) and (max-width:1219px){.page-nav,.page-nav-resizer{display:none}.footnotes{display:none}}
+@media (max-width:979px){.page-nav,.page-nav-resizer{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
 """.strip()
 
 
@@ -500,6 +519,9 @@ DEFAULT_BOOK_CSS = """
   --accent: #365f8c;
 }
 * { box-sizing: border-box; }
+html, body {
+  overscroll-behavior: none;
+}
 body {
   margin: 0;
   background: var(--page);
@@ -649,6 +671,76 @@ DEFAULT_NAV_JS = """
     update();
   }
 })();
+
+(() => {
+  const nav = document.querySelector('.page-nav');
+  const handle = document.querySelector('.page-nav-resizer');
+  if (!nav || !handle) return;
+  const root = document.documentElement;
+  const storageKey = 'bookNavLayout';
+  const collapseThreshold = 80;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const layoutFor = (rawNavWidth) => {
+    const viewport = Math.max(320, window.innerWidth || 0);
+    const navMax = Math.min(420, Math.max(220, viewport * 0.42));
+    const collapsed = rawNavWidth <= collapseThreshold;
+    const navWidth = collapsed ? 0 : clamp(rawNavWidth, 180, navMax);
+    const mainWidth = clamp(viewport - navWidth - 96, 560, 980);
+    document.body.classList.toggle('is-nav-collapsed', collapsed);
+    root.style.setProperty('--page-nav-width', `${Math.round(navWidth)}px`);
+    root.style.setProperty('--main-text-width', `${Math.round(mainWidth)}px`);
+  };
+  const readStoredWidth = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      return Number(saved.navWidth);
+    } catch {
+      return NaN;
+    }
+  };
+  const currentWidth = () => {
+    const stored = readStoredWidth();
+    if (Number.isFinite(stored)) return stored;
+    return nav.getBoundingClientRect().width || 260;
+  };
+  const applyStored = () => layoutFor(currentWidth());
+  const save = (navWidth) => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ navWidth: Math.round(navWidth) }));
+    } catch {
+      // Ignore storage failures; resizing still works for the current page.
+    }
+  };
+  applyStored();
+  window.addEventListener('resize', applyStored);
+  handle.addEventListener('pointerdown', (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+    handle.classList.add('is-dragging');
+    document.body.classList.add('is-resizing-layout');
+    try {
+      handle.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Synthetic checks and some drivers do not expose an active pointer capture target.
+    }
+    const onMove = (moveEvent) => {
+      const width = clamp(moveEvent.clientX, 0, Math.min(420, window.innerWidth * 0.42));
+      layoutFor(width);
+      save(width);
+    };
+    const onUp = () => {
+      handle.classList.remove('is-dragging');
+      document.body.classList.remove('is-resizing-layout');
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+    };
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+    onMove(event);
+  });
+})();
 """.strip()
 
 
@@ -661,6 +753,7 @@ def wrap_html_document(
     lang: str = "en",
 ) -> str:
     nav = nav_html or ""
+    resizer = '<div class="page-nav-resizer" role="separator" aria-orientation="vertical" title="Drag to resize navigation and text"></div>\n' if 'class="page-nav"' in nav else ""
     markup = (
         "<!doctype html>\n"
         f'<html lang="{html.escape(lang, quote=True)}">\n'
@@ -673,6 +766,7 @@ def wrap_html_document(
         "<body>\n"
         '<div class="book-shell">\n'
         f"{nav}\n"
+        f"{resizer}"
         f"<main>\n{body_html}\n</main>\n"
         "</div>\n"
         f"<script>\n{script}\n{DEFAULT_NAV_JS}\n</script>\n"

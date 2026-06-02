@@ -43,7 +43,7 @@ Use this skill when converting books into readable, selectable HTML. The quality
 5. Parse structural elements into an intermediate list such as `title`, `part`, `heading`, `paragraph`, `quote`, `figure`, and `index`.
 6. Insert footnotes by stable target strings or real PDF superscript metadata. Fail loudly when a target or note is missing.
 7. Extract or copy meaningful figures into `assets/figures/`; reject tiny glyph fragments and decorative scans.
-8. Generate the nav from final headings, not a separate hand-maintained outline. Use the shared standard shell by default: `STANDARD_BOOK_CSS`, `render_standard_nav`, and `wrap_html_document`, so fixed navigation, active-link behavior, details expansion, and direct anchor jumps stay consistent across outputs.
+8. Generate navigation from final headings, not a separate hand-maintained outline. Use both `render_standard_nav` for the fixed side navigator and `render_linked_contents` for the in-body contents section, then wrap with `STANDARD_BOOK_CSS` and `wrap_html_document` so fixed navigation, collapsible draggable nav/text resizing, active-link behavior, in-content links, details expansion, and direct anchor jumps stay consistent across outputs.
 9. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
 10. Regenerate and validate after each significant section.
 
@@ -83,7 +83,7 @@ Always check:
 - Known OCR/text-layer artifacts do not remain.
 - Excluded metadata/copyright/catalog pages did not leak into the reading text.
 - Annotation anchors are present on generated reading blocks. The toolkit adds `data-anchor-id` and, when needed, deterministic `ann-...` IDs scoped to the nearest section.
-- The shared standard navigator is present and behavior-ready. Run validation with `--require-standard-nav` for all standard generated book outputs; this checks the fixed nav shell, active-link CSS, hashchange handling, details auto-expansion, animation-frame throttling, and absence of smooth scrolling.
+- The shared standard navigator and in-body linked contents are present and behavior-ready. Run validation with `--require-standard-nav` for all standard generated book outputs; this checks the fixed nav shell, collapsible draggable nav/text separator, linked contents entries, active-link CSS, hashchange handling, details auto-expansion, animation-frame throttling, disabled overscroll, and absence of smooth scrolling.
 
 Use browser/Playwright checks when CSS, navigation, hover notes, mobile behavior, or figures changed.
 

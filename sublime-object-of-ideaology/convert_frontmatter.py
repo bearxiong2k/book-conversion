@@ -10,7 +10,7 @@ sys.path.insert(0, "..")
 
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_standard_nav, wrap_html_document
+from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
 
 
 PDF_PATH = Path("The Sublime Object of Ideology.pdf")
@@ -2554,23 +2554,6 @@ def main() -> None:
         '<p class="author">SLAVOJ ŽIŽEK</p>',
         '<p class="publisher">VERSO<br>London - New York</p>',
         "</section>",
-        '<section aria-labelledby="contents">',
-        '<h2 id="contents">Contents</h2>',
-        '<ol class="contents">',
-        '<li><span>Preface to the New Edition: The Idea\'s Constipation</span><span>ix</span></li>',
-        '<li><span>Introduction</span><span>xxiii</span></li>',
-        '<li class="part"><span>Part I: The Symptom</span><span></span></li>',
-        '<li><span>1. How Did Marx Invent the Symptom?</span><span>1</span></li>',
-        '<li><span>2. From Symptom to Sinthome</span><span>57</span></li>',
-        '<li class="part"><span>Part II: Lack in the Other</span><span></span></li>',
-        '<li><span>3. \'Che Vuoi?\'</span><span>95</span></li>',
-        '<li><span>4. You Only Die Twice</span><span>145</span></li>',
-        '<li class="part"><span>Part III: The Subject</span><span></span></li>',
-        '<li><span>5. Which Subject of the Real?</span><span>171</span></li>',
-        '<li><span>6. \'Not Only as Substance, but Also as Subject\'</span><span>227</span></li>',
-        '<li><span>Index</span><span></span></li>',
-        "</ol>",
-        "</section>",
         '<section aria-labelledby="preface">',
         '<h2 id="preface">Preface to the New Edition:<br><em>The Idea\'s Constipation?</em></h2>',
     ]
@@ -2762,7 +2745,8 @@ def main() -> None:
         "</section>",
     ]
 
-    nav_headings = [Heading(2, "Title", "title"), *collect_nav_headings()]
+    nav_headings = [Heading(2, "Title", "title"), Heading(2, "Contents", "contents"), *collect_nav_headings()]
+    parts.insert(5, render_linked_contents(nav_headings))
     markup = wrap_html_document(
         "The Sublime Object of Ideology - Front Matter",
         "\n".join(parts),
