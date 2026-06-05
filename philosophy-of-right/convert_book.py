@@ -12,9 +12,12 @@ sys.path.insert(0, "..")
 import fitz  # type: ignore
 
 from book_conversion_toolkit import (
+    Footnote,
     Heading,
     STANDARD_BOOK_CSS,
     clean_spaces,
+    render_footnote_list,
+    render_footnote_ref,
     render_linked_contents,
     render_standard_nav,
     slugify,
@@ -113,6 +116,13 @@ def clean_text(text: str) -> str:
     return text
 
 
+def clean_span_text(text: str) -> str:
+    text = text.replace("\xa0", " ")
+    for source, target in GLYPH_REPLACEMENTS.items():
+        text = text.replace(source, target)
+    return text
+
+
 def line_rows(page: fitz.Page) -> list[dict]:
     rows: list[dict] = []
     for block in page.get_text("dict")["blocks"]:
@@ -123,13 +133,28 @@ def line_rows(page: fitz.Page) -> list[dict]:
             text = clean_text("".join(span["text"] for span in spans))
             if not text:
                 continue
+            span_rows = []
+            for span in spans:
+                span_rows.append(
+                    {
+                        "text": clean_span_text(span["text"]),
+                        "x": span["bbox"][0],
+                        "y": span["bbox"][1],
+                        "bbox": span["bbox"],
+                        "size": span["size"],
+                        "font": span["font"],
+                        "flags": span["flags"],
+                    }
+                )
             rows.append(
                 {
                     "text": text,
                     "x": line["bbox"][0],
                     "y": line["bbox"][1],
+                    "bbox": line["bbox"],
                     "size": max(span["size"] for span in spans),
                     "font": spans[0]["font"] if spans else "",
+                    "spans": span_rows,
                 }
             )
     return sorted(rows, key=lambda row: (row["y"], row["x"]))
@@ -144,6 +169,87 @@ def is_running_header(row: dict, pdf_page: int) -> bool:
     if re.fullmatch(r"[ivxlcdm]+|\d+", text, flags=re.IGNORECASE) and (row["y"] < 80 or row["y"] > 455):
         return True
     return False
+
+
+def leading_footnote_label(row: dict) -> str | None:
+    if row["size"] > 8.2:
+        return None
+    for span in row["spans"]:
+        label = clean_text(span["text"])
+        if not label:
+            continue
+        if re.fullmatch(r"\d{1,3}", label) and span["size"] <= 5.2:
+            return label
+        return None
+    return None
+
+
+def page_footnote_line_indexes(rows: list[dict]) -> set[int]:
+    indexes: set[int] = set()
+    in_notes = False
+    for index, row in enumerate(rows):
+        if is_running_header(row, 0):
+            continue
+        if leading_footnote_label(row):
+            in_notes = True
+            indexes.add(index)
+            continue
+        if in_notes and row["size"] <= 8.2:
+            indexes.add(index)
+    return indexes
+
+
+def page_footnotes(rows: list[dict], note_line_indexes: set[int], pdf_page: int) -> dict[str, Footnote]:
+    notes: dict[str, Footnote] = {}
+    current_label: str | None = None
+    current_lines: list[str] = []
+
+    def flush_current() -> None:
+        if current_label and current_lines:
+            ident = f"p{pdf_page}-n{current_label}"
+            note_html = html.escape(clean_spaces(" ".join(current_lines)), quote=False)
+            notes[current_label] = Footnote(ident, current_label, note_html)
+
+    for index, row in enumerate(rows):
+        if index not in note_line_indexes:
+            continue
+        label = leading_footnote_label(row)
+        if label:
+            flush_current()
+            current_label = label
+            text = re.sub(rf"^{re.escape(label)}\s*", "", row["text"]).strip()
+            current_lines = [text] if text else []
+        elif current_label:
+            current_lines.append(row["text"])
+    flush_current()
+    return notes
+
+
+def is_note_ref_span(span: dict, notes: dict[str, Footnote]) -> str | None:
+    label = clean_text(span["text"])
+    if not re.fullmatch(r"\d{1,3}", label):
+        return None
+    if span["size"] > 6.6:
+        return None
+    if label not in notes:
+        raise RuntimeError(f"Could not find page footnote {label} for body marker")
+    return label
+
+
+def row_html(row: dict, notes: dict[str, Footnote], used_notes: list[Footnote]) -> str:
+    parts: list[str] = []
+    used_ids = {note.ident for note in used_notes}
+    for span in row["spans"]:
+        label = is_note_ref_span(span, notes)
+        if label:
+            note = notes[label]
+            if note.ident not in used_ids:
+                used_notes.append(note)
+                used_ids.add(note.ident)
+            parts.append(render_footnote_ref(note))
+        else:
+            parts.append(html.escape(span["text"], quote=False))
+    return clean_spaces("".join(parts))
 
 
 def normalize_heading_text(text: str) -> str:
@@ -213,6 +319,14 @@ def append_line(paragraph: str, line: str) -> str:
     return paragraph + " " + line
 
 
+def append_line_markup(paragraph_markup: str, paragraph_text: str, line_markup: str, line_text: str) -> str:
+    if not paragraph_markup:
+        return line_markup
+    if paragraph_text.endswith("-") and line_text and line_text[0].islower():
+        return paragraph_markup.rstrip()[:-1] + line_markup.lstrip()
+    return paragraph_markup.rstrip() + " " + line_markup.lstrip()
+
+
 def flush_paragraph(paragraphs: list[tuple[str, str]], text: str, css: str = "") -> str:
     text = clean_text(text)
     if text:
@@ -265,18 +379,26 @@ def render_paragraph(css: str, text: str) -> str:
     return f"<p{class_attr}>{escaped}</p>"
 
 
+def render_paragraph_markup(css: str, markup: str) -> str:
+    class_attr = f' class="{css}"' if css else ""
+    markup = clean_spaces(markup)
+    markup = re.sub(r"^(§?\d{1,3}\.?)\s+", r'<span class="section-number">\1</span> ', markup)
+    markup = re.sub(r"^(Addition:|Remark:)\s+", r'<span class="label">\1</span> ', markup)
+    return f"<p{class_attr}>{markup}</p>"
+
+
 def render_heading(heading: Heading) -> str:
     return f'<h{heading.level} id="{heading.ident}">{html.escape(heading.text, quote=False)}</h{heading.level}>'
 
 
 def emit_paragraph(
     fragments: list[str],
-    paragraph: str,
+    paragraph_markup: str,
     css: str,
 ) -> str:
-    paragraph = clean_text(paragraph)
-    if paragraph:
-        fragments.append(render_paragraph(css, paragraph))
+    paragraph_markup = clean_spaces(paragraph_markup)
+    if paragraph_markup:
+        fragments.append(render_paragraph_markup(css, paragraph_markup))
     return ""
 
 
@@ -295,15 +417,21 @@ def page_content_fragments(
     pdf_page: int,
     page_entries: list[OutlineEntry],
     page_headings: list[Heading],
+    notes: dict[str, Footnote],
+    note_line_indexes: set[int],
+    used_notes: list[Footnote],
 ) -> list[str]:
     fragments: list[str] = []
-    current = ""
+    current_markup = ""
+    current_text = ""
     current_css = ""
     last_y = 0.0
     last_x = 0.0
     pending = list(zip(page_entries, page_headings))
 
-    for row in rows:
+    for row_index, row in enumerate(rows):
+        if row_index in note_line_indexes:
+            continue
         text = row["text"]
         if is_running_header(row, pdf_page):
             continue
@@ -313,7 +441,8 @@ def page_content_fragments(
             None,
         )
         if matched_heading_index is not None:
-            current = emit_paragraph(fragments, current, current_css)
+            current_markup = emit_paragraph(fragments, current_markup, current_css)
+            current_text = ""
             _entry, heading = pending.pop(matched_heading_index)
             fragments.append(render_heading(heading))
             current_css = ""
@@ -328,7 +457,7 @@ def page_content_fragments(
         if row["size"] <= 9.6 or row["x"] > 50:
             css = "noteish" if pdf_page >= 371 else "addition"
         starts_new = False
-        if not current:
+        if not current_text:
             starts_new = False
         elif row["y"] - last_y > 15:
             starts_new = True
@@ -337,15 +466,17 @@ def page_content_fragments(
         elif re.match(r"^(\d{1,3}\.|Addition:|Remark:|[A-Z][A-Za-z’' -]+:)", text):
             starts_new = True
         if starts_new:
-            current = emit_paragraph(fragments, current, current_css)
+            current_markup = emit_paragraph(fragments, current_markup, current_css)
+            current_text = ""
             current_css = css
-        if not current:
+        if not current_text:
             current_css = css
-        current = append_line(current, text)
+        current_markup = append_line_markup(current_markup, current_text, row_html(row, notes, used_notes), text)
+        current_text = append_line(current_text, text)
         last_y = row["y"]
         last_x = row["x"]
 
-    emit_paragraph(fragments, current, current_css)
+    emit_paragraph(fragments, current_markup, current_css)
     return insert_unplaced_headings(fragments, [heading for _entry, heading in pending])
 
 
@@ -461,10 +592,13 @@ def build_html() -> str:
         entries_by_page.setdefault(entry.pdf_page, []).append(entry)
 
     body = [render_title_page(), render_linked_contents(headings, max_level=4)]
+    used_notes: list[Footnote] = []
     for pdf_page in range(READING_START, doc.page_count + 1):
         if pdf_page in OMIT_PAGES:
             continue
         rows = line_rows(doc[pdf_page - 1])
+        note_line_indexes = page_footnote_line_indexes(rows)
+        notes = page_footnotes(rows, note_line_indexes, pdf_page)
         page_entries = entries_by_page.get(pdf_page, [])
         if pdf_page >= 411:
             for heading in heading_by_page.get(pdf_page, []):
@@ -474,9 +608,20 @@ def build_html() -> str:
             else:
                 body.append(render_index_page(rows))
             continue
-        body.extend(page_content_fragments(rows, pdf_page, page_entries, heading_by_page.get(pdf_page, [])))
+        body.extend(
+            page_content_fragments(
+                rows,
+                pdf_page,
+                page_entries,
+                heading_by_page.get(pdf_page, []),
+                notes,
+                note_line_indexes,
+                used_notes,
+            )
+        )
 
     body = merge_body_fragments(body)
+    body.append(render_footnote_list(used_notes))
     css = (
         STANDARD_BOOK_CSS
         + "\n.title-page{min-height:72vh;display:flex;flex-direction:column;justify-content:center;text-align:center}"

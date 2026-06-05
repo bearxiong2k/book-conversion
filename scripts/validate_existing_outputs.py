@@ -33,6 +33,7 @@ CASES = [
             r"Kierkegaard's materialist r<",
         ],
         "require_standard_nav": True,
+        "reject_split_paragraphs": True,
     },
     {
         "path": ROOT / "the-idea-of-phenomenology/the-idea-of-phenomenology.html",
@@ -99,6 +100,7 @@ CASES = [
     },
     {
         "path": ROOT / "philosophy-of-right/philosophy-of-right.html",
+        "notes": 163,
         "figures": 0,
         "scan": [
             r"This page intentionally",
@@ -128,6 +130,7 @@ def main() -> int:
             expected_note_refs=case.get("notes"),
             expected_figures=case.get("figures"),
             require_standard_nav=case.get("require_standard_nav", False),
+            reject_split_paragraphs=case.get("reject_split_paragraphs", False),
         )
         print(f"\n{path.relative_to(ROOT)}")
         print("\n".join(report.summary_lines()))

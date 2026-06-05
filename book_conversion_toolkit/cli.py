@@ -29,6 +29,7 @@ def cmd_validate_html(args: argparse.Namespace) -> int:
         expected_figures=args.expect_figures,
         check_images=not args.no_image_check,
         require_standard_nav=args.require_standard_nav,
+        reject_split_paragraphs=args.reject_split_paragraphs,
     )
     if args.json:
         print(report.to_json())
@@ -64,6 +65,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--require-standard-nav",
         action="store_true",
         help="Require the shared fixed navigator, active-link behavior, and no smooth scrolling.",
+    )
+    validate.add_argument(
+        "--reject-split-paragraphs",
+        action="store_true",
+        help="Reject adjacent prose paragraphs that look like accidental PDF block/page continuations.",
     )
     validate.add_argument("--json", action="store_true")
     validate.set_defaults(func=cmd_validate_html)

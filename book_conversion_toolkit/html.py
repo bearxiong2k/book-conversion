@@ -124,6 +124,7 @@ def validate_html(
     expected_figures: int | None = None,
     check_images: bool = True,
     require_standard_nav: bool = False,
+    reject_split_paragraphs: bool = False,
 ) -> HtmlValidationReport:
     path = Path(path)
     markup = path.read_text(encoding="utf-8")
@@ -161,6 +162,10 @@ def validate_html(
     for pattern in artifact_patterns:
         if re.search(pattern, markup, flags=re.IGNORECASE):
             report.artifact_hits.append(pattern)
+
+    if reject_split_paragraphs:
+        for hit in split_paragraph_continuations(markup):
+            report.expectation_failures.append(f"split paragraph continuation: {hit}")
 
     if expected_note_refs is not None and parser.note_refs != expected_note_refs:
         report.expectation_failures.append(f"expected {expected_note_refs} note refs, found {parser.note_refs}")
@@ -230,6 +235,89 @@ def render_footnote_list(notes: Iterable[Footnote]) -> str:
     if not items:
         return ""
     return '<section class="footnotes" aria-labelledby="footnotes-title">\n<h2 id="footnotes-title">Notes</h2>\n<ol>\n' + "\n".join(items) + "\n</ol>\n</section>"
+
+
+def _plain_markup_text(markup: str) -> str:
+    text = re.sub(r"<[^>]+>", " ", markup)
+    return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def _class_attr(attrs: str) -> str:
+    match = re.search(r'\sclass="([^"]*)"', attrs)
+    return match.group(1) if match else ""
+
+
+def _paragraph_fragment(markup: str) -> tuple[str, str] | None:
+    match = re.fullmatch(r"<p(?P<attrs>[^>]*)>(?P<inner>.*)</p>", markup.strip(), flags=re.DOTALL)
+    if not match:
+        return None
+    return match.group("attrs"), match.group("inner")
+
+
+def _paragraph_is_open_continuation(inner: str) -> bool:
+    text = _plain_markup_text(inner)
+    if not text:
+        return False
+    return not re.search(r"[.!?;:][\"'”’)\]]*$", text)
+
+
+def _paragraph_starts_lower(inner: str) -> bool:
+    text = _plain_markup_text(inner)
+    return bool(re.match(r"^[a-z]", text))
+
+
+def merge_continuation_paragraphs(fragments: Iterable[str]) -> list[str]:
+    """Merge adjacent paragraph fragments split by PDF block/page boundaries.
+
+    This is intentionally conservative: it only joins adjacent plain paragraph
+    fragments with identical attributes before annotation IDs are assigned, when
+    the first paragraph is not sentence-closed and the next starts lowercase.
+    """
+
+    merged: list[str] = []
+    for fragment in fragments:
+        current = _paragraph_fragment(fragment)
+        previous = _paragraph_fragment(merged[-1]) if merged else None
+        if current and previous:
+            prev_attrs, prev_inner = previous
+            current_attrs, current_inner = current
+            if (
+                prev_attrs == current_attrs
+                and " id=" not in prev_attrs
+                and " data-anchor-id=" not in prev_attrs
+                and _paragraph_is_open_continuation(prev_inner)
+                and _paragraph_starts_lower(current_inner)
+            ):
+                joiner = "" if _plain_markup_text(prev_inner).endswith("-") else " "
+                merged[-1] = f"<p{prev_attrs}>{prev_inner.rstrip()}{joiner}{current_inner.lstrip()}</p>"
+                continue
+        merged.append(fragment)
+    return merged
+
+
+def split_paragraph_continuations(markup: str) -> list[str]:
+    """Return snippets of adjacent paragraphs that look accidentally split."""
+
+    hits: list[str] = []
+    pattern = re.compile(
+        r"<p(?P<a1>[^>]*)>(?P<i1>.*?)</p>\s*<p(?P<a2>[^>]*)>(?P<i2>.*?)</p>",
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+    for match in pattern.finditer(markup):
+        attrs1 = match.group("a1")
+        attrs2 = match.group("a2")
+        attrs = attrs1 + attrs2
+        if any(skip in attrs for skip in ("index-", "footnote", "section-number")):
+            continue
+        if _class_attr(attrs1) != _class_attr(attrs2):
+            continue
+        first = match.group("i1")
+        second = match.group("i2")
+        if _paragraph_is_open_continuation(first) and _paragraph_starts_lower(second):
+            first_text = _plain_markup_text(first)
+            second_text = _plain_markup_text(second)
+            hits.append(f"{first_text[-80:]} / {second_text[:80]}")
+    return hits
 
 
 def render_nav(headings: Iterable[Heading], title: str = "Contents") -> str:

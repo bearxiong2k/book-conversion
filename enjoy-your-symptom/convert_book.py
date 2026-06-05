@@ -12,7 +12,13 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0, "../.codex_deps")
 sys.path.insert(0, "..")
 
-from book_conversion_toolkit import STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
+from book_conversion_toolkit import (
+    STANDARD_BOOK_CSS,
+    merge_continuation_paragraphs,
+    render_linked_contents,
+    render_standard_nav,
+    wrap_html_document,
+)
 
 try:
     import fitz  # type: ignore
@@ -657,7 +663,7 @@ def build_html() -> str:
     doc = fitz.open(PDF_PATH)
     notes = parse_notes(doc)
     state = ConvertState(note_refs=[], missing_notes=[], headings=[], used_ids={})
-    body = extract_body(doc, notes, state)
+    body = merge_continuation_paragraphs(extract_body(doc, notes, state))
     body.append(extract_index(doc, state))
     body.append(footnotes_html(state))
     if state.missing_notes:
