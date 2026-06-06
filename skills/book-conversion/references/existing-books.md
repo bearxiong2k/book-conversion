@@ -13,7 +13,7 @@ book converters or validation metadata.
 | `for-they-know-not` | EPUB body, notes, and figures | `for-they-know-not/convert_book.py` | `for-they-know-not/for-they-know-not.html` | 371 | 11 | Omitted EPUB members stay omitted |
 | `how-to-read` | EPUB body and notes | `how-to-read/convert_book.py` | `how-to-read/how-to-read-lacan.html` | 60 | 0 | Duplicate note chapter skipped |
 | `philosophy-of-right` | PDF text layer | `philosophy-of-right/convert_book.py` | `philosophy-of-right/philosophy-of-right.html` | 163 | 0 | Publisher and metadata pages omitted |
-| `the-lacanian-subject` | EPUB body, notes, index, and image fallbacks | `the-lacanian-subject/convert_book.py` | `the-lacanian-subject/the-lacanian-subject.html` | 246 | 73 | MathML/image fallback decisions; side nav reopens after larger text size; no fallback note list expected |
+| `the-lacanian-subject` | EPUB body, notes, index, and image fallbacks | `the-lacanian-subject/convert_book.py` | `the-lacanian-subject/the-lacanian-subject.html` | 246 | 73 | MathML/image fallback decisions; dashed separator opens side nav after larger text/125% and 150% zoom; no fallback note list expected |
 
 Run the portable quality gate after regeneration:
 

@@ -14,7 +14,7 @@ Standard book outputs should use:
   anchors.
 
 Validation with `--require-standard-nav` checks the fixed nav shell, linked
-contents, resizer, reopen button, active-link behavior, hash-change handling,
+contents, draggable separator, active-link behavior, hash-change handling,
 details expansion, animation-frame throttling, disabled overscroll, and absence
 of smooth scrolling.
 
@@ -25,9 +25,10 @@ to a fixed PDF-like column unless a specific element would fail. When dense
 figures, diagram labels, tables, formulas, or captions need constraints, scope
 the constraint to that element or section.
 
-The side navigator must remain reachable after larger text-size settings and
-reading-width changes. Browser-check collapse and reopen behavior when touching
-standard nav CSS or JavaScript. This is a known risk for `the-lacanian-subject`.
+The side navigator must remain reachable through the dashed draggable separator
+at any text size or viewport width, including Chrome zoom such as 125% and 150%.
+Browser-check collapse and drag-open behavior when touching standard nav CSS or
+JavaScript. This is a known risk for `the-lacanian-subject`.
 
 ## Browser Checks
 

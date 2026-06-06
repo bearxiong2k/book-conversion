@@ -71,7 +71,8 @@ python3 scripts/quality_gate.py
 
 Use browser checks when CSS, navigation, hover notes, mobile behavior, formulas,
 or figures changed. For standard navigation, verify the side navigator can
-collapse and reopen after increasing text size or changing reading width.
+collapse and reopen by dragging the separator after increasing text size,
+changing reading width, or using Chrome zoom such as 125% and 150%.
 
 ## Required Output Properties
 
@@ -84,8 +85,9 @@ collapse and reopen after increasing text size or changing reading width.
   text.
 - Reading blocks have stable annotation anchors.
 - Standard outputs include the fixed side navigator, in-body linked contents,
-  draggable width control, reliable reopen button, active-link behavior, direct
-  hash jumps, and no smooth scrolling.
+  draggable width control, reliable dashed separator at any text size or
+  viewport width, active-link behavior, direct hash jumps, and no smooth
+  scrolling.
 
 ## References
 

@@ -176,7 +176,7 @@ CASES: tuple[ValidationCase, ...] = (
         ),
         special_checks=(
             "MathML/image fallback decisions",
-            "navigator can reopen after larger text size",
+            "dashed separator opens navigator at any text size or viewport width",
             "no fallback note list expected",
         ),
     ),

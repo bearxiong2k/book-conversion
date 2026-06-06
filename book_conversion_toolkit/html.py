@@ -221,8 +221,6 @@ def validate_html(
         required_fragments = {
             "book shell wrapper": '<div class="book-shell">',
             "fixed page navigator": '<nav class="page-nav" aria-label="Section navigation"',
-            "navigator toggle button": 'class="page-nav-toggle"',
-            "navigator toggle target": 'aria-controls="page-nav"',
             "navigator list": '<ol class="page-nav-list">',
             "shared active-link styling": ".page-nav a.is-active",
             "navigator link collector": "document.querySelectorAll('.page-nav a[href^=\"#\"]')",
@@ -237,7 +235,6 @@ def validate_html(
             "nav resize controller": "bookNavLayout",
             "navigator collapse threshold": "collapseThreshold",
             "hidden navigator class": "is-nav-collapsed",
-            "navigator reopen controller": "setNavCollapsed",
         }
         for label, fragment in required_fragments.items():
             if fragment not in markup:
@@ -574,12 +571,10 @@ def render_standard_nav(headings: Iterable[Heading]) -> str:
 STANDARD_BOOK_CSS = """
 :root{--page-nav-width:260px;--main-text-width:760px}
 html,body{overscroll-behavior:none}
-body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;background:#f8f6f0;color:#151515}
+body{font-family:Georgia,'Times New Roman',serif;line-height:1.55;margin:0;padding-left:var(--page-nav-width);background:#f8f6f0;color:#151515}
 .book-shell{display:block}
 main{max-width:var(--main-text-width);margin:0 auto;padding:48px 24px 80px;background:#fff;min-height:100vh}
-.page-nav-toggle{position:fixed;z-index:45;top:10px;left:10px;min-width:42px;min-height:34px;padding:7px 10px;border:1px solid #c9b99d;border-radius:3px;background:#fffaf0;color:#3f3931;font:700 13px/1.2 system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
-.page-nav-toggle:hover,.page-nav-toggle:focus{outline:2px solid rgba(122,61,0,.35);outline-offset:2px;color:#7a3d00}
-.page-nav{position:fixed;z-index:25;top:0;bottom:0;left:0;width:var(--page-nav-width);box-sizing:border-box;padding:58px 18px 28px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
+.page-nav{position:fixed;z-index:25;top:0;bottom:0;left:0;width:var(--page-nav-width);box-sizing:border-box;padding:28px 18px;background:#f1eadf;border-right:1px solid #ded2bd;overflow:auto}
 .page-nav-resizer{position:fixed;z-index:30;top:0;bottom:0;left:var(--page-nav-width);width:10px;margin-left:-5px;cursor:col-resize;user-select:none;touch-action:none}
 .page-nav-resizer:after{content:"";position:absolute;top:0;bottom:0;left:4px;border-left:1px solid rgba(122,61,0,.42)}
 .page-nav-resizer:hover:after,.page-nav-resizer.is-dragging:after{left:3px;border-left-width:3px;border-left-color:rgba(122,61,0,.76)}
@@ -637,9 +632,8 @@ sup{font-size:.72em;line-height:0}
 .footnotes{border-top:1px solid #ccc;margin-top:42px;padding-top:18px;font-size:.92rem}
 .footnotes li{margin:.45rem 0}
 .backref{text-decoration:none;margin-left:.35em}
-@media (min-width:1220px){body{padding-left:var(--page-nav-width)}.footnotes{display:none}}
-@media (min-width:980px) and (max-width:1219px){.page-nav,.page-nav-resizer,.page-nav-toggle{display:none}.footnotes{display:none}}
-@media (max-width:979px){.page-nav,.page-nav-resizer,.page-nav-toggle{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
+@media (min-width:980px){.footnotes{display:none}}
+@media (max-width:979px){.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
 """.strip()
 
 
@@ -809,23 +803,14 @@ DEFAULT_NAV_JS = """
 (() => {
   const nav = document.querySelector('.page-nav');
   const handle = document.querySelector('.page-nav-resizer');
-  const toggle = document.querySelector('.page-nav-toggle');
   if (!nav || !handle) return;
   const root = document.documentElement;
   const storageKey = 'bookNavLayout';
   const collapseThreshold = 80;
-  const defaultNavWidth = 260;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const cssPx = (name, fallback) => {
     const value = parseFloat(getComputedStyle(root).getPropertyValue(name));
     return Number.isFinite(value) ? value : fallback;
-  };
-  const setNavCollapsed = (collapsed) => {
-    document.body.classList.toggle('is-nav-collapsed', collapsed);
-    if (toggle) {
-      toggle.setAttribute('aria-expanded', String(!collapsed));
-      toggle.textContent = collapsed ? 'Navigate' : 'Hide nav';
-    }
   };
   const layoutFor = (rawNavWidth) => {
     const viewport = Math.max(320, window.innerWidth || 0);
@@ -835,7 +820,7 @@ DEFAULT_NAV_JS = """
     const collapsed = rawNavWidth <= collapseThreshold;
     const navWidth = collapsed ? 0 : clamp(rawNavWidth, 180, navMax);
     const mainWidth = clamp(viewport - navWidth - 96, mainMin, mainMax);
-    setNavCollapsed(collapsed);
+    document.body.classList.toggle('is-nav-collapsed', collapsed);
     root.style.setProperty('--page-nav-width', `${Math.round(navWidth)}px`);
     root.style.setProperty('--main-text-width', `${Math.round(mainWidth)}px`);
   };
@@ -862,14 +847,6 @@ DEFAULT_NAV_JS = """
   };
   applyStored();
   window.addEventListener('resize', applyStored);
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      const collapsed = document.body.classList.contains('is-nav-collapsed');
-      const width = collapsed ? defaultNavWidth : 0;
-      layoutFor(width);
-      save(width);
-    });
-  }
   handle.addEventListener('pointerdown', (event) => {
     if (event.button !== undefined && event.button !== 0) return;
     event.preventDefault();
@@ -911,7 +888,6 @@ def wrap_html_document(
 ) -> str:
     nav = nav_html or ""
     has_standard_nav = 'class="page-nav"' in nav
-    toggle = '<button class="page-nav-toggle" type="button" aria-controls="page-nav" aria-expanded="true">Hide nav</button>\n' if has_standard_nav else ""
     resizer = '<div class="page-nav-resizer" role="separator" aria-orientation="vertical" title="Drag to resize navigation and text"></div>\n' if has_standard_nav else ""
     markup = (
         "<!doctype html>\n"
@@ -924,7 +900,6 @@ def wrap_html_document(
         "</head>\n"
         "<body>\n"
         '<div class="book-shell">\n'
-        f"{toggle}"
         f"{nav}\n"
         f"{resizer}"
         f"<main>\n{body_html}\n</main>\n"
