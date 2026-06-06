@@ -116,6 +116,10 @@ PASSTHROUGH_TAGS = {
 VOID_TAGS = {"hr", "img", "wbr"}
 INLINE_IMAGE_MEMBERS: set[str] = set()
 TRIMMED_IMAGE_PATHS: set[Path] = set()
+TOSS_GRID_ROWS = {
+    "1 2 3 4 5 6 7 8 9 Toss Numbers": (("1", "2", "3", "4", "5", "6", "7", "8", "9"), "Toss Numbers"),
+    "+ + – – + – – – + Heads/Tails Chain": (("+", "+", "–", "–", "+", "–", "–", "–", "+"), "Heads/Tails Chain"),
+}
 
 
 @dataclass(frozen=True)
@@ -358,6 +362,24 @@ class EpubRenderer:
                 pieces.append(html.escape(child.tail, quote=False))
         return "".join(pieces)
 
+    def render_toss_grid_row(self, node: ET.Element, member: str) -> str | None:
+        row = TOSS_GRID_ROWS.get(plain_text(node))
+        if not row:
+            return None
+        cells, label = row
+        attrs = self.render_attrs(node, member)
+        if 'class="' in attrs:
+            attrs = attrs.replace('class="', 'class="toss-grid-row ', 1)
+        else:
+            attrs += ' class="toss-grid-row"'
+        cell_markup = "".join(f"<span>{html.escape(cell, quote=False)}</span>" for cell in cells)
+        return (
+            f"<p{attrs}>"
+            f'<span class="toss-grid">{cell_markup}</span>'
+            f'<span class="toss-grid-label">{html.escape(label, quote=False)}</span>'
+            "</p>"
+        )
+
     def render_node(self, node: ET.Element, member: str, collect_headings: bool = True) -> str:
         tag = local_name(node.tag)
         if is_epub_math_variant(node):
@@ -387,6 +409,11 @@ class EpubRenderer:
                     return self.render_note_ref(note, ref_ident)
         if tag not in PASSTHROUGH_TAGS:
             return self.render_children(node, member, collect_headings)
+
+        if tag == "p" and "EQ" in class_tokens(node):
+            toss_grid_row = self.render_toss_grid_row(node, member)
+            if toss_grid_row:
+                return toss_grid_row
 
         attrs = self.render_attrs(node, member)
         if tag == "img":
@@ -509,6 +536,10 @@ def build_html() -> str:
         + "\np.SB1{margin-top:.75rem}"
         + "\np.TXS,p.STNI,p.TNIS{font-size:.95rem;line-height:1.32}"
         + "\np.EQ{font-size:1.05rem;line-height:1.32;text-align:center;text-indent:0;white-space:pre-wrap;margin:.55rem auto;font-variant-numeric:tabular-nums}"
+        + "\np.EQ.toss-grid-row{display:flex;align-items:baseline;justify-content:center;gap:1.1rem;white-space:normal;overflow-x:auto;text-align:left}"
+        + "\n.toss-grid{display:grid;grid-template-columns:repeat(9,2ch);column-gap:.55ch;font-family:'Courier New',Courier,monospace;font-variant-numeric:tabular-nums;text-align:center;flex:0 0 auto}"
+        + "\n.toss-grid span{display:block;text-align:center}"
+        + "\n.toss-grid-label{white-space:nowrap;flex:0 0 auto}"
         + "\n.CAP,.TT,.TT1{text-align:left;font-style:normal;color:#111;margin:.2rem 0 .35rem;font-size:.86rem;line-height:1.2;font-weight:700}"
         + "\n.BL{position:relative;padding-left:1.2rem}"
         + "\n.BL::before{content:''}"
@@ -542,7 +573,7 @@ def build_html() -> str:
         + "\n.IX,.IXA{font-size:.9rem;line-height:1.35;margin-bottom:.18rem}"
         + "\n.BIB{font-size:.94rem;line-height:1.32;text-align:left;text-indent:0;margin-bottom:.35rem}"
         + "\n.NTX,.noteish{font-size:.92rem;color:#39342f}"
-        + "\n@media (max-width:760px){main{padding:36px 20px 64px}main p{text-align:left}.title-page{padding-top:12vh}.title-page .subtitle{margin-bottom:4rem}table{display:block;overflow-x:auto}th,td{min-width:3rem}p.TX,p.TXS,p.SB1,p.NTX{text-indent:1em}}"
+        + "\n@media (max-width:760px){main{padding:36px 20px 64px}main p{text-align:left}.title-page{padding-top:12vh}.title-page .subtitle{margin-bottom:4rem}table{display:block;overflow-x:auto}th,td{min-width:3rem}p.TX,p.TXS,p.SB1,p.NTX{text-indent:1em}p.EQ.toss-grid-row{justify-content:flex-start}.toss-grid{grid-template-columns:repeat(9,1.8ch);column-gap:.35ch}}"
     )
     return wrap_html_document(TITLE, "\n".join(fragments), render_standard_nav(renderer.headings), css=css)
 
