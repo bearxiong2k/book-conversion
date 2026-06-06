@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc 'root=$(git rev-parse --show-toplevel 2>/dev/null || pwd); bash \"$root/.codex/hooks/session_start.sh\"'",
+            "statusMessage": "Book conversion session guidance"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc 'root=$(git rev-parse --show-toplevel 2>/dev/null || pwd); python3 \"$root/.codex/hooks/stop_quality_gate.py\"'",
+            "statusMessage": "Book conversion quality gate"
+          }
+        ]
+      }
+    ]
+  }
+}
