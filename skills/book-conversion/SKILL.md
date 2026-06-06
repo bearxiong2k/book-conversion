@@ -5,55 +5,53 @@ description: Convert scholarly/theory books from PDF, EPUB, or OCR into reproduc
 
 # Book Conversion
 
-Use this skill when converting books into readable, selectable HTML. The quality bar is script-driven reproducibility: every correction, omission, figure, footnote, and heading decision belongs in code or documented configuration, not in manual edits to generated HTML.
+Use this skill when converting books into readable, selectable HTML. The quality
+bar is script-driven reproducibility: every correction, omission, figure,
+footnote, and heading decision belongs in converter code or book-specific
+configuration, never in manual edits to generated HTML.
+
+Keep the repo practical. Add shared structure only when it removes real
+duplication, makes checks enforceable, or keeps book-specific decisions easier to
+find.
 
 ## Start
 
-1. Bootstrap dependencies if the root `.codex_deps/` does not exist:
+Bootstrap root dependencies if needed:
 
-   ```bash
-   bash scripts/bootstrap_deps.sh
-   ```
+```bash
+bash scripts/bootstrap_deps.sh
+```
 
-2. In a new book sub-project, insert both paths before imports:
+In a book sub-project, import root dependencies and toolkit helpers:
 
-   ```python
-   import sys
-   sys.path.insert(0, "../.codex_deps")
-   sys.path.insert(0, "..")
-   ```
+```python
+import sys
+sys.path.insert(0, "../.codex_deps")
+sys.path.insert(0, "..")
+```
 
-3. Use `book_conversion_toolkit` for shared text cleanup, slug generation, PDF line inspection, EPUB spine/member reads, footnote rendering, navigation rendering, and HTML validation.
+## Workflow
 
-## Conversion Workflow
-
-1. Map pages first. Use the toolkit CLI to inspect visible page starts:
+1. Map the source before full extraction:
 
    ```bash
    python3 -m book_conversion_toolkit inspect-pdf "book.pdf" --pages 1-20 --lines 8
    ```
 
-2. Choose the authority for body text:
-   - Use EPUB when it has complete, ordered text and better chapter endings.
-   - Use PDF text layer when spans preserve italics, superscript notes, and usable body order.
-   - Use OCR when the PDF text layer corrupts many terms or glyphs.
-   - Use a hybrid path when EPUB is best for images/index but PDF is best for notes or layout.
-3. Build a page/section map and omit non-reading matter explicitly.
-4. Centralize cleanup in replacement dictionaries. Include artifact scans for every high-confidence recurring error.
-5. Parse structural elements into an intermediate list such as `title`, `part`, `heading`, `paragraph`, `quote`, `figure`, and `index`.
-6. Insert footnotes by stable target strings or real PDF superscript metadata. Fail loudly when a target or note is missing.
-7. Extract or copy meaningful figures into a deterministic working asset directory; reject tiny glyph fragments and decorative scans. Final generated HTML should embed figure and inline-image payloads as `data:image` URIs so the reading file is self-contained. Keep copied assets as regeneration inputs only, not runtime dependencies.
-8. When an EPUB is available, prefer its structured text, tables, MathML, note links, and image assets over OCR; do not use full-page snapshots for tables or figures unless no structured/cropped source exists.
-9. Cross-check EPUB formula, table, and figure blocks against the PDF's layout or PDF-derived image assets. When an EPUB supplies both MathML/text and a rendered image fallback for the same formula or diagram, render only one visible representation; prefer the image fallback when the PDF layout is the authority.
-10. Keep the reading surface book-like even when EPUB is the text authority: use the PDF for title/subtitle placement, chapter-opening hierarchy, section heading weight, paragraph indentation, table scale, figure scale, and quote style. Preserve the shared adjustable text width instead of forcing an identical PDF-width column; the goal is PDF-like typography with a comfortable resizable reading surface.
-11. For PDF block extraction, run paragraph fragments through `merge_continuation_paragraphs` before assigning annotation anchors so page/block breaks like `family` followed by `abandoned...` do not become separate paragraphs.
-12. Generate navigation from final headings, not a separate hand-maintained outline. Use both `render_standard_nav` for the fixed side navigator and `render_linked_contents` for the in-body contents section, then wrap with `STANDARD_BOOK_CSS` and `wrap_html_document` so fixed navigation, collapsible draggable nav/text resizing, active-link behavior, in-content links, details expansion, and direct anchor jumps stay consistent across outputs.
-13. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
-14. Regenerate and validate after each significant section.
+2. Choose the text authority: EPUB, PDF text layer, OCR, or a hybrid. See
+   `references/source-selection.md`.
+3. Keep book-specific page maps, omitted pages, figure maps, footnote targets,
+   replacement dictionaries, and artifact scans beside the converter.
+4. Move only stable mechanics into `book_conversion_toolkit/`.
+5. Generate standard outputs with `render_standard_nav`,
+   `render_linked_contents`, `STANDARD_BOOK_CSS`, and `wrap_html_document`.
+6. Preserve adjustable reading width. Constrain only specific figures, labels,
+   tables, formulas, or captions that would otherwise break.
+7. Regenerate and validate after meaningful changes.
 
-## Toolkit Commands
+## Validation
 
-Validate an output:
+Validate one output:
 
 ```bash
 python3 -m book_conversion_toolkit validate-html output.html \
@@ -65,35 +63,35 @@ python3 -m book_conversion_toolkit validate-html output.html \
   --scan "known_bad_ocr"
 ```
 
-Validate all current generated outputs:
+Validate all current outputs:
 
 ```bash
-python3 scripts/validate_existing_outputs.py
+python3 scripts/quality_gate.py
 ```
 
-Use JSON output when another script should consume the result:
+Use browser checks when CSS, navigation, hover notes, mobile behavior, formulas,
+or figures changed. For standard navigation, verify the side navigator can
+collapse and reopen after increasing text size or changing reading width.
 
-```bash
-python3 -m book_conversion_toolkit validate-html output.html --json
-```
+## Required Output Properties
 
-## Required Checks
+- Generated HTML has no broken internal links or duplicate IDs.
+- Image-bearing outputs embed figures and inline images as `data:image` URIs.
+- Footnote ref, floating note, and fallback counts match when fallback notes are
+  used.
+- Known OCR/text-layer artifacts are scanned and absent.
+- Metadata, copyright, catalog, and other omitted pages do not leak into reading
+  text.
+- Reading blocks have stable annotation anchors.
+- Standard outputs include the fixed side navigator, in-body linked contents,
+  draggable width control, reliable reopen button, active-link behavior, direct
+  hash jumps, and no smooth scrolling.
 
-Always check:
+## References
 
-- HTML parses enough for anchor scanning.
-- Every internal link resolves to an ID.
-- IDs are unique.
-- Figure and inline-image payloads are self-contained in generated HTML. For new converted outputs with images, validate with `--require-self-contained-images`; this rejects runtime `assets/...` dependencies and malformed or empty `data:image` payloads.
-- Footnote reference, hover popover, and fallback list counts match when that output uses hover notes.
-- Known OCR/text-layer artifacts do not remain.
-- Excluded metadata/copyright/catalog pages did not leak into the reading text.
-- Annotation anchors are present on generated reading blocks. The toolkit adds `data-anchor-id` and, when needed, deterministic `ann-...` IDs scoped to the nearest section.
-- The shared standard navigator and in-body linked contents are present and behavior-ready. Run validation with `--require-standard-nav` for all standard generated book outputs; this checks the fixed nav shell, collapsible draggable nav/text separator, linked contents entries, active-link CSS, hashchange handling, details auto-expansion, animation-frame throttling, disabled overscroll, and absence of smooth scrolling.
-- For PDF block-based prose outputs, run validation with `--reject-split-paragraphs` after using `merge_continuation_paragraphs`; intentional style changes such as inset quotation blocks should remain distinct.
-
-Use browser/Playwright checks when CSS, navigation, hover notes, mobile behavior, or figures changed.
-
-## Detailed Lessons
-
-Read `references/conversion-guidance.md` when choosing between PDF, EPUB, OCR, or hybrid extraction, or when debugging paragraph merging, note leakage, image extraction, or foreign-language term cleanup.
+- `references/source-selection.md`
+- `references/html-quality-bar.md`
+- `references/figures-and-images.md`
+- `references/footnotes-and-anchors.md`
+- `references/text-cleanup.md`
+- `references/existing-books.md`

@@ -1,5 +1,5 @@
-.codex_deps/
-.playwright-cli/
-__pycache__/
+**/.codex_deps/
+**/.playwright-cli/
+**/__pycache__/
 *.py[cod]
-.DS_Store
+**/.DS_Store
