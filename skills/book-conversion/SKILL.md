@@ -42,7 +42,7 @@ Use this skill when converting books into readable, selectable HTML. The quality
 4. Centralize cleanup in replacement dictionaries. Include artifact scans for every high-confidence recurring error.
 5. Parse structural elements into an intermediate list such as `title`, `part`, `heading`, `paragraph`, `quote`, `figure`, and `index`.
 6. Insert footnotes by stable target strings or real PDF superscript metadata. Fail loudly when a target or note is missing.
-7. Extract or copy meaningful figures into `assets/figures/`; reject tiny glyph fragments and decorative scans.
+7. Extract or copy meaningful figures into a deterministic working asset directory; reject tiny glyph fragments and decorative scans. Final generated HTML should embed figure and inline-image payloads as `data:image` URIs so the reading file is self-contained. Keep copied assets as regeneration inputs only, not runtime dependencies.
 8. When an EPUB is available, prefer its structured text, tables, MathML, note links, and image assets over OCR; do not use full-page snapshots for tables or figures unless no structured/cropped source exists.
 9. Cross-check EPUB formula, table, and figure blocks against the PDF's layout or PDF-derived image assets. When an EPUB supplies both MathML/text and a rendered image fallback for the same formula or diagram, render only one visible representation; prefer the image fallback when the PDF layout is the authority.
 10. Keep the reading surface book-like even when EPUB is the text authority: use the PDF for title/subtitle placement, chapter-opening hierarchy, section heading weight, paragraph indentation, table scale, figure scale, and quote style. Preserve the shared adjustable text width instead of forcing an identical PDF-width column; the goal is PDF-like typography with a comfortable resizable reading surface.
@@ -59,6 +59,7 @@ Validate an output:
 python3 -m book_conversion_toolkit validate-html output.html \
   --expect-note-refs 11 \
   --expect-figures 5 \
+  --require-self-contained-images \
   --require-standard-nav \
   --reject-split-paragraphs \
   --scan "known_bad_ocr"
@@ -83,7 +84,7 @@ Always check:
 - HTML parses enough for anchor scanning.
 - Every internal link resolves to an ID.
 - IDs are unique.
-- Figure files exist and are non-empty.
+- Figure and inline-image payloads are self-contained in generated HTML. For new converted outputs with images, validate with `--require-self-contained-images`; this rejects runtime `assets/...` dependencies and malformed or empty `data:image` payloads.
 - Footnote reference, hover popover, and fallback list counts match when that output uses hover notes.
 - Known OCR/text-layer artifacts do not remain.
 - Excluded metadata/copyright/catalog pages did not leak into the reading text.

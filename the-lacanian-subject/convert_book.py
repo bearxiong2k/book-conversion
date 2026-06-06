@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import html
+import base64
+import mimetypes
 import posixpath
 import re
 import shutil
@@ -296,7 +298,9 @@ class EpubRenderer:
         target = ASSET_DIR / Path(source_member).name
         self.package.extract_member(source_member, target)
         trim_image_whitespace(target)
-        return f"assets/epub-images/{html.escape(target.name, quote=True)}"
+        mime_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+        data = base64.b64encode(target.read_bytes()).decode("ascii")
+        return f"data:{mime_type};base64,{data}"
 
     def render_attrs(self, node: ET.Element, member: str) -> str:
         attrs: list[str] = []

@@ -61,9 +61,9 @@ Drop extracted note paragraphs from body elements before merging paragraph conti
 
 Audit PDF images with `page.get_images(full=True)` and `page.get_image_rects(xref)`, plus `page.get_drawings()` when formulas or vector diagrams may be present. Filter by area and context so tiny embedded word fragments are not treated as figures.
 
-When EPUB images are cleaner than PDF crops, copy them reproducibly into `assets/figures/` and place them according to PDF or EPUB reading position.
+When EPUB images are cleaner than PDF crops, copy them reproducibly into a working asset directory and place them according to PDF or EPUB reading position. The final generated HTML should still embed those image payloads as `data:image` URIs so the reading file is portable and does not depend on a sibling `assets/` directory.
 
-After generation, validate that every `<img>` target exists and has nonzero bytes. Use browser checks for natural dimensions when image encoding is suspicious.
+After generation, validate new image-bearing outputs with `--require-self-contained-images`. The validator checks that every `<img>` uses an embedded image URI and that base64 payloads decode to nonzero bytes. Use browser checks for natural dimensions when image encoding is suspicious.
 
 ## Text Accuracy
 

@@ -21,6 +21,7 @@ CASES = [
             r"DSM-Ill",
         ],
         "require_standard_nav": True,
+        "allow_external_images": True,
     },
     {
         "path": ROOT / "enjoy-your-symptom/enjoy-your-symptom.html",
@@ -34,6 +35,7 @@ CASES = [
         ],
         "require_standard_nav": True,
         "reject_split_paragraphs": True,
+        "allow_external_images": True,
     },
     {
         "path": ROOT / "the-idea-of-phenomenology/the-idea-of-phenomenology.html",
@@ -65,6 +67,7 @@ CASES = [
             r"evel\)lthing",
         ],
         "require_standard_nav": True,
+        "allow_external_images": True,
     },
     {
         "path": ROOT / "for-they-know-not/for-they-know-not.html",
@@ -82,6 +85,7 @@ CASES = [
             r"(?<!over)scroll-behavior",
         ],
         "require_standard_nav": True,
+        "allow_external_images": True,
     },
     {
         "path": ROOT / "how-to-read/how-to-read-lacan.html",
@@ -156,6 +160,10 @@ def main() -> int:
             artifact_patterns=case.get("scan", []),
             expected_note_refs=case.get("notes"),
             expected_figures=case.get("figures"),
+            require_self_contained_images=case.get(
+                "require_self_contained_images",
+                not case.get("allow_external_images", False),
+            ),
             require_standard_nav=case.get("require_standard_nav", False),
             reject_split_paragraphs=case.get("reject_split_paragraphs", False),
         )

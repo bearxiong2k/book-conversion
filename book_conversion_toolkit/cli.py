@@ -28,6 +28,7 @@ def cmd_validate_html(args: argparse.Namespace) -> int:
         expected_note_refs=args.expect_note_refs,
         expected_figures=args.expect_figures,
         check_images=not args.no_image_check,
+        require_self_contained_images=args.require_self_contained_images,
         require_standard_nav=args.require_standard_nav,
         reject_split_paragraphs=args.reject_split_paragraphs,
     )
@@ -61,6 +62,11 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--expect-note-refs", type=int)
     validate.add_argument("--expect-figures", type=int)
     validate.add_argument("--no-image-check", action="store_true")
+    validate.add_argument(
+        "--require-self-contained-images",
+        action="store_true",
+        help="Require every img src to be an embedded data:image URI and validate its base64 payload.",
+    )
     validate.add_argument(
         "--require-standard-nav",
         action="store_true",

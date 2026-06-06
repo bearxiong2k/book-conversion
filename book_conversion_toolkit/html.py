@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import binascii
 import html
 import hashlib
 import json
@@ -37,6 +39,8 @@ class HtmlValidationReport:
     figures: int = 0
     missing_images: list[str] = field(default_factory=list)
     empty_images: list[str] = field(default_factory=list)
+    external_images: list[str] = field(default_factory=list)
+    invalid_data_images: list[str] = field(default_factory=list)
     artifact_hits: list[str] = field(default_factory=list)
     expectation_failures: list[str] = field(default_factory=list)
     navigator_failures: list[str] = field(default_factory=list)
@@ -49,6 +53,8 @@ class HtmlValidationReport:
             or self.duplicate_ids
             or self.missing_images
             or self.empty_images
+            or self.external_images
+            or self.invalid_data_images
             or self.artifact_hits
             or self.expectation_failures
             or self.navigator_failures
@@ -72,6 +78,8 @@ class HtmlValidationReport:
             ("duplicate ids", self.duplicate_ids),
             ("missing images", self.missing_images),
             ("empty images", self.empty_images),
+            ("external images", self.external_images),
+            ("invalid data images", self.invalid_data_images),
             ("artifact hits", self.artifact_hits),
             ("expectation failures", self.expectation_failures),
             ("navigator failures", self.navigator_failures),
@@ -123,6 +131,7 @@ def validate_html(
     expected_note_refs: int | None = None,
     expected_figures: int | None = None,
     check_images: bool = True,
+    require_self_contained_images: bool = False,
     require_standard_nav: bool = False,
     reject_split_paragraphs: bool = False,
 ) -> HtmlValidationReport:
@@ -151,6 +160,21 @@ def validate_html(
 
     if check_images:
         for src in parser.images:
+            if src.startswith("data:image/"):
+                match = re.match(r"^data:image/[a-z0-9.+-]+;base64,(.+)$", src, flags=re.IGNORECASE | re.DOTALL)
+                if not match:
+                    report.invalid_data_images.append(src[:80])
+                    continue
+                try:
+                    decoded = base64.b64decode(match.group(1), validate=True)
+                except (binascii.Error, ValueError):
+                    report.invalid_data_images.append(src[:80])
+                    continue
+                if not decoded:
+                    report.invalid_data_images.append(src[:80])
+                continue
+            if require_self_contained_images:
+                report.external_images.append(src)
             if re.match(r"^[a-z]+:", src):
                 continue
             image_path = (path.parent / src).resolve()
@@ -159,8 +183,14 @@ def validate_html(
             elif image_path.stat().st_size == 0:
                 report.empty_images.append(src)
 
+    artifact_markup = re.sub(
+        r"data:image/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=\r\n]+",
+        "data:image/*;base64,[embedded-image]",
+        markup,
+        flags=re.IGNORECASE,
+    )
     for pattern in artifact_patterns:
-        if re.search(pattern, markup, flags=re.IGNORECASE):
+        if re.search(pattern, artifact_markup, flags=re.IGNORECASE):
             report.artifact_hits.append(pattern)
 
     if reject_split_paragraphs:
