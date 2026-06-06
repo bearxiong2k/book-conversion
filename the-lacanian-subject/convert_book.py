@@ -154,6 +154,14 @@ def class_tokens(node: ET.Element) -> set[str]:
     return set(value.split())
 
 
+def contains_tag(node: ET.Element, tag_name: str) -> bool:
+    return any(local_name(child.tag) == tag_name for child in node.iter())
+
+
+def is_epub_math_variant(node: ET.Element) -> bool:
+    return local_name(node.tag) == "span" and "epub" in class_tokens(node) and contains_tag(node, "math")
+
+
 def parse_member(package: EPUBPackage, member: str) -> ET.Element:
     return ET.fromstring(package.read_text(member))
 
@@ -175,6 +183,11 @@ def plain_text(node: ET.Element) -> str:
         if child.tail:
             pieces.append(child.tail)
     return re.sub(r"\s+", " ", "".join(pieces)).strip()
+
+
+def heading_text(node: ET.Element) -> str:
+    text = plain_text(node)
+    return re.sub(r"^(\d+)(?=[A-Za-z])", r"\1 ", text)
 
 
 def absolute_member(base_member: str, href: str) -> tuple[str, str | None]:
@@ -300,6 +313,8 @@ class EpubRenderer:
 
     def render_node(self, node: ET.Element, member: str, collect_headings: bool = True) -> str:
         tag = local_name(node.tag)
+        if is_epub_math_variant(node):
+            return ""
         if "doc-pagebreak" in role_tokens(node):
             ident = self.mapped_id(member, attr_value(node, "id"))
             aria = attr_value(node, "aria-label")
@@ -334,7 +349,7 @@ class EpubRenderer:
             if ident:
                 original_level = int(tag[1:])
                 level = 2 if original_level <= 2 else min(original_level, 4)
-                self.headings.append(Heading(level, plain_text(node), ident))
+                self.headings.append(Heading(level, heading_text(node), ident))
         if tag in VOID_TAGS:
             return f"<{tag}{attrs}>"
         return f"<{tag}{attrs}>{self.render_children(node, member, collect_headings)}</{tag}>"
