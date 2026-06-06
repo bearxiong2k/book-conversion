@@ -130,6 +130,7 @@ CASES = [
             r"INDEX \d",
             r"page-snapshot",
             r"ocr-images",
+            r"transition_sb",
             r"<span class=\"epub\"><math",
             r"<mtext>Symbolic</mtext>",
             r"TILITIIII",

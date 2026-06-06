@@ -358,6 +358,8 @@ class EpubRenderer:
         tag = local_name(node.tag)
         if is_epub_math_variant(node):
             return ""
+        if tag == "hr" and "transition_sb" in class_tokens(node):
+            return ""
         if "doc-pagebreak" in role_tokens(node):
             ident = self.mapped_id(member, attr_value(node, "id"))
             aria = attr_value(node, "aria-label")
@@ -474,7 +476,7 @@ def build_html() -> str:
 
     css = (
         STANDARD_BOOK_CSS
-        + "\n:root{--main-text-width:640px;--main-text-max-width:640px}"
+        + "\n:root{--main-text-width:760px}"
         + "\nmain{padding:64px 52px 88px}"
         + "\nmain p{font-size:1rem;line-height:1.34;margin:0;text-align:justify}"
         + "\n.title-page{min-height:78vh;display:block;text-align:center;padding-top:18vh}"
@@ -506,8 +508,16 @@ def build_html() -> str:
         + "\n.BL{position:relative;padding-left:1.2rem}"
         + "\n.BL::before{content:''}"
         + "\nfigure.img,figure.img-1,figure.img-nt,.book-figure{margin:.75rem auto 1.2rem;text-align:center}"
-        + "\nfigure img{display:block;max-width:min(100%,34rem);height:auto;margin:0 auto}"
-        + "\nfigure.img-1 img{max-width:min(100%,29rem)}"
+        + "\nfigure img{display:block;max-width:min(100%,30rem);max-height:24rem;width:auto;height:auto;margin:0 auto}"
+        + "\nfigure.img-1 img{max-width:min(100%,25rem);max-height:16rem}"
+        + "\nfigure img.img1{max-width:min(100%,8.5rem);max-height:8.5rem}"
+        + "\nfigure img.img50{max-width:min(100%,18rem);max-height:16rem}"
+        + "\nfigure img.img60{max-width:min(100%,21rem);max-height:18rem}"
+        + "\nfigure img.img70{max-width:min(100%,24rem);max-height:20rem}"
+        + "\nfigure img.img80{max-width:min(100%,26rem);max-height:21rem}"
+        + "\nfigure img.img90{max-width:min(100%,28rem);max-height:22rem}"
+        + "\nfigure img.img100{max-width:min(100%,30rem);max-height:24rem}"
+        + "\nfigure.img-nt img{max-width:min(100%,32rem);max-height:24rem}"
         + "\np.math{margin:.6rem auto .95rem;text-align:center}"
         + "\np.math img[role='presentation']{max-width:min(100%,22rem);max-height:4.4rem;width:auto;height:auto;margin:.1rem auto .25rem}"
         + "\nimg.inline{display:inline-block;width:auto;max-height:1.1em;vertical-align:-.12em;margin:0 .08em}"
@@ -517,7 +527,6 @@ def build_html() -> str:
         + "\ntd p,th p{margin:.08rem 0;font-size:inherit;line-height:inherit}"
         + "\n.TB-nbor,.TB-nbor-th{border:0}"
         + "\nblockquote{border-left:0;margin:.9rem 1.6rem;color:#111}"
-        + "\n.transition_sb{border:0;border-top:1px solid #4a453e;margin:1.2rem auto;width:36%}"
         + "\n.strikethrough{text-decoration:line-through}"
         + "\nsmall{font-size:.78em}"
         + "\nmath{font-family:Georgia,'Times New Roman',serif}"
