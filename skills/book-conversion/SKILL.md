@@ -43,10 +43,11 @@ Use this skill when converting books into readable, selectable HTML. The quality
 5. Parse structural elements into an intermediate list such as `title`, `part`, `heading`, `paragraph`, `quote`, `figure`, and `index`.
 6. Insert footnotes by stable target strings or real PDF superscript metadata. Fail loudly when a target or note is missing.
 7. Extract or copy meaningful figures into `assets/figures/`; reject tiny glyph fragments and decorative scans.
-8. For PDF block extraction, run paragraph fragments through `merge_continuation_paragraphs` before assigning annotation anchors so page/block breaks like `family` followed by `abandoned...` do not become separate paragraphs.
-9. Generate navigation from final headings, not a separate hand-maintained outline. Use both `render_standard_nav` for the fixed side navigator and `render_linked_contents` for the in-body contents section, then wrap with `STANDARD_BOOK_CSS` and `wrap_html_document` so fixed navigation, collapsible draggable nav/text resizing, active-link behavior, in-content links, details expansion, and direct anchor jumps stay consistent across outputs.
-10. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
-11. Regenerate and validate after each significant section.
+8. When an EPUB is available, prefer its structured text, tables, MathML, note links, and image assets over OCR; do not use full-page snapshots for tables or figures unless no structured/cropped source exists.
+9. For PDF block extraction, run paragraph fragments through `merge_continuation_paragraphs` before assigning annotation anchors so page/block breaks like `family` followed by `abandoned...` do not become separate paragraphs.
+10. Generate navigation from final headings, not a separate hand-maintained outline. Use both `render_standard_nav` for the fixed side navigator and `render_linked_contents` for the in-body contents section, then wrap with `STANDARD_BOOK_CSS` and `wrap_html_document` so fixed navigation, collapsible draggable nav/text resizing, active-link behavior, in-content links, details expansion, and direct anchor jumps stay consistent across outputs.
+11. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
+12. Regenerate and validate after each significant section.
 
 ## Toolkit Commands
 
