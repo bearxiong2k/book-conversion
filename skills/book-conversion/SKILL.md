@@ -45,10 +45,11 @@ Use this skill when converting books into readable, selectable HTML. The quality
 7. Extract or copy meaningful figures into `assets/figures/`; reject tiny glyph fragments and decorative scans.
 8. When an EPUB is available, prefer its structured text, tables, MathML, note links, and image assets over OCR; do not use full-page snapshots for tables or figures unless no structured/cropped source exists.
 9. Cross-check EPUB formula, table, and figure blocks against the PDF's layout or PDF-derived image assets. When an EPUB supplies both MathML/text and a rendered image fallback for the same formula or diagram, render only one visible representation; prefer the image fallback when the PDF layout is the authority.
-10. For PDF block extraction, run paragraph fragments through `merge_continuation_paragraphs` before assigning annotation anchors so page/block breaks like `family` followed by `abandoned...` do not become separate paragraphs.
-11. Generate navigation from final headings, not a separate hand-maintained outline. Use both `render_standard_nav` for the fixed side navigator and `render_linked_contents` for the in-body contents section, then wrap with `STANDARD_BOOK_CSS` and `wrap_html_document` so fixed navigation, collapsible draggable nav/text resizing, active-link behavior, in-content links, details expansion, and direct anchor jumps stay consistent across outputs.
-12. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
-13. Regenerate and validate after each significant section.
+10. Keep the reading surface book-like even when EPUB is the text authority: use the PDF for title/subtitle placement, chapter-opening hierarchy, section heading weight, paragraph indentation, table scale, figure scale, and text-column measure. Do not leave loose EPUB spacing as the default.
+11. For PDF block extraction, run paragraph fragments through `merge_continuation_paragraphs` before assigning annotation anchors so page/block breaks like `family` followed by `abandoned...` do not become separate paragraphs.
+12. Generate navigation from final headings, not a separate hand-maintained outline. Use both `render_standard_nav` for the fixed side navigator and `render_linked_contents` for the in-body contents section, then wrap with `STANDARD_BOOK_CSS` and `wrap_html_document` so fixed navigation, collapsible draggable nav/text resizing, active-link behavior, in-content links, details expansion, and direct anchor jumps stay consistent across outputs.
+13. Use `wrap_html_document` or `add_annotation_anchors` for final HTML so headings and reading blocks have stable annotation anchors.
+14. Regenerate and validate after each significant section.
 
 ## Toolkit Commands
 

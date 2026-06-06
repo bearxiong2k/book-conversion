@@ -71,34 +71,57 @@ sup{font-size:.72em;line-height:0}
 @media (min-width:1220px){body{padding-left:var(--page-nav-width)}.footnotes{display:none}}
 @media (min-width:980px) and (max-width:1219px){.page-nav,.page-nav-resizer{display:none}.footnotes{display:none}}
 @media (max-width:979px){.page-nav,.page-nav-resizer{display:none}.floating-note{display:none}main{max-width:760px;margin:0 auto;padding:32px 18px 64px}.footnotes{display:block}}
-.title-page{min-height:72vh;display:flex;flex-direction:column;justify-content:center;text-align:center}
-.title-page .subtitle{font-size:1.15rem;color:#5c5449}
-.title-page .author{font-size:1.2rem;letter-spacing:.08em}
+:root{--main-text-width:640px;--main-text-max-width:640px}
+main{padding:64px 52px 88px}
+main p{font-size:1rem;line-height:1.34;margin:0;text-align:justify}
+.title-page{min-height:78vh;display:block;text-align:center;padding-top:18vh}
+.title-page h1{font-size:2.25rem;line-height:1.02;letter-spacing:.08em;margin:0 0 2.6rem;text-transform:uppercase}
+.title-page .subtitle{font-size:1.35rem;line-height:1.32;color:#28231f;max-width:17rem;margin:0 auto 7.5rem}
+.title-page .author{font-size:1.25rem;letter-spacing:.22em;text-transform:uppercase;margin-top:0}
 hgroup{display:block}
-section{margin:0 0 1rem}
-.CN,.PN,.APN{display:block;font-size:.9em;color:#5c5449}
+section{margin:0}
+h1.FMH{font-size:1.45rem;line-height:1.2;margin:4.5rem 0 2.1rem;text-align:center;letter-spacing:0;text-transform:none}
+h2.CHAPTER{font-size:1rem;line-height:1.2;text-align:left;margin:4.4rem 0 3.1rem;font-weight:700;letter-spacing:0}
+h2.CHAPTER .CN{display:flex;align-items:center;gap:.75rem;font-size:1.9rem;line-height:1;margin:0 0 1.35rem;color:#111}
+h2.CHAPTER .CN::after{content:'';height:1px;background:#4a453e;flex:1}
+h2.CHAPTER .CT{display:block;font-size:1.26rem;line-height:1.18;font-weight:700;color:#111}
+h2.CHAPTER [role='doc-subtitle']{display:block;margin-top:.18rem;font-size:.96em}
+.PART{margin:6rem 0 5rem;text-align:center}
+.PART .PN{display:block;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase;color:#4f493f;margin-bottom:1rem}
+.PART .PT{display:block;font-size:1.22rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.CN,.PN,.APN{display:block;color:#5c5449}
 .CT,.PT,.APH{display:block}
-.PART{margin-top:72px}
-.CAP,.TT,.TT1{text-align:center;font-style:italic;color:#5c5449;margin:.25rem 0 .5rem}
-.BL{position:relative;padding-left:1.35rem}
+h2.H1,h3.H1,h3.H2,h4.H2{font-size:1.08rem;line-height:1.2;margin:2.65rem 0 1.15rem;text-align:left;font-style:normal;font-weight:700;letter-spacing:0}
+h3.H2,h4.H2{font-size:.96rem;text-transform:uppercase;letter-spacing:.06em;margin-top:2rem}
+p.TX,p.TXS,p.SB1,p.NTX{text-indent:1.28em}
+p.TNI,p.TNIS,p.STNI,p.CO,p.CAP,p.TT,p.TT1,p.math,td p,th p{text-indent:0}
+h1.FMH + p,h2.CHAPTER + p,h2.H1 + p,h3.H1 + p,h3.H2 + p,h4.H2 + p{text-indent:0}
+p.CO{margin-bottom:0}
+p.SB1{margin-top:.75rem}
+p.TXS,p.STNI,p.TNIS{font-size:.95rem;line-height:1.32}
+.CAP,.TT,.TT1{text-align:left;font-style:normal;color:#111;margin:.2rem 0 .35rem;font-size:.86rem;line-height:1.2;font-weight:700}
+.BL{position:relative;padding-left:1.2rem}
 .BL::before{content:''}
-figure.img,figure.img-1,figure.img-nt,.book-figure{margin:1.35rem auto 1.8rem;text-align:center}
-figure img{display:block;max-width:100%;height:auto;margin:0 auto}
+figure.img,figure.img-1,figure.img-nt,.book-figure{margin:.75rem auto 1.2rem;text-align:center}
+figure img{display:block;max-width:min(100%,34rem);height:auto;margin:0 auto}
+figure.img-1 img{max-width:min(100%,29rem)}
+p.math{margin:.6rem auto .95rem;text-align:center}
+p.math img[role='presentation']{max-width:min(100%,22rem);max-height:4.4rem;width:auto;height:auto;margin:.1rem auto .25rem}
 img.inline{display:inline-block;width:auto;max-height:1.1em;vertical-align:-.12em;margin:0 .08em}
-img[role='presentation']:not(.inline){display:block;max-width:100%;height:auto;margin:1rem auto}
-table{width:auto;max-width:100%;border-collapse:collapse;margin:1.25rem auto 1.75rem;font-size:.92rem;line-height:1.32}
-th,td{border:1px solid #d8d0c5;padding:.28rem .45rem;vertical-align:middle;text-align:center}
+img[role='presentation']:not(.inline){display:block;max-width:min(100%,22rem);height:auto;margin:.75rem auto 1rem}
+table{width:auto;max-width:100%;border-collapse:collapse;margin:.4rem auto 1.1rem;font-size:.92rem;line-height:1.25}
+th,td{border:1px solid #2b2926;padding:.4rem .6rem;vertical-align:middle;text-align:left}
 td p,th p{margin:.08rem 0;font-size:inherit;line-height:inherit}
 .TB-nbor,.TB-nbor-th{border:0}
-blockquote{border-left:2px solid #d8c7a8;margin:1.2rem 1.5rem;padding-left:1rem;color:#3f3931}
-.transition_sb{border:0;border-top:1px solid #d8c7a8;margin:1.5rem auto;width:40%}
+blockquote{border-left:0;margin:.9rem 1.6rem;color:#111}
+.transition_sb{border:0;border-top:1px solid #4a453e;margin:1.2rem auto;width:36%}
 .strikethrough{text-decoration:line-through}
 small{font-size:.78em}
 math{font-family:Georgia,'Times New Roman',serif}
 .IX,.IXA{font-size:.9rem;line-height:1.35;margin-bottom:.18rem}
-.BIB{font-size:.94rem;line-height:1.42;text-align:left}
+.BIB{font-size:.94rem;line-height:1.32;text-align:left;text-indent:0;margin-bottom:.35rem}
 .NTX,.noteish{font-size:.92rem;color:#39342f}
-@media (max-width:760px){table{display:block;overflow-x:auto}th,td{min-width:3rem}}
+@media (max-width:760px){main{padding:36px 20px 64px}main p{text-align:left}.title-page{padding-top:12vh}.title-page .subtitle{margin-bottom:4rem}table{display:block;overflow-x:auto}th,td{min-width:3rem}p.TX,p.TXS,p.SB1,p.NTX{text-indent:1em}}
 </style>
 </head>
 <body>
@@ -4234,12 +4257,18 @@ document.querySelectorAll('.footnote-popover').forEach((wrap) => {
   const storageKey = 'bookNavLayout';
   const collapseThreshold = 80;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const cssPx = (name, fallback) => {
+    const value = parseFloat(getComputedStyle(root).getPropertyValue(name));
+    return Number.isFinite(value) ? value : fallback;
+  };
   const layoutFor = (rawNavWidth) => {
     const viewport = Math.max(320, window.innerWidth || 0);
     const navMax = Math.min(420, Math.max(220, viewport * 0.42));
+    const mainMax = cssPx('--main-text-max-width', 980);
+    const mainMin = Math.min(560, mainMax);
     const collapsed = rawNavWidth <= collapseThreshold;
     const navWidth = collapsed ? 0 : clamp(rawNavWidth, 180, navMax);
-    const mainWidth = clamp(viewport - navWidth - 96, 560, 980);
+    const mainWidth = clamp(viewport - navWidth - 96, mainMin, mainMax);
     document.body.classList.toggle('is-nav-collapsed', collapsed);
     root.style.setProperty('--page-nav-width', `${Math.round(navWidth)}px`);
     root.style.setProperty('--main-text-width', `${Math.round(mainWidth)}px`);

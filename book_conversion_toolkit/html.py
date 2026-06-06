@@ -771,12 +771,18 @@ DEFAULT_NAV_JS = """
   const storageKey = 'bookNavLayout';
   const collapseThreshold = 80;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const cssPx = (name, fallback) => {
+    const value = parseFloat(getComputedStyle(root).getPropertyValue(name));
+    return Number.isFinite(value) ? value : fallback;
+  };
   const layoutFor = (rawNavWidth) => {
     const viewport = Math.max(320, window.innerWidth || 0);
     const navMax = Math.min(420, Math.max(220, viewport * 0.42));
+    const mainMax = cssPx('--main-text-max-width', 980);
+    const mainMin = Math.min(560, mainMax);
     const collapsed = rawNavWidth <= collapseThreshold;
     const navWidth = collapsed ? 0 : clamp(rawNavWidth, 180, navMax);
-    const mainWidth = clamp(viewport - navWidth - 96, 560, 980);
+    const mainWidth = clamp(viewport - navWidth - 96, mainMin, mainMax);
     document.body.classList.toggle('is-nav-collapsed', collapsed);
     root.style.setProperty('--page-nav-width', `${Math.round(navWidth)}px`);
     root.style.setProperty('--main-text-width', `${Math.round(mainWidth)}px`);

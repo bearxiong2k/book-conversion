@@ -17,6 +17,7 @@ from book_conversion_toolkit import (  # noqa: E402
     STANDARD_BOOK_CSS,
     render_linked_contents,
     render_standard_nav,
+    require_fitz,
     slugify,
     wrap_html_document,
 )
@@ -112,6 +113,7 @@ PASSTHROUGH_TAGS = {
 }
 VOID_TAGS = {"hr", "img", "wbr"}
 INLINE_IMAGE_MEMBERS: set[str] = set()
+TRIMMED_IMAGE_PATHS: set[Path] = set()
 
 
 @dataclass(frozen=True)
@@ -190,6 +192,46 @@ def heading_text(node: ET.Element) -> str:
     return re.sub(r"^(\d+)(?=[A-Za-z])", r"\1 ", text)
 
 
+def trim_image_whitespace(path: Path, padding: int = 18, threshold: int = 248) -> None:
+    if path in TRIMMED_IMAGE_PATHS:
+        return
+    TRIMMED_IMAGE_PATHS.add(path)
+    fitz = require_fitz()
+    pix = fitz.Pixmap(path)
+    if pix.width <= 0 or pix.height <= 0 or pix.n < 3:
+        return
+    samples = pix.samples
+    stride = pix.n
+    min_x, min_y = pix.width, pix.height
+    max_x, max_y = -1, -1
+    for y in range(pix.height):
+        row = y * pix.width * stride
+        for x in range(pix.width):
+            i = row + x * stride
+            channels = samples[i : i + 3]
+            alpha = samples[i + 3] if pix.alpha and stride > 3 else 255
+            if alpha > 8 and any(channel < threshold for channel in channels):
+                min_x = min(min_x, x)
+                min_y = min(min_y, y)
+                max_x = max(max_x, x)
+                max_y = max(max_y, y)
+    if max_x < 0:
+        return
+    min_x = max(0, min_x - padding)
+    min_y = max(0, min_y - padding)
+    max_x = min(pix.width - 1, max_x + padding)
+    max_y = min(pix.height - 1, max_y + padding)
+    if min_x == 0 and min_y == 0 and max_x == pix.width - 1 and max_y == pix.height - 1:
+        return
+    source_rect = fitz.IRect(min_x, min_y, max_x + 1, max_y + 1)
+    cropped = fitz.Pixmap(pix.colorspace, fitz.IRect(0, 0, source_rect.width, source_rect.height), pix.alpha)
+    cropped.clear_with(255)
+    cropped.set_origin(source_rect.x0, source_rect.y0)
+    cropped.copy(pix, source_rect)
+    cropped.set_origin(0, 0)
+    cropped.save(path)
+
+
 def absolute_member(base_member: str, href: str) -> tuple[str, str | None]:
     path, _, fragment = href.partition("#")
     if path:
@@ -253,6 +295,7 @@ class EpubRenderer:
         source_member, _ = absolute_member(member, src)
         target = ASSET_DIR / Path(source_member).name
         self.package.extract_member(source_member, target)
+        trim_image_whitespace(target)
         return f"assets/epub-images/{html.escape(target.name, quote=True)}"
 
     def render_attrs(self, node: ET.Element, member: str) -> str:
@@ -431,34 +474,57 @@ def build_html() -> str:
 
     css = (
         STANDARD_BOOK_CSS
-        + "\n.title-page{min-height:72vh;display:flex;flex-direction:column;justify-content:center;text-align:center}"
-        + "\n.title-page .subtitle{font-size:1.15rem;color:#5c5449}"
-        + "\n.title-page .author{font-size:1.2rem;letter-spacing:.08em}"
+        + "\n:root{--main-text-width:640px;--main-text-max-width:640px}"
+        + "\nmain{padding:64px 52px 88px}"
+        + "\nmain p{font-size:1rem;line-height:1.34;margin:0;text-align:justify}"
+        + "\n.title-page{min-height:78vh;display:block;text-align:center;padding-top:18vh}"
+        + "\n.title-page h1{font-size:2.25rem;line-height:1.02;letter-spacing:.08em;margin:0 0 2.6rem;text-transform:uppercase}"
+        + "\n.title-page .subtitle{font-size:1.35rem;line-height:1.32;color:#28231f;max-width:17rem;margin:0 auto 7.5rem}"
+        + "\n.title-page .author{font-size:1.25rem;letter-spacing:.22em;text-transform:uppercase;margin-top:0}"
         + "\nhgroup{display:block}"
-        + "\nsection{margin:0 0 1rem}"
-        + "\n.CN,.PN,.APN{display:block;font-size:.9em;color:#5c5449}"
+        + "\nsection{margin:0}"
+        + "\nh1.FMH{font-size:1.45rem;line-height:1.2;margin:4.5rem 0 2.1rem;text-align:center;letter-spacing:0;text-transform:none}"
+        + "\nh2.CHAPTER{font-size:1rem;line-height:1.2;text-align:left;margin:4.4rem 0 3.1rem;font-weight:700;letter-spacing:0}"
+        + "\nh2.CHAPTER .CN{display:flex;align-items:center;gap:.75rem;font-size:1.9rem;line-height:1;margin:0 0 1.35rem;color:#111}"
+        + "\nh2.CHAPTER .CN::after{content:'';height:1px;background:#4a453e;flex:1}"
+        + "\nh2.CHAPTER .CT{display:block;font-size:1.26rem;line-height:1.18;font-weight:700;color:#111}"
+        + "\nh2.CHAPTER [role='doc-subtitle']{display:block;margin-top:.18rem;font-size:.96em}"
+        + "\n.PART{margin:6rem 0 5rem;text-align:center}"
+        + "\n.PART .PN{display:block;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase;color:#4f493f;margin-bottom:1rem}"
+        + "\n.PART .PT{display:block;font-size:1.22rem;line-height:1.2;font-weight:700;letter-spacing:.08em;text-transform:uppercase}"
+        + "\n.CN,.PN,.APN{display:block;color:#5c5449}"
         + "\n.CT,.PT,.APH{display:block}"
-        + "\n.PART{margin-top:72px}"
-        + "\n.CAP,.TT,.TT1{text-align:center;font-style:italic;color:#5c5449;margin:.25rem 0 .5rem}"
-        + "\n.BL{position:relative;padding-left:1.35rem}"
+        + "\nh2.H1,h3.H1,h3.H2,h4.H2{font-size:1.08rem;line-height:1.2;margin:2.65rem 0 1.15rem;text-align:left;font-style:normal;font-weight:700;letter-spacing:0}"
+        + "\nh3.H2,h4.H2{font-size:.96rem;text-transform:uppercase;letter-spacing:.06em;margin-top:2rem}"
+        + "\np.TX,p.TXS,p.SB1,p.NTX{text-indent:1.28em}"
+        + "\np.TNI,p.TNIS,p.STNI,p.CO,p.CAP,p.TT,p.TT1,p.math,td p,th p{text-indent:0}"
+        + "\nh1.FMH + p,h2.CHAPTER + p,h2.H1 + p,h3.H1 + p,h3.H2 + p,h4.H2 + p{text-indent:0}"
+        + "\np.CO{margin-bottom:0}"
+        + "\np.SB1{margin-top:.75rem}"
+        + "\np.TXS,p.STNI,p.TNIS{font-size:.95rem;line-height:1.32}"
+        + "\n.CAP,.TT,.TT1{text-align:left;font-style:normal;color:#111;margin:.2rem 0 .35rem;font-size:.86rem;line-height:1.2;font-weight:700}"
+        + "\n.BL{position:relative;padding-left:1.2rem}"
         + "\n.BL::before{content:''}"
-        + "\nfigure.img,figure.img-1,figure.img-nt,.book-figure{margin:1.35rem auto 1.8rem;text-align:center}"
-        + "\nfigure img{display:block;max-width:100%;height:auto;margin:0 auto}"
+        + "\nfigure.img,figure.img-1,figure.img-nt,.book-figure{margin:.75rem auto 1.2rem;text-align:center}"
+        + "\nfigure img{display:block;max-width:min(100%,34rem);height:auto;margin:0 auto}"
+        + "\nfigure.img-1 img{max-width:min(100%,29rem)}"
+        + "\np.math{margin:.6rem auto .95rem;text-align:center}"
+        + "\np.math img[role='presentation']{max-width:min(100%,22rem);max-height:4.4rem;width:auto;height:auto;margin:.1rem auto .25rem}"
         + "\nimg.inline{display:inline-block;width:auto;max-height:1.1em;vertical-align:-.12em;margin:0 .08em}"
-        + "\nimg[role='presentation']:not(.inline){display:block;max-width:100%;height:auto;margin:1rem auto}"
-        + "\ntable{width:auto;max-width:100%;border-collapse:collapse;margin:1.25rem auto 1.75rem;font-size:.92rem;line-height:1.32}"
-        + "\nth,td{border:1px solid #d8d0c5;padding:.28rem .45rem;vertical-align:middle;text-align:center}"
+        + "\nimg[role='presentation']:not(.inline){display:block;max-width:min(100%,22rem);height:auto;margin:.75rem auto 1rem}"
+        + "\ntable{width:auto;max-width:100%;border-collapse:collapse;margin:.4rem auto 1.1rem;font-size:.92rem;line-height:1.25}"
+        + "\nth,td{border:1px solid #2b2926;padding:.4rem .6rem;vertical-align:middle;text-align:left}"
         + "\ntd p,th p{margin:.08rem 0;font-size:inherit;line-height:inherit}"
         + "\n.TB-nbor,.TB-nbor-th{border:0}"
-        + "\nblockquote{border-left:2px solid #d8c7a8;margin:1.2rem 1.5rem;padding-left:1rem;color:#3f3931}"
-        + "\n.transition_sb{border:0;border-top:1px solid #d8c7a8;margin:1.5rem auto;width:40%}"
+        + "\nblockquote{border-left:0;margin:.9rem 1.6rem;color:#111}"
+        + "\n.transition_sb{border:0;border-top:1px solid #4a453e;margin:1.2rem auto;width:36%}"
         + "\n.strikethrough{text-decoration:line-through}"
         + "\nsmall{font-size:.78em}"
         + "\nmath{font-family:Georgia,'Times New Roman',serif}"
         + "\n.IX,.IXA{font-size:.9rem;line-height:1.35;margin-bottom:.18rem}"
-        + "\n.BIB{font-size:.94rem;line-height:1.42;text-align:left}"
+        + "\n.BIB{font-size:.94rem;line-height:1.32;text-align:left;text-indent:0;margin-bottom:.35rem}"
         + "\n.NTX,.noteish{font-size:.92rem;color:#39342f}"
-        + "\n@media (max-width:760px){table{display:block;overflow-x:auto}th,td{min-width:3rem}}"
+        + "\n@media (max-width:760px){main{padding:36px 20px 64px}main p{text-align:left}.title-page{padding-top:12vh}.title-page .subtitle{margin-bottom:4rem}table{display:block;overflow-x:auto}th,td{min-width:3rem}p.TX,p.TXS,p.SB1,p.NTX{text-indent:1em}}"
     )
     return wrap_html_document(TITLE, "\n".join(fragments), render_standard_nav(renderer.headings), css=css)
 
