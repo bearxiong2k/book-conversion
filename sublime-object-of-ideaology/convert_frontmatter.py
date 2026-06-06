@@ -10,7 +10,14 @@ sys.path.insert(0, "..")
 
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
+from book_conversion_toolkit import (
+    Heading,
+    STANDARD_BOOK_CSS,
+    image_file_to_data_uri,
+    render_linked_contents,
+    render_standard_nav,
+    wrap_html_document,
+)
 
 
 PDF_PATH = Path("The Sublime Object of Ideology.pdf")
@@ -1149,7 +1156,7 @@ def ensure_figure_assets(doc: fitz.Document) -> None:
 
 def figure_html(slug: str) -> str:
     figure = FIGURES[slug]
-    src = f"{FIGURE_DIR.as_posix()}/{figure['filename']}"
+    src = image_file_to_data_uri(FIGURE_DIR / figure["filename"])
     return (
         '<figure class="book-figure">'
         f'<img src="{html.escape(src, quote=True)}" alt="{html.escape(figure["alt"], quote=True)}">'

@@ -5,11 +5,19 @@ import binascii
 import html
 import hashlib
 import json
+import mimetypes
 import re
 from dataclasses import asdict, dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Iterable
+
+
+def image_file_to_data_uri(path: Path | str) -> str:
+    path = Path(path)
+    mime_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    payload = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:{mime_type};base64,{payload}"
 
 
 @dataclass(frozen=True)

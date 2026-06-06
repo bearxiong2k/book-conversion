@@ -14,6 +14,7 @@ sys.path.insert(0, "..")
 
 from book_conversion_toolkit import (
     STANDARD_BOOK_CSS,
+    image_file_to_data_uri,
     merge_continuation_paragraphs,
     render_linked_contents,
     render_standard_nav,
@@ -243,8 +244,9 @@ def figure_html(page_index: int, sequence: int) -> str:
     path = extract_epub_image(filename)
     if path is None:
         return ""
+    src = image_file_to_data_uri(path)
     return (
-        f'<figure class="book-figure"><img src="{html.escape(path.as_posix(), quote=True)}" '
+        f'<figure class="book-figure"><img src="{html.escape(src, quote=True)}" '
         f'alt="{html.escape(alt, quote=True)}" loading="lazy" decoding="async"></figure>'
     )
 

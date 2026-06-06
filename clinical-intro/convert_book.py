@@ -17,7 +17,14 @@ sys.path.insert(0, "..")
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning  # type: ignore
 import fitz  # type: ignore
 
-from book_conversion_toolkit import Heading, STANDARD_BOOK_CSS, render_linked_contents, render_standard_nav, wrap_html_document
+from book_conversion_toolkit import (
+    Heading,
+    STANDARD_BOOK_CSS,
+    image_file_to_data_uri,
+    render_linked_contents,
+    render_standard_nav,
+    wrap_html_document,
+)
 
 
 PDF_PATH = Path("A Clinical Introduction to Lacanian Psychoanalysis_ Theory.pdf")
@@ -750,7 +757,8 @@ def render_html(elements: list[Element]) -> str:
             body.append(f"<blockquote>{emphasize_terms(element.text)}</blockquote>")
         elif element.kind == "figure" and element.src:
             caption = f"<figcaption>{html.escape(element.caption)}</figcaption>" if element.caption else ""
-            body.append(f'<figure><img src="{html.escape(element.src)}" alt="{html.escape(element.alt or "")}">{caption}</figure>')
+            src = image_file_to_data_uri(Path(element.src))
+            body.append(f'<figure><img src="{html.escape(src)}" alt="{html.escape(element.alt or "")}">{caption}</figure>')
     if not contents_inserted:
         body.insert(1, render_linked_contents(headings))
 

@@ -21,6 +21,7 @@ from book_conversion_toolkit import (
     Heading,
     STANDARD_BOOK_CSS,
     clean_spaces,
+    image_file_to_data_uri,
     render_footnote_list,
     render_footnote_ref,
     render_linked_contents,
@@ -145,8 +146,9 @@ def render_image(tag, member: str) -> str:
         if not target.exists() or target.read_bytes() != data:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
+        src = image_file_to_data_uri(target)
         return (
-            f'<figure class="book-figure"><img src="{html.escape(target.as_posix(), quote=True)}" '
+            f'<figure class="book-figure"><img src="{html.escape(src, quote=True)}" '
             f'alt="Figure from {html.escape(TITLE, quote=True)}" loading="lazy" decoding="async"></figure>'
         )
 
