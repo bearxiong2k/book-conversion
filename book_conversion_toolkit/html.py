@@ -288,8 +288,11 @@ def merge_continuation_paragraphs(fragments: Iterable[str]) -> list[str]:
                 and _paragraph_is_open_continuation(prev_inner)
                 and _paragraph_starts_lower(current_inner)
             ):
-                joiner = "" if _plain_markup_text(prev_inner).endswith("-") else " "
-                merged[-1] = f"<p{prev_attrs}>{prev_inner.rstrip()}{joiner}{current_inner.lstrip()}</p>"
+                if _plain_markup_text(prev_inner).endswith("-"):
+                    joined = prev_inner.rstrip()[:-1] + current_inner.lstrip()
+                else:
+                    joined = prev_inner.rstrip() + " " + current_inner.lstrip()
+                merged[-1] = f"<p{prev_attrs}>{joined}</p>"
                 continue
         merged.append(fragment)
     return merged

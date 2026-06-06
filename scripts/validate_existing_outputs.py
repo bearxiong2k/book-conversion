@@ -113,6 +113,24 @@ CASES = [
         ],
         "require_standard_nav": True,
     },
+    {
+        "path": ROOT / "the-lacanian-subject/the-lacanian-subject.html",
+        "figures": 0,
+        "scan": [
+            r"Copyright",
+            r"All Rights Reserved",
+            r"ISBN",
+            r"calibre",
+            r"This book has been composed",
+            r"Printed in the United",
+            r"Wenran",
+            r"Gédelian",
+            r"NOTES TO",
+            r"BIBLIOGRAPHY \d",
+            r"INDEX \d",
+        ],
+        "require_standard_nav": True,
+    },
 ]
 
 
